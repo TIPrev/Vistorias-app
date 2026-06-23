@@ -6,8 +6,8 @@
   --text: #15202b;
   --muted: #667585;
   --line: #dfe7ee;
-  --brand: #158160;
-  --brand-dark: #0d5f47;
+  --brand: #2563eb;
+  --brand-dark: #1d4ed8;
   --accent: #f2b84b;
   --danger: #c63d3d;
   --shadow: 0 22px 55px rgba(22, 38, 54, 0.14);
@@ -76,7 +76,7 @@ h1 {
 
 .app-header p {
   margin-top: 7px;
-  color: #a8d8ca;
+  color: #bfdbfe;
   font-size: 0.95rem;
   font-weight: 700;
 }
@@ -104,7 +104,7 @@ h1 {
   border-radius: 28px;
   background: var(--brand);
   color: #ffffff;
-  box-shadow: 0 24px 44px rgba(21, 129, 96, 0.3);
+  box-shadow: 0 24px 44px rgba(37, 99, 235, 0.28);
 }
 
 .total-day-card span {
@@ -117,6 +117,37 @@ h1 {
   font-size: 3rem;
   line-height: 1;
   letter-spacing: 0;
+}
+
+.view-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 18px 20px 0;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface-soft);
+}
+
+.tab-button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  background: var(--brand);
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22);
+}
+
+.view-section {
+  display: block;
 }
 
 .calculator {
@@ -157,7 +188,7 @@ h1 {
 
 .field input:focus {
   border-color: var(--brand);
-  box-shadow: 0 0 0 4px rgba(22, 127, 95, 0.13);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
 }
 
 .segmented {
@@ -230,8 +261,8 @@ h1 {
   gap: 12px;
   padding: 18px;
   border-radius: 20px;
-  background: #e9f6f1;
-  border: 1px solid #c6eadc;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
 }
 
 .result-panel strong {
@@ -306,7 +337,7 @@ h1 {
 }
 
 .summary-strip .average-card span {
-  color: #a8d8ca;
+  color: #bfdbfe;
 }
 
 .summary-strip .average-card strong {
@@ -361,7 +392,7 @@ h1 {
 }
 
 .inspection-date {
-  background: #eef7f4;
+  background: #eff6ff;
   color: var(--brand-dark);
 }
 
@@ -417,6 +448,88 @@ h1 {
   text-align: center;
 }
 
+.resume-page {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+
+.resume-total-card {
+  display: grid;
+  gap: 8px;
+  padding: 24px;
+  border-radius: 24px;
+  background: #142532;
+  color: #ffffff;
+  box-shadow: var(--soft-shadow);
+}
+
+.resume-total-card span,
+.resume-metrics span,
+.resume-item span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.resume-total-card span {
+  color: #bfdbfe;
+}
+
+.resume-total-card strong {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.resume-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.resume-metrics div,
+.resume-item {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: var(--soft-shadow);
+}
+
+.resume-metrics strong {
+  color: var(--text);
+  font-size: 1.2rem;
+}
+
+.resume-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resume-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.resume-row strong {
+  color: var(--brand-dark);
+  white-space: nowrap;
+}
+
+.resume-item small {
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
 .hidden {
   display: none;
 }
@@ -441,7 +554,8 @@ h1 {
 @media (max-width: 360px) {
   .switch-grid,
   .summary-strip,
-  .inspection-details {
+  .inspection-details,
+  .resume-metrics {
     grid-template-columns: 1fr;
   }
 

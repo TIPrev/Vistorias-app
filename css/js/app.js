@@ -10,6 +10,15 @@ const totalDia = document.querySelector("#total-dia");
 const quantidadeVistorias = document.querySelector("#quantidade-vistorias");
 const ganhoTotal = document.querySelector("#ganho-total");
 const valorMedio = document.querySelector("#valor-medio");
+const abaCalculadora = document.querySelector("#aba-calculadora");
+const abaResumo = document.querySelector("#aba-resumo");
+const telaCalculadora = document.querySelector("#tela-calculadora");
+const telaResumo = document.querySelector("#tela-resumo");
+const resumoTotal = document.querySelector("#resumo-total");
+const resumoQuantidade = document.querySelector("#resumo-quantidade");
+const resumoMedia = document.querySelector("#resumo-media");
+const listaResumo = document.querySelector("#lista-resumo");
+const resumoVazio = document.querySelector("#resumo-vazio");
 
 function obterTipoSelecionado() {
   return document.querySelector("input[name='tipo']:checked").value;
@@ -101,6 +110,35 @@ function renderizarVistorias() {
   quantidadeVistorias.textContent = String(vistorias.length);
   ganhoTotal.textContent = formatarMoeda(total);
   valorMedio.textContent = formatarMoeda(media);
+  renderizarResumo(vistorias, total, media);
+}
+
+function renderizarResumo(vistorias, total, media) {
+  listaResumo.innerHTML = "";
+  resumoVazio.classList.toggle("hidden", vistorias.length > 0);
+
+  vistorias.forEach((vistoria) => {
+    const item = document.createElement("li");
+    item.className = "resume-item";
+
+    const tipo = vistoria.tipo === "saida" ? "Saida" : "Entrada";
+
+    item.innerHTML = `
+      <div class="resume-row">
+        <div>
+          <span>${formatarData(vistoria.dataAgendada)}</span>
+          <small>${tipo} | ${vistoria.metragem} m2</small>
+        </div>
+        <strong>${formatarMoeda(vistoria.valor)}</strong>
+      </div>
+    `;
+
+    listaResumo.appendChild(item);
+  });
+
+  resumoTotal.textContent = formatarMoeda(total);
+  resumoQuantidade.textContent = String(vistorias.length);
+  resumoMedia.textContent = formatarMoeda(media);
 }
 
 function adicionarVistoriaPeloFormulario(event) {
@@ -132,8 +170,19 @@ function definirDataPadrao() {
   dataAgendadaInput.value = hoje.toISOString().slice(0, 10);
 }
 
+function trocarTela(tela) {
+  const mostrarResumo = tela === "resumo";
+
+  telaCalculadora.classList.toggle("hidden", mostrarResumo);
+  telaResumo.classList.toggle("hidden", !mostrarResumo);
+  abaCalculadora.classList.toggle("active", !mostrarResumo);
+  abaResumo.classList.toggle("active", mostrarResumo);
+}
+
 form.addEventListener("submit", adicionarVistoriaPeloFormulario);
 form.addEventListener("input", atualizarPreview);
+abaCalculadora.addEventListener("click", () => trocarTela("calculadora"));
+abaResumo.addEventListener("click", () => trocarTela("resumo"));
 
 definirDataPadrao();
 atualizarPreview();
