@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VISTORIA</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="phone">
+      <header class="app-header">
+        <div>
+          <span class="eyebrow">QuintoAndar</span>
+          <h1>VISTORIA</h1>
+        </div>
+        <div class="badge">BRL</div>
+      </header>
+
+      <form id="vistoria-form" class="calculator">
+        <label class="field">
+          <span>Metragem do imovel</span>
+          <input id="metragem" type="number" min="1" step="0.01" placeholder="Ex: 72" required>
+        </label>
+
+        <fieldset class="field-group">
+          <legend>Tipo</legend>
+          <div class="segmented">
+            <label>
+              <input type="radio" name="tipo" value="entrada" checked>
+              <span>Entrada</span>
+            </label>
+            <label>
+              <input type="radio" name="tipo" value="saida">
+              <span>Saida</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="switch-grid">
+          <label class="switch-card">
+            <span>Mobilia</span>
+            <input id="mobilia" type="checkbox">
+            <strong>+10%</strong>
+          </label>
+
+          <label class="switch-card">
+            <span>Qualidade</span>
+            <input id="qualidade" type="checkbox">
+            <strong>+R$ 15</strong>
+          </label>
+        </div>
+
+        <section class="result-panel" aria-live="polite">
+          <span>Valor calculado</span>
+          <strong id="valor-preview">R$ 0,00</strong>
+        </section>
+
+        <button class="primary-button" type="submit">Adicionar vistoria</button>
+      </form>
+
+      <section class="memory">
+        <div class="section-title">
+          <h2>Memoria</h2>
+          <strong id="total-acumulado">R$ 0,00</strong>
+        </div>
+
+        <ul id="lista-vistorias" class="inspection-list"></ul>
+        <p id="lista-vazia" class="empty-state">Nenhuma vistoria adicionada.</p>
+      </section>
+    </section>
+  </main>
+
+  <script src="css/js/calculadora.js"></script>
+  <script src="css/js/memoria.js"></script>
+  <script src="css/js/app.js"></script>
+</body>
+</html>
