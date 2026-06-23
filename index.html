@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VISTORIA</title>
+  <title>Calculadora de Vistorias</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -11,13 +11,23 @@
     <section class="phone">
       <header class="app-header">
         <div>
-          <span class="eyebrow">QuintoAndar</span>
-          <h1>VISTORIA</h1>
+          <h1>Calculadora de Vistorias</h1>
+          <p>QuintoAndar</p>
         </div>
-        <div class="badge">BRL</div>
+        <div class="badge">R$</div>
       </header>
 
+      <section class="total-day-card" aria-live="polite">
+        <span>Total do Dia</span>
+        <strong id="total-dia">R$ 0,00</strong>
+      </section>
+
       <form id="vistoria-form" class="calculator">
+        <label class="field">
+          <span>Data agendada</span>
+          <input id="data-agendada" type="date" required>
+        </label>
+
         <label class="field">
           <span>Metragem do imovel</span>
           <input id="metragem" type="number" min="1" step="0.01" placeholder="Ex: 72" required>
@@ -56,17 +66,32 @@
           <strong id="valor-preview">R$ 0,00</strong>
         </section>
 
-        <button class="primary-button" type="submit">Adicionar vistoria</button>
+        <button class="primary-button" type="submit">Agendar vistoria</button>
       </form>
 
       <section class="memory">
         <div class="section-title">
-          <h2>Memoria</h2>
-          <strong id="total-acumulado">R$ 0,00</strong>
+          <h2>Vistorias do Dia</h2>
+        </div>
+
+        <div class="summary-strip">
+          <div>
+            <span>Resumo mensal</span>
+            <strong id="quantidade-vistorias">0</strong>
+            <small>vistorias</small>
+          </div>
+          <div>
+            <span>Valor acumulado</span>
+            <strong id="ganho-total">R$ 0,00</strong>
+          </div>
+          <div class="average-card">
+            <span>Valor medio por vistoria</span>
+            <strong id="valor-medio">R$ 0,00</strong>
+          </div>
         </div>
 
         <ul id="lista-vistorias" class="inspection-list"></ul>
-        <p id="lista-vazia" class="empty-state">Nenhuma vistoria adicionada.</p>
+        <p id="lista-vazia" class="empty-state">Nenhuma vistoria agendada.</p>
       </section>
     </section>
   </main>
