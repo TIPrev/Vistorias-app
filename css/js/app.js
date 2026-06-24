@@ -1,189 +1,382 @@
-const form = document.querySelector("#vistoria-form");
-const dataAgendadaInput = document.querySelector("#data-agendada");
-const metragemInput = document.querySelector("#metragem");
-const mobiliaInput = document.querySelector("#mobilia");
-const qualidadeInput = document.querySelector("#qualidade");
-const valorPreview = document.querySelector("#valor-preview");
-const listaVistorias = document.querySelector("#lista-vistorias");
-const listaVazia = document.querySelector("#lista-vazia");
-const totalDia = document.querySelector("#total-dia");
-const quantidadeVistorias = document.querySelector("#quantidade-vistorias");
-const ganhoTotal = document.querySelector("#ganho-total");
-const valorMedio = document.querySelector("#valor-medio");
-const abaCalculadora = document.querySelector("#aba-calculadora");
-const abaResumo = document.querySelector("#aba-resumo");
-const telaCalculadora = document.querySelector("#tela-calculadora");
-const telaResumo = document.querySelector("#tela-resumo");
-const resumoTotal = document.querySelector("#resumo-total");
-const resumoQuantidade = document.querySelector("#resumo-quantidade");
-const resumoMedia = document.querySelector("#resumo-media");
-const listaResumo = document.querySelector("#lista-resumo");
-const resumoVazio = document.querySelector("#resumo-vazio");
+// --- ELEMENTOS DO DOM ---
+const alertasContainer = document.querySelector("#alertas-container");
+const abas = {
+  novaVistoria: document.querySelector("#aba-nova-vistoria"),
+  agenda: document.querySelector("#aba-agenda"),
+  resumo: document.querySelector("#aba-resumo"),
+};
+const telas = {
+  novaVistoria: document.querySelector("#tela-nova-vistoria"),
+  agenda: document.querySelector("#tela-agenda"),
+  resumo: document.querySelector("#tela-resumo"),
+};
 
-function obterTipoSelecionado() {
-  return document.querySelector("input[name='tipo']:checked").value;
-}
+// Tela: Nova Vistoria
+const vistoriaForm = document.querySelector("#vistoria-form");
+const vistoriaDataInput = document.querySelector("#vistoria-data");
+const vistoriaMetragemInput = document.querySelector("#vistoria-metragem");
+const vistoriaMobiliaInput = document.querySelector("#vistoria-mobilia");
+const vistoriaQualidadeInput = document.querySelector("#vistoria-qualidade");
+const vistoriaValorPreview = document.querySelector("#vistoria-valor-preview");
+const vistoriaCalcularBtn = document.querySelector("#vistoria-calcular-btn");
+const vistoriaSalvarBtn = document.querySelector("#vistoria-salvar-btn");
 
-function obterDadosFormulario() {
-  return {
-    dataAgendada: dataAgendadaInput.value,
-    metragem: Number(metragemInput.value),
-    tipo: obterTipoSelecionado(),
-    mobilia: mobiliaInput.checked,
-    qualidade: qualidadeInput.checked
-  };
-}
+// Tela: Agenda
+const agendaForm = document.querySelector("#agenda-form");
+const agendaDataInput = document.querySelector("#agenda-data");
+const agendaHoraInput = document.querySelector("#agenda-hora");
+const agendaEnderecoInput = document.querySelector("#agenda-endereco");
+const agendaObsInput = document.querySelector("#agenda-obs");
+const agendaListas = {
+    hoje: document.querySelector("#agenda-lista-hoje"),
+    amanha: document.querySelector("#agenda-lista-amanha"),
+    semana: document.querySelector("#agenda-lista-semana"),
+    futuras: document.querySelector("#agenda-lista-futuras"),
+};
+const agendaVazia = {
+    hoje: document.querySelector("#agenda-vazia-hoje"),
+    amanha: document.querySelector("#agenda-vazia-amanha"),
+    semana: document.querySelector("#agenda-vazia-semana"),
+    futuras: document.querySelector("#agenda-vazia-futuras"),
+};
 
-function atualizarPreview() {
-  const dados = obterDadosFormulario();
+// Tela: Resumo
+const historicoLista = document.querySelector("#historico-lista");
+const historicoVazio = document.querySelector("#historico-vazio");
+const dashboardHojeValor = document.querySelector("#dashboard-hoje-valor");
+const dashboardHojeQtd = document.querySelector("#dashboard-hoje-qtd");
+const dashboardSemanaValor = document.querySelector("#dashboard-semana-valor");
+const dashboardSemanaQtd = document.querySelector("#dashboard-semana-qtd");
+const dashboardMesValor = document.querySelector("#dashboard-mes-valor");
+const dashboardMesQtd = document.querySelector("#dashboard-mes-qtd");
+const dashboardAnoValor = document.querySelector("#dashboard-ano-valor");
+const dashboardAnoQtd = document.querySelector("#dashboard-ano-qtd");
+const ganhoEntradasValor = document.querySelector("#ganho-entradas-valor");
+const ganhoEntradasQtd = document.querySelector("#ganho-entradas-qtd");
+const ganhoSaidasValor = document.querySelector("#ganho-saidas-valor");
+const ganhoSaidasQtd = document.querySelector("#ganho-saidas-qtd");
+const rankingMaiorValor = document.querySelector("#ranking-maior-valor");
+const rankingMenorValor = document.querySelector("#ranking-menor-valor");
+const rankingMediaValor = document.querySelector("#ranking-media-valor");
+const melhorDiaNome = document.querySelector("#melhor-dia-nome");
+const melhorDiaValor = document.querySelector("#melhor-dia-valor");
 
-  if (!dados.metragem) {
-    valorPreview.textContent = formatarMoeda(0);
-    return;
-  }
 
-  try {
-    const valor = calcularVistoria(
-      dados.metragem,
-      dados.tipo,
-      dados.mobilia,
-      dados.qualidade
-    );
-
-    valorPreview.textContent = formatarMoeda(valor);
-  } catch {
-    valorPreview.textContent = formatarMoeda(0);
-  }
-}
+// --- FUNÇÕES AUXILIARES DE DATA E FORMATO ---
 
 function formatarData(dataISO) {
-  if (!dataISO) {
-    return "Sem data";
-  }
-
+  if (!dataISO) return "Sem data";
   const [ano, mes, dia] = dataISO.split("-");
   return `${dia}/${mes}/${ano}`;
 }
 
-function renderizarVistorias() {
-  const vistorias = listarVistorias();
-  const total = calcularTotalAcumulado();
-  const media = vistorias.length > 0 ? total / vistorias.length : 0;
-
-  listaVistorias.innerHTML = "";
-  listaVazia.classList.toggle("hidden", vistorias.length > 0);
-
-  vistorias.forEach((vistoria) => {
-    const item = document.createElement("li");
-    item.className = "inspection-item";
-    const tipo = vistoria.tipo === "saida" ? "Saida" : "Entrada";
-
-    item.innerHTML = `
-      <div class="inspection-main">
-        <div class="inspection-top">
-          <span class="inspection-date">${formatarData(vistoria.dataAgendada)}</span>
-          <span class="inspection-type">${tipo}</span>
-        </div>
-        <div class="inspection-details">
-          <div>
-            <span>Metragem</span>
-            <strong>${vistoria.metragem} m2</strong>
-          </div>
-          <div>
-            <span>Valor final</span>
-            <strong>${formatarMoeda(vistoria.valor)}</strong>
-          </div>
-        </div>
-      </div>
-      <button class="remove-button" type="button" aria-label="Excluir vistoria">Excluir</button>
-    `;
-
-    item.querySelector("button").addEventListener("click", () => {
-      removerVistoria(vistoria.id);
-      renderizarVistorias();
-    });
-
-    listaVistorias.appendChild(item);
-  });
-
-  totalDia.textContent = formatarMoeda(total);
-  quantidadeVistorias.textContent = String(vistorias.length);
-  ganhoTotal.textContent = formatarMoeda(total);
-  valorMedio.textContent = formatarMoeda(media);
-  renderizarResumo(vistorias, total, media);
+function dataParaISO(data) {
+  const dataObj = new Date(data);
+  dataObj.setMinutes(dataObj.getMinutes() - dataObj.getTimezoneOffset());
+  return dataObj.toISOString().slice(0, 10);
 }
 
-function renderizarResumo(vistorias, total, media) {
-  listaResumo.innerHTML = "";
-  resumoVazio.classList.toggle("hidden", vistorias.length > 0);
-
-  vistorias.forEach((vistoria) => {
-    const item = document.createElement("li");
-    item.className = "resume-item";
-
-    const tipo = vistoria.tipo === "saida" ? "Saida" : "Entrada";
-
-    item.innerHTML = `
-      <div class="resume-row">
-        <div>
-          <span>${formatarData(vistoria.dataAgendada)}</span>
-          <small>${tipo} | ${vistoria.metragem} m2</small>
-        </div>
-        <strong>${formatarMoeda(vistoria.valor)}</strong>
-      </div>
-    `;
-
-    listaResumo.appendChild(item);
-  });
-
-  resumoTotal.textContent = formatarMoeda(total);
-  resumoQuantidade.textContent = String(vistorias.length);
-  resumoMedia.textContent = formatarMoeda(media);
+function hojeISO() { return dataParaISO(new Date()); }
+function amanhaISO() {
+    const amanha = new Date();
+    amanha.setDate(amanha.getDate() + 1);
+    return dataParaISO(amanha);
 }
 
-function adicionarVistoriaPeloFormulario(event) {
+
+// --- LÓGICA DE NAVEGAÇÃO ---
+
+function trocarTela(telaAtiva) {
+  Object.keys(telas).forEach((nomeTela) => {
+    const mostrar = nomeTela === telaAtiva;
+    telas[nomeTela].classList.toggle("hidden", !mostrar);
+    abas[nomeTela].classList.toggle("active", mostrar);
+  });
+}
+
+// --- TELA: NOVA VISTORIA ---
+
+function calcularEExibirValor() {
+  const metragem = Number(vistoriaMetragemInput.value);
+  if (!metragem) {
+    vistoriaValorPreview.textContent = formatarMoeda(0);
+    return;
+  }
+  try {
+    const tipo = document.querySelector("input[name='vistoria-tipo']:checked").value;
+    const mobilia = vistoriaMobiliaInput.checked;
+    const qualidade = vistoriaQualidadeInput.checked;
+    const valor = calcularVistoria(metragem, tipo, mobilia, qualidade);
+    vistoriaValorPreview.textContent = formatarMoeda(valor);
+  } catch (error) {
+    alert(error.message);
+    vistoriaValorPreview.textContent = formatarMoeda(0);
+  }
+}
+
+function salvarVistoria() {
+  const data = vistoriaDataInput.value;
+  const metragem = Number(vistoriaMetragemInput.value);
+  if (!data || !metragem) {
+    alert("Por favor, preencha a data e a metragem antes de salvar.");
+    return;
+  }
+
+  try {
+    const tipo = document.querySelector("input[name='vistoria-tipo']:checked").value;
+    const mobilia = vistoriaMobiliaInput.checked;
+    const qualidade = vistoriaQualidadeInput.checked;
+    const valor = calcularVistoria(metragem, tipo, mobilia, qualidade);
+
+    adicionarVistoria({ dataAgendada: data, metragem, tipo, mobilia, qualidade, valor });
+
+    alert("Vistoria salva com sucesso!");
+    vistoriaForm.reset();
+    vistoriaDataInput.value = hojeISO();
+    vistoriaValorPreview.textContent = formatarMoeda(0);
+    renderizarTudo();
+  } catch (error) {
+    alert("Não foi possível salvar a vistoria: " + error.message);
+  }
+}
+
+// --- TELA: AGENDA INTELIGENTE ---
+
+function renderizarAgenda() {
+  const todosAgendamentos = listarAgendamentos();
+  
+  const hoje = hojeISO();
+  const amanha = amanhaISO();
+  const dataDaqui7Dias = new Date();
+  dataDaqui7Dias.setDate(dataDaqui7Dias.getDate() + 7);
+
+  const grupos = {
+      hoje: [],
+      amanha: [],
+      semana: [],
+      futuras: [],
+  };
+
+  todosAgendamentos.forEach(ag => {
+    const dataAg = new Date(ag.data + "T00:00:00");
+    if (ag.data === hoje) {
+      grupos.hoje.push(ag);
+    } else if (ag.data === amanha) {
+      grupos.amanha.push(ag);
+    } else if (dataAg <= dataDaqui7Dias) {
+      grupos.semana.push(ag);
+    } else {
+      grupos.futuras.push(ag);
+    }
+  });
+
+  Object.keys(grupos).forEach(key => {
+      const grupoAgendamentos = grupos[key];
+      const listaEl = agendaListas[key];
+      const VazioEl = agendaVazia[key];
+
+      listaEl.innerHTML = "";
+      grupoAgendamentos.sort((a,b) => new Date(a.data + 'T' + a.hora) - new Date(b.data + 'T' + b.hora));
+      
+      grupoAgendamentos.forEach(ag => {
+          const card = document.createElement("li");
+          card.className = "agenda-card";
+          card.innerHTML = `
+            <button class="remove-button" data-id="${ag.id}">&times;</button>
+            <div class="agenda-card-header">
+              <span>${formatarData(ag.data)}</span>
+              <span>${ag.hora}</span>
+            </div>
+            <p><strong>Endereço:</strong> ${ag.endereco}</p>
+            ${ag.obs ? `<p><strong>Obs:</strong> ${ag.obs}</p>` : ''}
+          `;
+          listaEl.appendChild(card);
+      });
+      
+      VazioEl.classList.toggle('hidden', grupoAgendamentos.length > 0);
+      listaEl.classList.toggle('hidden', grupoAgendamentos.length === 0);
+  });
+}
+
+
+function adicionarAgendamentoPeloFormulario(event) {
   event.preventDefault();
+  const data = agendaDataInput.value;
+  const hora = agendaHoraInput.value;
+  const endereco = agendaEnderecoInput.value;
+  const obs = agendaObsInput.value;
 
-  const dados = obterDadosFormulario();
-  const valor = calcularVistoria(
-    dados.metragem,
-    dados.tipo,
-    dados.mobilia,
-    dados.qualidade
-  );
+  if (!data || !hora || !endereco) {
+    alert("Preencha Data, Hora e Endereço.");
+    return;
+  }
 
-  adicionarVistoria({
-    ...dados,
-    valor
+  adicionarAgendamento({ data, hora, endereco, obs });
+  agendaForm.reset();
+  agendaDataInput.value = hojeISO();
+  renderizarTudo();
+}
+
+function removerAgendamentoPelaLista(event) {
+    const removeBtn = event.target.closest('.remove-button');
+    if(removeBtn) {
+        const id = Number(removeBtn.dataset.id);
+        if (confirm("Tem certeza que deseja excluir este agendamento?")) {
+            removerAgendamento(id);
+            renderizarTudo();
+        }
+    }
+}
+
+// --- TELA: RESUMO (HISTÓRICO E DASHBOARD) ---
+
+const ehHojeFiltro = (date) => new Date().toDateString() === new Date(date).toDateString();
+const getStartOfWeek = (d) => { const date = new Date(d); const day = date.getDay(); const diff = date.getDate() - day + (day === 0 ? -6 : 1); return new Date(date.setDate(diff)); };
+const ehNestaSemanaFiltro = (date) => new Date(date) >= getStartOfWeek(new Date());
+const ehNesteMesFiltro = (date) => new Date().getMonth() === new Date(date).getMonth() && new Date().getFullYear() === new Date(date).getFullYear();
+const ehNesteAnoFiltro = (date) => new Date().getFullYear() === new Date(date).getFullYear();
+
+function calcularMetricas(vistorias, filtro) {
+  const vistoriasFiltradas = vistorias.filter(v => v.dataAgendada && filtro(v.dataAgendada + "T00:00:00"));
+  return {
+    valor: vistoriasFiltradas.reduce((sum, v) => sum + v.valor, 0),
+    qtd: vistoriasFiltradas.length,
+  };
+}
+
+function renderizarResumo() {
+  const vistorias = listarVistorias();
+  historicoVazio.classList.toggle("hidden", vistorias.length > 0);
+  historicoLista.innerHTML = "";
+  
+  if (vistorias.length === 0) {
+    [dashboardHojeValor, dashboardSemanaValor, dashboardMesValor, dashboardAnoValor, ganhoEntradasValor, ganhoSaidasValor, rankingMaiorValor, rankingMenorValor, rankingMediaValor, melhorDiaValor].forEach(el => el.textContent = formatarMoeda(0));
+    [dashboardHojeQtd, dashboardSemanaQtd, dashboardMesQtd, dashboardAnoQtd, ganhoEntradasQtd, ganhoSaidasQtd].forEach(el => el.textContent = '0 vistorias');
+    melhorDiaNome.textContent = 'N/A';
+    return;
+  }
+
+  vistorias.sort((a, b) => new Date(b.dataAgendada) - new Date(a.dataAgendada));
+
+  vistorias.forEach(v => {
+    const card = document.createElement("li");
+    card.className = "historic-card";
+    card.innerHTML = `
+      <div class="historic-card-details">
+        <small>${formatarData(v.dataAgendada)}</small>
+        <strong>${v.metragem}m² - ${v.tipo.charAt(0).toUpperCase() + v.tipo.slice(1)}</strong>
+      </div>
+      <strong class="historic-card-valor">${formatarMoeda(v.valor)}</strong>
+      <button class="remove-button" data-id="${v.id}">&times;</button>
+    `;
+    historicoLista.appendChild(card);
   });
 
-  form.reset();
-  definirDataPadrao();
-  atualizarPreview();
-  renderizarVistorias();
-  metragemInput.focus();
+  // Cálculos do Dashboard
+  const hoje = calcularMetricas(vistorias, ehHojeFiltro);
+  dashboardHojeValor.textContent = formatarMoeda(hoje.valor);
+  dashboardHojeQtd.textContent = `${hoje.qtd} vistorias`;
+  const semana = calcularMetricas(vistorias, ehNestaSemanaFiltro);
+  dashboardSemanaValor.textContent = formatarMoeda(semana.valor);
+  dashboardSemanaQtd.textContent = `${semana.qtd} vistorias`;
+  const mes = calcularMetricas(vistorias, ehNesteMesFiltro);
+  dashboardMesValor.textContent = formatarMoeda(mes.valor);
+  dashboardMesQtd.textContent = `${mes.qtd} vistorias`;
+  const ano = calcularMetricas(vistorias, ehNesteAnoFiltro);
+  dashboardAnoValor.textContent = formatarMoeda(ano.valor);
+  dashboardAnoQtd.textContent = `${ano.qtd} vistorias`;
+  const entradas = vistorias.filter(v => v.tipo === 'entrada');
+  ganhoEntradasValor.textContent = formatarMoeda(entradas.reduce((s, v) => s + v.valor, 0));
+  ganhoEntradasQtd.textContent = `${entradas.length} vistorias`;
+  const saidas = vistorias.filter(v => v.tipo === 'saida');
+  ganhoSaidasValor.textContent = formatarMoeda(saidas.reduce((s, v) => s + v.valor, 0));
+  ganhoSaidasQtd.textContent = `${saidas.length} vistorias`;
+  const valores = vistorias.map(v => v.valor);
+  rankingMaiorValor.textContent = formatarMoeda(Math.max(...valores));
+  rankingMenorValor.textContent = formatarMoeda(Math.min(...valores));
+  rankingMediaValor.textContent = formatarMoeda(valores.reduce((s, v) => s + v, 0) / valores.length);
+  const dias = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+  const ganhosPorDia = vistorias.reduce((acc, v) => {
+    const dia = new Date(v.dataAgendada + "T00:00:00").getDay();
+    acc[dia] = (acc[dia] || 0) + v.valor;
+    return acc;
+  }, {});
+  const [melhorDiaIdx, maiorValor] = Object.entries(ganhosPorDia).reduce((melhor, [dia, v]) => (v > melhor[1] ? [dia, v] : melhor), [-1, -Infinity]);
+  melhorDiaNome.textContent = melhorDiaIdx > -1 ? dias[melhorDiaIdx] : "N/A";
+  melhorDiaValor.textContent = formatarMoeda(maiorValor > 0 ? maiorValor : 0);
 }
 
-function definirDataPadrao() {
-  const hoje = new Date();
-  hoje.setMinutes(hoje.getMinutes() - hoje.getTimezoneOffset());
-  dataAgendadaInput.value = hoje.toISOString().slice(0, 10);
+function removerVistoriaDoHistorico(event) {
+    const removeBtn = event.target.closest('.remove-button');
+    if(removeBtn) {
+        const id = Number(removeBtn.dataset.id);
+        if (confirm("Tem certeza que deseja excluir esta vistoria salva?")) {
+            removerVistoria(id);
+            renderizarTudo();
+        }
+    }
 }
 
-function trocarTela(tela) {
-  const mostrarResumo = tela === "resumo";
+// --- ALERTA ---
+function renderizarAlertas() {
+    alertasContainer.innerHTML = "";
+    const vistorias = listarVistorias();
+    const agendamentos = listarAgendamentos();
+    const hoje = hojeISO();
 
-  telaCalculadora.classList.toggle("hidden", mostrarResumo);
-  telaResumo.classList.toggle("hidden", !mostrarResumo);
-  abaCalculadora.classList.toggle("active", !mostrarResumo);
-  abaResumo.classList.toggle("active", mostrarResumo);
+    const vistoriasDeHoje = vistorias.filter(v => v.dataAgendada === hoje);
+    const agendamentosDeHoje = agendamentos.filter(a => a.data === hoje);
+
+    if (vistoriasDeHoje.length === 0) {
+        const alerta = document.createElement('div');
+        alerta.className = 'alerta warning';
+        alerta.textContent = 'Você ainda não registrou vistorias hoje.';
+        alertasContainer.appendChild(alerta);
+    } else {
+        const totalHoje = vistoriasDeHoje.reduce((sum, v) => sum + v.valor, 0);
+        if (totalHoje > 200) {
+            const alerta = document.createElement('div');
+            alerta.className = 'alerta success';
+            alerta.textContent = 'Meta diária de R$ 200,00 atingida!';
+            alertasContainer.appendChild(alerta);
+        }
+    }
+
+    if (agendamentosDeHoje.length > 0) {
+        const alerta = document.createElement('div');
+        alerta.className = 'alerta info';
+        alerta.textContent = `Você tem ${agendamentosDeHoje.length} vistoria(s) agendada(s) para hoje.`;
+        alertasContainer.appendChild(alerta);
+    }
 }
 
-form.addEventListener("submit", adicionarVistoriaPeloFormulario);
-form.addEventListener("input", atualizarPreview);
-abaCalculadora.addEventListener("click", () => trocarTela("calculadora"));
-abaResumo.addEventListener("click", () => trocarTela("resumo"));
 
-definirDataPadrao();
-atualizarPreview();
-renderizarVistorias();
+// --- INICIALIZAÇÃO ---
+
+function renderizarTudo() {
+    renderizarAgenda();
+    renderizarResumo();
+    renderizarAlertas();
+}
+
+function inicializar() {
+  vistoriaDataInput.value = hojeISO();
+  agendaDataInput.value = hojeISO();
+  
+  Object.keys(abas).forEach(nomeTela => {
+    abas[nomeTela].addEventListener("click", () => trocarTela(nomeTela));
+  });
+
+  vistoriaCalcularBtn.addEventListener("click", calcularEExibirValor);
+  vistoriaSalvarBtn.addEventListener("click", salvarVistoria);
+
+  agendaForm.addEventListener("submit", adicionarAgendamentoPeloFormulario);
+  document.querySelector("#agenda-grupos").addEventListener("click", removerAgendamentoPelaLista);
+
+  historicoLista.addEventListener("click", removerVistoriaDoHistorico);
+
+  renderizarTudo();
+  trocarTela("novaVistoria");
+}
+
+inicializar();

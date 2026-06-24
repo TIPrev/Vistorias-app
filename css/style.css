@@ -27,7 +27,8 @@ body {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -94,35 +95,10 @@ h1 {
   font-weight: 800;
 }
 
-.total-day-card {
-  display: grid;
-  gap: 12px;
-  margin: 20px 20px 0;
-  padding: 30px 26px;
-  min-height: 148px;
-  align-content: center;
-  border-radius: 28px;
-  background: var(--brand);
-  color: #ffffff;
-  box-shadow: 0 24px 44px rgba(37, 99, 235, 0.28);
-}
-
-.total-day-card span {
-  font-size: 0.82rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.total-day-card strong {
-  font-size: 3rem;
-  line-height: 1;
-  letter-spacing: 0;
-}
-
 .view-tabs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
   margin: 18px 20px 0;
   padding: 6px;
   border: 1px solid var(--line);
@@ -138,6 +114,7 @@ h1 {
   color: var(--muted);
   font-weight: 800;
   cursor: pointer;
+  font-size: 0.85rem;
 }
 
 .tab-button.active {
@@ -150,7 +127,8 @@ h1 {
   display: block;
 }
 
-.calculator {
+.calculator,
+.page-content {
   display: grid;
   gap: 16px;
   padding: 20px;
@@ -174,9 +152,10 @@ h1 {
   font-weight: 700;
 }
 
-.field input {
+.field input,
+.field textarea {
   width: 100%;
-  height: 54px;
+  min-height: 54px;
   padding: 0 16px;
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -186,7 +165,14 @@ h1 {
   outline: 0;
 }
 
-.field input:focus {
+.field textarea {
+  padding: 14px 16px;
+  min-height: 80px;
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
   border-color: var(--brand);
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
 }
@@ -271,24 +257,38 @@ h1 {
   white-space: nowrap;
 }
 
-.primary-button {
+.button-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.primary-button,
+.secondary-button {
   height: 56px;
   border: 0;
   border-radius: 18px;
-  background: var(--brand);
-  color: #ffffff;
   font-weight: 800;
   cursor: pointer;
+}
+
+.primary-button {
+  background: var(--brand);
+  color: #ffffff;
 }
 
 .primary-button:hover {
   background: var(--brand-dark);
 }
 
-.memory {
-  display: grid;
-  gap: 16px;
-  padding: 2px 20px 26px;
+.secondary-button {
+  background: var(--surface-soft);
+  color: var(--brand);
+  border: 1px solid var(--line);
+}
+
+.secondary-button:hover {
+  border-color: var(--brand);
 }
 
 .section-title {
@@ -296,6 +296,7 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 14px;
+  margin-top: 12px;
 }
 
 .section-title h2 {
@@ -318,12 +319,6 @@ h1 {
   box-shadow: var(--soft-shadow);
 }
 
-.summary-strip .average-card {
-  grid-column: 1 / -1;
-  background: #142532;
-  border-color: #142532;
-}
-
 .summary-strip span {
   color: var(--muted);
   font-size: 0.78rem;
@@ -336,21 +331,31 @@ h1 {
   font-size: 1.2rem;
 }
 
-.summary-strip .average-card span {
-  color: #bfdbfe;
-}
-
-.summary-strip .average-card strong {
-  color: #ffffff;
-  font-size: 1.55rem;
-}
-
 .summary-strip small {
   color: var(--muted);
   font-size: 0.78rem;
 }
 
-.inspection-list {
+#agenda-ganho-card {
+  background: #142532;
+  border-color: #142532;
+  color: white;
+}
+#agenda-ganho-card span,
+#agenda-ganho-card strong {
+  color: white;
+}
+
+.form-stack {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+}
+
+.agenda-list,
+.historic-list {
   display: grid;
   gap: 12px;
   margin: 0;
@@ -358,9 +363,11 @@ h1 {
   list-style: none;
 }
 
-.inspection-item {
+.agenda-card,
+.historic-card {
+  position: relative;
   display: grid;
-  gap: 14px;
+  gap: 12px;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 20px;
@@ -368,63 +375,61 @@ h1 {
   box-shadow: var(--soft-shadow);
 }
 
-.inspection-main {
+.agenda-card .remove-button,
+.historic-card .remove-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
   display: grid;
-  gap: 12px;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  line-height: 1;
 }
 
-.inspection-top {
+.agenda-card-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
-}
-
-.inspection-date,
-.inspection-type {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  padding: 0 10px;
-  border-radius: 999px;
-  font-size: 0.78rem;
   font-weight: 800;
+  font-size: 1.1rem;
 }
 
-.inspection-date {
-  background: #eff6ff;
+.agenda-card-header span:first-child {
   color: var(--brand-dark);
 }
 
-.inspection-type {
-  background: #fff7e3;
-  color: #835c08;
+.agenda-card p {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
-.inspection-details {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+.historic-card {
+  grid-template-columns: 1fr auto;
+  align-items: center;
 }
 
-.inspection-details div {
+.historic-card-details {
   display: grid;
   gap: 4px;
-  padding: 12px;
-  border-radius: 16px;
-  background: var(--surface-soft);
 }
-
-.inspection-details span {
+.historic-card-details small {
   color: var(--muted);
-  font-size: 0.76rem;
-  font-weight: 800;
-  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+.historic-card-details strong {
+  font-size: 1.2rem;
 }
 
-.inspection-details strong {
-  color: var(--text);
-  font-size: 1rem;
+.historic-card-valor {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--brand);
 }
 
 .remove-button {
@@ -441,97 +446,86 @@ h1 {
 }
 
 .empty-state {
-  padding: 18px;
+  padding: 24px 18px;
   border: 1px dashed var(--line);
   border-radius: 20px;
   color: var(--muted);
   text-align: center;
 }
 
-.resume-page {
-  display: grid;
-  gap: 16px;
-  padding: 20px;
-}
-
-.resume-total-card {
-  display: grid;
-  gap: 8px;
-  padding: 24px;
-  border-radius: 24px;
-  background: #142532;
-  color: #ffffff;
-  box-shadow: var(--soft-shadow);
-}
-
-.resume-total-card span,
-.resume-metrics span,
-.resume-item span {
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.resume-total-card span {
-  color: #bfdbfe;
-}
-
-.resume-total-card strong {
-  font-size: 2.4rem;
-  line-height: 1;
-}
-
-.resume-metrics {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.resume-metrics div,
-.resume-item {
-  display: grid;
-  gap: 6px;
-  padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  background: #ffffff;
-  box-shadow: var(--soft-shadow);
-}
-
-.resume-metrics strong {
-  color: var(--text);
-  font-size: 1.2rem;
-}
-
-.resume-list {
-  display: grid;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.resume-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.resume-row strong {
-  color: var(--brand-dark);
-  white-space: nowrap;
-}
-
-.resume-item small {
-  color: var(--text);
-  font-size: 0.95rem;
-  font-weight: 800;
-}
-
 .hidden {
   display: none;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.dashboard-card {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+  border-radius: 20px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+}
+
+.dashboard-card small {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.dashboard-card strong {
+  font-size: 1.5rem;
+  color: var(--brand);
+}
+
+.dashboard-card span {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.metric-card {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  box-shadow: var(--soft-shadow);
+}
+
+.metric-card small {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.metric-card strong {
+  font-size: 1.15rem;
+  color: var(--text);
+}
+
+.metric-card span {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+#melhor-dia-nome {
+  color: var(--brand-dark);
 }
 
 @media (max-width: 460px) {
@@ -551,15 +545,53 @@ h1 {
   }
 }
 
-@media (max-width: 360px) {
-  .switch-grid,
-  .summary-strip,
-  .inspection-details,
-  .resume-metrics {
+@media (max-width: 380px) {
+  .dashboard-grid,
+  .metrics-grid {
     grid-template-columns: 1fr;
   }
-
-  .total-day-card strong {
-    font-size: 2.35rem;
+  .tab-button {
+    font-size: 0.75rem;
   }
+}
+
+/* NOVOS ESTILOS - ALERTA E AGENDA INTELIGENTE */
+.alertas-container {
+  display: grid;
+  gap: 10px;
+  padding: 0 20px;
+}
+
+.alerta {
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.alerta.info {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+.alerta.success {
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.alerta.warning {
+  background-color: #fffbeb;
+  color: #b45309;
+}
+
+#agenda-grupos {
+  display: grid;
+  gap: 24px;
+}
+
+.agenda-group .section-title {
+  margin-top: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
 }

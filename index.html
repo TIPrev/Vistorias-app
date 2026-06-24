@@ -11,121 +11,123 @@
     <section class="phone">
       <header class="app-header">
         <div>
-          <h1>Calculadora de Vistorias</h1>
-          <p>QuintoAndar</p>
+          <h1>Vistoria App</h1>
+          <p>Seu assistente de vistorias</p>
         </div>
         <div class="badge">R$</div>
       </header>
 
-      <section class="total-day-card" aria-live="polite">
-        <span>Total do Dia</span>
-        <strong id="total-dia">R$ 0,00</strong>
-      </section>
+      <div id="alertas-container" class="alertas-container"></div>
 
-      <nav class="view-tabs" aria-label="Navegacao do app">
-        <button id="aba-calculadora" class="tab-button active" type="button">Calculadora</button>
+      <nav class="view-tabs" aria-label="Navegação do app">
+        <button id="aba-nova-vistoria" class="tab-button active" type="button">Nova Vistoria</button>
+        <button id="aba-agenda" class="tab-button" type="button">Agenda</button>
         <button id="aba-resumo" class="tab-button" type="button">Resumo</button>
       </nav>
 
-      <section id="tela-calculadora" class="view-section">
+      <!-- 1. TELA NOVA VISTORIA -->
+      <section id="tela-nova-vistoria" class="view-section">
         <form id="vistoria-form" class="calculator">
           <label class="field">
-            <span>Data agendada</span>
-            <input id="data-agendada" type="date" required>
+            <span>Data da vistoria</span>
+            <input id="vistoria-data" type="date" required>
           </label>
-
           <label class="field">
-            <span>Metragem do imovel</span>
-            <input id="metragem" type="number" min="1" step="0.01" placeholder="Ex: 72" required>
+            <span>Metragem do imóvel</span>
+            <input id="vistoria-metragem" type="number" min="1" step="0.01" placeholder="Ex: 72" required>
           </label>
-
           <fieldset class="field-group">
             <legend>Tipo</legend>
             <div class="segmented">
-              <label>
-                <input type="radio" name="tipo" value="entrada" checked>
-                <span>Entrada</span>
-              </label>
-              <label>
-                <input type="radio" name="tipo" value="saida">
-                <span>Saida</span>
-              </label>
+              <label><input type="radio" name="vistoria-tipo" value="entrada" checked><span>Entrada</span></label>
+              <label><input type="radio" name="vistoria-tipo" value="saida"><span>Saída</span></label>
             </div>
           </fieldset>
-
           <div class="switch-grid">
-            <label class="switch-card">
-              <span>Mobilia</span>
-              <input id="mobilia" type="checkbox">
-              <strong>+10%</strong>
-            </label>
-
-            <label class="switch-card">
-              <span>Qualidade</span>
-              <input id="qualidade" type="checkbox">
-              <strong>+R$ 15</strong>
-            </label>
+            <label class="switch-card"><span>Mobília</span><input id="vistoria-mobilia" type="checkbox"><strong>+10%</strong></label>
+            <label class="switch-card"><span>Qualidade</span><input id="vistoria-qualidade" type="checkbox"><strong>+R$ 15</strong></label>
           </div>
-
           <section class="result-panel" aria-live="polite">
             <span>Valor calculado</span>
-            <strong id="valor-preview">R$ 0,00</strong>
+            <strong id="vistoria-valor-preview">R$ 0,00</strong>
           </section>
-
-          <button class="primary-button" type="submit">Agendar vistoria</button>
+          <div class="button-group">
+            <button id="vistoria-calcular-btn" class="secondary-button" type="button">Calcular</button>
+            <button id="vistoria-salvar-btn" class="primary-button" type="button">Salvar Vistoria</button>
+          </div>
         </form>
-
-        <section class="memory">
-          <div class="section-title">
-            <h2>Vistorias do Dia</h2>
-          </div>
-
-          <div class="summary-strip">
-            <div>
-              <span>Resumo mensal</span>
-              <strong id="quantidade-vistorias">0</strong>
-              <small>vistorias</small>
-            </div>
-            <div>
-              <span>Valor acumulado</span>
-              <strong id="ganho-total">R$ 0,00</strong>
-            </div>
-            <div class="average-card">
-              <span>Valor medio por vistoria</span>
-              <strong id="valor-medio">R$ 0,00</strong>
-            </div>
-          </div>
-
-          <ul id="lista-vistorias" class="inspection-list"></ul>
-          <p id="lista-vazia" class="empty-state">Nenhuma vistoria agendada.</p>
-        </section>
       </section>
 
-      <section id="tela-resumo" class="view-section hidden">
-        <section class="resume-page">
+      <!-- 2. TELA AGENDA -->
+      <section id="tela-agenda" class="view-section hidden">
+        <div class="page-content">
           <div class="section-title">
-            <h2>Resumo de Vistorias</h2>
+            <h2>Agendar um compromisso</h2>
+          </div>
+          <form id="agenda-form" class="form-stack">
+            <label class="field"><span>Data</span><input id="agenda-data" type="date" required></label>
+            <label class="field"><span>Hora</span><input id="agenda-hora" type="time" required></label>
+            <label class="field"><span>Endereço</span><input id="agenda-endereco" type="text" placeholder="Rua, Número, Bairro" required></label>
+            <label class="field"><span>Observação</span><textarea id="agenda-obs" placeholder="Detalhes, contato..."></textarea></label>
+            <button class="primary-button" type="submit">Agendar</button>
+          </form>
+
+          <div id="agenda-grupos">
+              <div class="agenda-group">
+                <div class="section-title"><h2>Hoje</h2></div>
+                <ul id="agenda-lista-hoje" class="agenda-list"></ul>
+                <p id="agenda-vazia-hoje" class="empty-state">Nenhum compromisso para hoje.</p>
+              </div>
+              <div class="agenda-group">
+                <div class="section-title"><h2>Amanhã</h2></div>
+                <ul id="agenda-lista-amanha" class="agenda-list"></ul>
+                <p id="agenda-vazia-amanha" class="empty-state">Nenhum compromisso para amanhã.</p>
+              </div>
+              <div class="agenda-group">
+                <div class="section-title"><h2>Próximos 7 dias</h2></div>
+                <ul id="agenda-lista-semana" class="agenda-list"></ul>
+                <p id="agenda-vazia-semana" class="empty-state">Nenhum compromisso para os próximos 7 dias.</p>
+              </div>
+              <div class="agenda-group">
+                <div class="section-title"><h2>Futuras</h2></div>
+                <ul id="agenda-lista-futuras" class="agenda-list"></ul>
+                <p id="agenda-vazia-futuras" class="empty-state">Nenhum compromisso futuro.</p>
+              </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. TELA RESUMO -->
+      <section id="tela-resumo" class="view-section hidden">
+        <div class="page-content">
+          <div class="section-title">
+            <h2>Dashboard</h2>
+          </div>
+          <div class="dashboard-grid">
+            <div class="dashboard-card"><small>Hoje</small><strong id="dashboard-hoje-valor">R$ 0,00</strong><span id="dashboard-hoje-qtd">0 vistorias</span></div>
+            <div class="dashboard-card"><small>Semana</small><strong id="dashboard-semana-valor">R$ 0,00</strong><span id="dashboard-semana-qtd">0 vistorias</span></div>
+            <div class="dashboard-card"><small>Mês</small><strong id="dashboard-mes-valor">R$ 0,00</strong><span id="dashboard-mes-qtd">0 vistorias</span></div>
+            <div class="dashboard-card"><small>Ano</small><strong id="dashboard-ano-valor">R$ 0,00</strong><span id="dashboard-ano-qtd">0 vistorias</span></div>
           </div>
 
-          <div class="resume-total-card">
-            <span>Total geral</span>
-            <strong id="resumo-total">R$ 0,00</strong>
+          <div class="section-title">
+            <h2>Métricas Gerais</h2>
+          </div>
+          <div class="metrics-grid">
+            <div class="metric-card"><small>Entradas</small><strong id="ganho-entradas-valor">R$ 0,00</strong><span id="ganho-entradas-qtd">0 vistorias</span></div>
+            <div class="metric-card"><small>Saídas</small><strong id="ganho-saidas-valor">R$ 0,00</strong><span id="ganho-saidas-qtd">0 vistorias</span></div>
+            <div class="metric-card"><small>Maior vistoria</small><strong id="ranking-maior-valor">R$ 0,00</strong></div>
+            <div class="metric-card"><small>Menor vistoria</small><strong id="ranking-menor-valor">R$ 0,00</strong></div>
+            <div class="metric-card"><small>Valor médio</small><strong id="ranking-media-valor">R$ 0,00</strong></div>
+            <div class="metric-card"><small>Melhor dia</small><strong id="melhor-dia-nome">N/A</strong><span id="melhor-dia-valor">R$ 0,00</span></div>
           </div>
 
-          <div class="resume-metrics">
-            <div>
-              <span>Vistorias feitas</span>
-              <strong id="resumo-quantidade">0</strong>
-            </div>
-            <div>
-              <span>Valor medio</span>
-              <strong id="resumo-media">R$ 0,00</strong>
-            </div>
+          <div class="section-title">
+            <h2>Histórico de Vistorias Salvas</h2>
           </div>
-
-          <ul id="lista-resumo" class="resume-list"></ul>
-          <p id="resumo-vazio" class="empty-state">Nenhuma vistoria para resumir.</p>
-        </section>
+          <ul id="historico-lista" class="historic-list"></ul>
+          <p id="historico-vazio" class="empty-state">Nenhuma vistoria salva.</p>
+        </div>
       </section>
     </section>
   </main>
