@@ -661,6 +661,7 @@ h1 {
   opacity: 1;
   visibility: visible;
   transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+  background: linear-gradient(170deg, #081C3A 0%, #0E4CB5 100%);
 }
 
 .onboarding-container.hidden {
@@ -669,6 +670,7 @@ h1 {
   pointer-events: none;
 }
 
+/* TELA 1 - CAPA: dark/night theme */
 .onboarding-background {
   position: absolute;
   top: 0;
@@ -736,10 +738,6 @@ h1 {
   margin-top: auto;
 }
 
-#onboarding-name .onboarding-content {
-  justify-content: center;
-}
-
 .onboarding-card h2 {
   font-size: 1.8rem;
   font-weight: 700;
@@ -774,27 +772,176 @@ h1 {
   transform: scale(0.98);
 }
 
-.onboarding-input {
+/* TELA 2 - CONTRA-CAPA: white/light theme */
+.onboarding-light {
+  background: #f5f7fa;
+  color: #15202b;
+}
+
+.onboarding-content-light {
+  width: 100%;
+  max-width: 460px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.onboarding-name-card {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 36px 28px 28px;
+  box-shadow: 0 8px 40px rgba(22, 38, 54, 0.10);
+  text-align: left;
+}
+
+.onboarding-name-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #15202b;
+  margin-bottom: 8px;
+}
+
+.onboarding-name-desc {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #15202b;
+  margin-bottom: 4px;
+}
+
+.onboarding-name-sub {
+  font-size: 0.92rem;
+  color: #667585;
+  margin-bottom: 28px;
+}
+
+.onboarding-input-group {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.onboarding-input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  color: #667585;
+  pointer-events: none;
+}
+
+.onboarding-input-light {
   width: 100%;
   min-height: 54px;
-  padding: 0 20px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  font-size: 1.1rem;
-  margin-bottom: 16px;
+  padding: 0 16px 0 46px;
+  border: 1.5px solid #dfe7ee;
+  border-radius: 14px;
+  background: #f5f7fa;
+  color: #15202b;
+  font-size: 1rem;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
 }
 
-.onboarding-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+.onboarding-input-light::placeholder {
+  color: #a0aeba;
 }
 
-.onboarding-input:focus {
-  border-color: #ffffff;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+.onboarding-input-light:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  background: #fff;
+}
+
+.onboarding-button-primary {
+  width: 100%;
+  height: 54px;
+  border: none;
+  border-radius: 14px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  margin-bottom: 24px;
+  font-family: inherit;
+}
+
+.onboarding-button-primary:hover {
+  background: #1d4ed8;
+  transform: scale(1.02);
+}
+
+.onboarding-button-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-arrow {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.onboarding-security-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #f0faf4;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.security-icon {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  background: #22c55e;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin-top: 1px;
+}
+
+.security-text strong {
+  font-size: 0.92rem;
+  color: #15202b;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.security-text p {
+  font-size: 0.82rem;
+  color: #667585;
+  margin: 0;
+}
+
+.onboarding-terms {
+  font-size: 0.78rem;
+  color: #a0aeba;
+  text-align: center;
+  margin: 0;
+}
+
+.onboarding-terms a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.onboarding-terms a:hover {
+  text-decoration: underline;
 }
 
 /* --- PROFILE BUTTON --- */

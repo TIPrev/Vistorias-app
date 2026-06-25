@@ -26,14 +26,25 @@
   </section>
 
   <!-- TELA 2 - ONBOARDING: IDENTIFICAÇÃO -->
-  <section id="onboarding-name" class="onboarding-container hidden">
-    <div class="onboarding-background"></div>
-    <div class="onboarding-content">
-      <div class="onboarding-card">
-        <h2>Olá! 👋</h2>
-        <p>Antes de tudo, qual é o seu nome?</p>
-        <input type="text" id="onboarding-name-input" class="onboarding-input" placeholder="Digite seu nome">
-        <button id="onboarding-continue-btn" class="onboarding-button">Continuar</button>
+  <section id="onboarding-name" class="onboarding-container onboarding-light hidden">
+    <div class="onboarding-content onboarding-content-light">
+      <div class="onboarding-name-card">
+        <h2 class="onboarding-name-title">Olá! 👋</h2>
+        <p class="onboarding-name-desc">Antes de tudo, qual é o seu nome?</p>
+        <p class="onboarding-name-sub">A ferramenta sempre pronta pra você.</p>
+        <div class="onboarding-input-group">
+          <span class="onboarding-input-icon">👤</span>
+          <input type="text" id="onboarding-name-input" class="onboarding-input-light" placeholder="Digite seu nome">
+        </div>
+        <button id="onboarding-continue-btn" class="onboarding-button-primary">Continuar <span class="btn-arrow">›</span></button>
+        <div class="onboarding-security-box">
+          <span class="security-icon">✓</span>
+          <div class="security-text">
+            <strong>Seus dados estão seguros</strong>
+            <p>Usamos criptografia para proteger suas informações.</p>
+          </div>
+        </div>
+        <p class="onboarding-terms">Ao continuar, você concorda com nossos <a href="#">Termos de Uso</a> e <a href="#">Política de Privacidade</a>.</p>
       </div>
     </div>
   </section>
