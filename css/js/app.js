@@ -99,8 +99,11 @@ const configMetaMensal  = document.querySelector("#config-meta-mensal");
 const configCombustivel = document.querySelector("#config-combustivel");
 const configPedagio     = document.querySelector("#config-pedagio");
 const configNome        = document.querySelector("#config-nome");
+const configWhatsapp    = document.querySelector("#config-whatsapp");
 const configTema        = document.querySelector("#config-tema");
 const configSaveBtn     = document.querySelector("#config-save-btn");
+const exportBtn         = document.querySelector("#export-btn");
+const importInput       = document.querySelector("#import-input");
 
 
 // ============================================================
@@ -649,6 +652,7 @@ function renderizarConfig() {
   configCombustivel.value = appConfig.combustivel ?? 0;
   configPedagio.value     = appConfig.pedagio     ?? 0;
   configNome.value        = localStorage.getItem("vistoriaUserName") || appConfig.nome || "";
+  configWhatsapp.value    = appConfig.whatsapp    || "";
   configTema.checked      = appConfig.tema === "dark";
 }
 
@@ -660,12 +664,132 @@ function salvarConfig() {
     combustivel: Number(configCombustivel.value) || 0,
     pedagio:     Number(configPedagio.value)     || 0,
     nome:        novoNome,
+    whatsapp:    configWhatsapp.value.replace(/\D/g, ""),
     tema:        configTema.checked ? "dark" : "light",
   };
   Object.assign(appConfig, salvarConfigDados(novaConfig));
   if (novoNome) localStorage.setItem("vistoriaUserName", novoNome);
   aplicarTema(appConfig.tema);
   mostrarToast("Configurações salvas! ✓");
+}
+
+
+// ============================================================
+// WHATSAPP
+// ============================================================
+
+function gerarRelatorioHoje() {
+  const hoje      = hojeISO();
+  const vistorias = listarVistorias().filter(v => v.dataAgendada === hoje);
+  const total     = vistorias.reduce((s, v) => s + v.valor, 0);
+  const nome      = localStorage.getItem("vistoriaUserName") || "";
+  const meta      = appConfig.metaDiaria || 200;
+  const pct       = Math.round((total / meta) * 100);
+
+  const d = new Date();
+  const dataStr = `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
+
+  let txt = `🏠 *Relatório de Vistorias*\n`;
+  if (nome) txt += `👤 ${nome}\n`;
+  txt += `📅 ${dataStr}\n\n`;
+
+  if (vistorias.length === 0) {
+    txt += `Nenhuma vistoria registrada hoje.\n`;
+  } else {
+    txt += `*${vistorias.length} vistoria${vistorias.length > 1 ? "s" : ""} hoje:*\n`;
+    vistorias.forEach((v, i) => {
+      const hora   = v.hora ? ` · ${v.hora}` : "";
+      const extras = [v.mobilia && "Mobília", v.qualidade && "Qualidade"].filter(Boolean).join(", ");
+      txt += `${i+1}. ${v.metragem}m² · ${v.tipo === "entrada" ? "Entrada" : "Saída"}${hora}${extras ? ` · ${extras}` : ""} → *${formatarMoeda(v.valor)}*\n`;
+    });
+    txt += `\n💰 *Total: ${formatarMoeda(total)}*\n`;
+    txt += `🎯 Meta diária: ${pct}% atingida`;
+    if (pct >= 100) txt += ` ✅`;
+  }
+  return txt;
+}
+
+function gerarRelatorioCompleto() {
+  const vistorias = listarVistorias();
+  const hoje      = hojeISO();
+  const nome      = localStorage.getItem("vistoriaUserName") || "";
+
+  const deHoje  = calcularMetricas(vistorias, ehHojeFiltro);
+  const doMes   = calcularMetricas(vistorias, ehNesteMes);
+  const doAno   = calcularMetricas(vistorias, ehNesteAno);
+
+  let txt = `📊 *Resumo — Vistoria App*\n`;
+  if (nome) txt += `👤 ${nome}\n\n`;
+
+  txt += `*Hoje:* ${formatarMoeda(deHoje.valor)} (${deHoje.qtd} vistorias)\n`;
+  txt += `*Mês:* ${formatarMoeda(doMes.valor)} (${doMes.qtd} vistorias)\n`;
+  txt += `*Ano:* ${formatarMoeda(doAno.valor)} (${doAno.qtd} vistorias)\n`;
+
+  const meta = appConfig.metaMensal || 4000;
+  const pct  = Math.round((doMes.valor / meta) * 100);
+  txt += `\n🎯 Meta mensal: ${pct}% (${formatarMoeda(doMes.valor)} / ${formatarMoeda(meta)})`;
+  return txt;
+}
+
+function enviarWhatsApp(texto) {
+  const numero = (appConfig.whatsapp || "").replace(/\D/g, "");
+  if (!numero) {
+    mostrarToast("Cadastre um número de WhatsApp nas configurações.", "error");
+    trocarTela("config");
+    return;
+  }
+  const url = `https://wa.me/55${numero}?text=${encodeURIComponent(texto)}`;
+  window.open(url, "_blank");
+}
+
+
+// ============================================================
+// BACKUP / RESTORE
+// ============================================================
+
+function exportarDados() {
+  const dados = {
+    versao: "2",
+    exportadoEm: new Date().toISOString(),
+    vistorias:    listarVistorias(),
+    agendamentos: listarAgendamentos(),
+    config:       { ...appConfig },
+    userName:     localStorage.getItem("vistoriaUserName") || "",
+  };
+  const json  = JSON.stringify(dados, null, 2);
+  const blob  = new Blob([json], { type: "application/json" });
+  const url   = URL.createObjectURL(blob);
+  const a     = document.createElement("a");
+  const data  = new Date();
+  a.href      = url;
+  a.download  = `vistoria-backup-${data.getFullYear()}${String(data.getMonth()+1).padStart(2,"0")}${String(data.getDate()).padStart(2,"0")}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  mostrarToast("Backup exportado! ✓");
+}
+
+function importarDados(arquivo) {
+  if (!arquivo) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const dados = JSON.parse(e.target.result);
+      if (!dados.vistorias || !Array.isArray(dados.vistorias)) throw new Error("Arquivo inválido");
+
+      if (!confirm(`Importar ${dados.vistorias.length} vistorias e ${(dados.agendamentos || []).length} agendamentos?\n\nOs dados atuais serão SUBSTITUÍDOS.`)) return;
+
+      localStorage.setItem(CHAVE_VISTORIAS, JSON.stringify(dados.vistorias));
+      localStorage.setItem(CHAVE_AGENDA,    JSON.stringify(dados.agendamentos || []));
+      if (dados.userName) localStorage.setItem("vistoriaUserName", dados.userName);
+      if (dados.config)   localStorage.setItem(CHAVE_CONFIG, JSON.stringify(dados.config));
+
+      mostrarToast("Backup importado com sucesso! Recarregando...");
+      setTimeout(() => location.reload(), 1500);
+    } catch {
+      mostrarToast("Arquivo de backup inválido.", "error");
+    }
+  };
+  reader.readAsText(arquivo);
 }
 
 
@@ -747,6 +871,17 @@ function inicializar() {
   // Config
   configSaveBtn.addEventListener("click", salvarConfig);
   configTema.addEventListener("change", () => aplicarTema(configTema.checked ? "dark" : "light"));
+
+  // WhatsApp
+  document.querySelector("#home-whatsapp-btn").addEventListener("click",   () => enviarWhatsApp(gerarRelatorioHoje()));
+  document.querySelector("#resumo-whatsapp-btn").addEventListener("click", () => enviarWhatsApp(gerarRelatorioCompleto()));
+
+  // Backup
+  exportBtn.addEventListener("click", exportarDados);
+  importInput.addEventListener("change", e => {
+    importarDados(e.target.files[0]);
+    e.target.value = "";
+  });
 }
 
 inicializar();

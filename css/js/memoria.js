@@ -91,6 +91,7 @@ const CONFIG_PADRAO = {
   pedagio: 0,
   nome: "",
   tema: "light",
+  whatsapp: "",
 };
 
 function carregarConfig() {
