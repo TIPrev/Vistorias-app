@@ -644,3 +644,181 @@ h1 {
   color: #bfdbfe;
 }
 
+/* --- ONBOARDING STYLES --- */
+.onboarding-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+}
+
+.onboarding-container.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.onboarding-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(170deg, #081C3A 0%, #0E4CB5 100%);
+  z-index: -1;
+}
+
+.onboarding-content {
+  width: 100%;
+  max-width: 460px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.onboarding-logo {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 20px;
+}
+
+.onboarding-illustration {
+  width: 100%;
+  max-width: 350px;
+  height: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 20px 0;
+}
+
+.onboarding-text {
+  margin-bottom: 30px;
+}
+
+.onboarding-text h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.onboarding-text p {
+  font-size: 1.1rem;
+  color: #a7c5f5;
+  max-width: 30ch;
+  margin: 0 auto;
+}
+
+.onboarding-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 24px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+#onboarding-welcome .onboarding-card {
+  margin-top: auto;
+}
+
+#onboarding-name .onboarding-content {
+  justify-content: center;
+}
+
+.onboarding-card h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.onboarding-card p {
+  color: #dbeaff;
+  font-size: 1rem;
+  margin-bottom: 24px;
+}
+
+.onboarding-button {
+  width: 100%;
+  height: 56px;
+  border: none;
+  border-radius: 18px;
+  background: #ffffff;
+  color: #0E4CB5;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.onboarding-button:hover {
+  transform: scale(1.03);
+}
+
+.onboarding-button:active {
+  transform: scale(0.98);
+}
+
+.onboarding-input {
+  width: 100%;
+  min-height: 54px;
+  padding: 0 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.onboarding-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.onboarding-input:focus {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+/* --- PROFILE BUTTON --- */
+.profile-button {
+  display: grid;
+  place-items: center;
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.11);
+  color: var(--accent);
+  font-size: 1.5rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+}
+
+/* --- User Greeting --- */
+#user-greeting h1 {
+  font-size: 1.4rem;
+}
+#user-greeting p {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+

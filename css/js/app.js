@@ -1,4 +1,18 @@
 // --- ELEMENTOS DO DOM ---
+
+// Onboarding
+const onboardingWelcome = document.querySelector("#onboarding-welcome");
+const onboardingName = document.querySelector("#onboarding-name");
+const startBtn = document.querySelector("#onboarding-start-btn");
+const continueBtn = document.querySelector("#onboarding-continue-btn");
+const nameInput = document.querySelector("#onboarding-name-input");
+
+// App Principal
+const splashScreen = document.querySelector("#splash-screen");
+const appShell = document.querySelector(".app-shell");
+const userGreeting = document.querySelector("#user-greeting");
+const profileButton = document.querySelector("#profile-button");
+
 const alertasContainer = document.querySelector("#alertas-container");
 const abas = {
   novaVistoria: document.querySelector("#aba-nova-vistoria"),
@@ -60,6 +74,63 @@ const rankingMenorValor = document.querySelector("#ranking-menor-valor");
 const rankingMediaValor = document.querySelector("#ranking-media-valor");
 const melhorDiaNome = document.querySelector("#melhor-dia-nome");
 const melhorDiaValor = document.querySelector("#melhor-dia-valor");
+
+
+// --- LÓGICA DE ONBOARDING E PERFIL ---
+
+function updateUserGreeting(name) {
+  if (!name) return;
+  const firstName = name.split(" ")[0];
+  userGreeting.innerHTML = `
+    <h1>Olá, ${firstName}! 👋</h1>
+    <p>Pronto para mais uma vistoria?</p>
+  `;
+}
+
+function startApp(name) {
+  // Esconde telas de onboarding e splash
+  onboardingWelcome.classList.add("hidden");
+  onboardingName.classList.add("hidden");
+  splashScreen.style.display = 'none';
+
+  // Mostra o app principal
+  appShell.classList.remove("hidden");
+
+  // Atualiza a saudação
+  updateUserGreeting(name);
+
+  // Inicializa o restante do app
+  renderizarTudo();
+  trocarTela("novaVistoria");
+}
+
+function handleOnboarding() {
+  const userName = localStorage.getItem("vistoriaUserName");
+  
+  // Esconde o splash inicial
+  splashScreen.classList.add("fade-out");
+  setTimeout(() => {
+    splashScreen.style.display = 'none';
+  }, 500);
+
+  if (userName) {
+    // Se já tem nome, inicia o app direto
+    startApp(userName);
+  } else {
+    // Se não, mostra a primeira tela do onboarding
+    onboardingWelcome.classList.remove("hidden");
+  }
+}
+
+function changeUserName() {
+    const currentUser = localStorage.getItem("vistoriaUserName") || "";
+    const newName = prompt("Qual é o seu nome?", currentUser);
+    if (newName && newName.trim() !== "") {
+        localStorage.setItem("vistoriaUserName", newName.trim());
+        updateUserGreeting(newName.trim());
+        alert("Seu nome foi atualizado!");
+    }
+}
 
 
 // --- FUNÇÕES AUXILIARES DE DATA E FORMATO ---
@@ -361,27 +432,32 @@ function renderizarTudo() {
 }
 
 function inicializar() {
-  // Lógica da Splash Screen
-  const splashScreen = document.querySelector("#splash-screen");
-  const appShell = document.querySelector(".app-shell");
-
+  // Lógica de Onboarding ou início direto
   window.addEventListener("load", () => {
-    setTimeout(() => {
-      if (splashScreen) {
-        splashScreen.classList.add("fade-out");
-      }
-      if (appShell) {
-        appShell.classList.remove("hidden");
-      }
-      // Garante que o splash não atrapalhe a interação depois da animação
-      setTimeout(() => {
-        if (splashScreen) {
-          splashScreen.style.display = 'none';
-        }
-      }, 500); // Mesmo tempo da transição do CSS
-    }, 1500); // 1.5 segundos de espera
+    setTimeout(handleOnboarding, 500); // Um pequeno delay para a fonte carregar
   });
 
+  // Listeners do Onboarding
+  startBtn.addEventListener("click", () => {
+    onboardingWelcome.classList.add("hidden");
+    onboardingName.classList.remove("hidden");
+    nameInput.focus();
+  });
+
+  continueBtn.addEventListener("click", () => {
+    const userName = nameInput.value.trim();
+    if (userName) {
+      localStorage.setItem("vistoriaUserName", userName);
+      startApp(userName);
+    } else {
+      alert("Por favor, digite seu nome para continuar.");
+    }
+  });
+
+  // Listener do botão de Perfil
+  profileButton.addEventListener("click", changeUserName);
+
+  // --- Listeners do App Principal ---
   vistoriaDataInput.value = hojeISO();
   agendaDataInput.value = hojeISO();
   
@@ -397,8 +473,8 @@ function inicializar() {
 
   historicoLista.addEventListener("click", removerVistoriaDoHistorico);
 
-  renderizarTudo();
-  trocarTela("novaVistoria");
+  // As chamadas de renderização agora acontecem dentro de startApp
 }
 
+// Inicia tudo
 inicializar();

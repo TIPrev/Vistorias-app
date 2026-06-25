@@ -7,6 +7,37 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <!-- TELA 1 - ONBOARDING: BEM-VINDO -->
+  <section id="onboarding-welcome" class="onboarding-container hidden">
+    <div class="onboarding-background"></div>
+    <div class="onboarding-content">
+      <img src="img/logo.png" alt="Vistoria App Logo" class="onboarding-logo">
+      <img src="img/house-illustration.png" alt="Ilustração de uma casa ao entardecer" class="onboarding-illustration">
+      <div class="onboarding-text">
+        <h1>Vistoria App</h1>
+        <p>Facilidade, precisão e confiança em cada vistoria.</p>
+      </div>
+      <div class="onboarding-card">
+        <h2>Bem-vindo!</h2>
+        <p>Vamos começar conhecendo você.</p>
+        <button id="onboarding-start-btn" class="onboarding-button">Começar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TELA 2 - ONBOARDING: IDENTIFICAÇÃO -->
+  <section id="onboarding-name" class="onboarding-container hidden">
+    <div class="onboarding-background"></div>
+    <div class="onboarding-content">
+      <div class="onboarding-card">
+        <h2>Olá! 👋</h2>
+        <p>Antes de tudo, qual é o seu nome?</p>
+        <input type="text" id="onboarding-name-input" class="onboarding-input" placeholder="Digite seu nome">
+        <button id="onboarding-continue-btn" class="onboarding-button">Continuar</button>
+      </div>
+    </div>
+  </section>
+
   <section id="splash-screen" class="splash">
     <div class="splash-content">
       <img src="img/logo.png" alt="Vistoria App Logo" class="splash-logo">
@@ -18,11 +49,11 @@
   <main class="app-shell hidden">
     <section class="phone">
       <header class="app-header">
-        <div>
+        <div id="user-greeting">
           <h1>Vistoria App</h1>
           <p>Seu assistente de vistorias</p>
         </div>
-        <div class="badge">R$</div>
+        <button id="profile-button" class="profile-button" aria-label="Acessar perfil">👤</button>
       </header>
 
       <div id="alertas-container" class="alertas-container"></div>
