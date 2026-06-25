@@ -633,12 +633,16 @@ h1 {
 }
 
 .splash-logo {
-  width: 120px;
-  height: 120px;
-  margin-bottom: 24px;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 15px
+  background: rgba(255, 255, 255, 0.12);
+  padding: 18px;
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.4);
 }
 
 .splash-content h1 {

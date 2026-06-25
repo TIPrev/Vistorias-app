@@ -454,7 +454,7 @@ function renderizarTudo() {
 function inicializar() {
   // Lógica de Onboarding ou início direto
   window.addEventListener("load", () => {
-    setTimeout(handleOnboarding, 500); // Um pequeno delay para a fonte carregar
+    setTimeout(handleOnboarding, 2500);
   });
 
   // Listeners do Onboarding
