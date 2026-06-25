@@ -1,0 +1,19 @@
+{
+  "name": "Vistoria App",
+  "short_name": "Vistoria",
+  "description": "Calculadora e agenda de vistorias imobiliárias",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2563eb",
+  "theme_color": "#2563eb",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

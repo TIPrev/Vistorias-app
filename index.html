@@ -1,13 +1,40 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Vistorias</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Vistoria">
+  <title>Vistoria App</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- TELA 1 - ONBOARDING: BEM-VINDO -->
+
+  <!-- ===== SPLASH SCREEN ===== -->
+  <section id="splash-screen" class="splash">
+    <div class="splash-content">
+      <div class="splash-logo">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+          <rect width="64" height="64" rx="16" fill="#2563eb"/>
+          <path d="M32 10L10 28h6v26h14V40h4v14h14V28h6L32 10z" fill="white"/>
+          <rect x="26" y="40" width="12" height="14" rx="2" fill="#2563eb"/>
+          <rect x="18" y="32" width="8" height="8" rx="1" fill="#93c5fd"/>
+          <rect x="38" y="32" width="8" height="8" rx="1" fill="#93c5fd"/>
+        </svg>
+      </div>
+      <h1>Vistoria App</h1>
+      <p>Seu assistente de vistorias</p>
+      <button id="splash-enter-btn" class="splash-enter-btn">Entrar</button>
+    </div>
+  </section>
+
+  <!-- ===== ONBOARDING TELA 1: CAPA ===== -->
   <section id="onboarding-welcome" class="onboarding-container hidden">
     <div class="onboarding-cover-bg">
       <svg class="onboarding-scene" viewBox="0 0 400 520" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
@@ -28,12 +55,9 @@
           </linearGradient>
         </defs>
         <rect width="400" height="520" fill="url(#sky)"/>
-        <!-- Brilho da lua -->
         <rect width="400" height="520" fill="url(#moon-glow)"/>
-        <!-- Lua -->
         <circle cx="300" cy="72" r="28" fill="#fef3c7" opacity="0.95"/>
         <circle cx="310" cy="65" r="22" fill="#0a1f4a"/>
-        <!-- Estrelas -->
         <circle cx="40" cy="30" r="1.2" fill="white" opacity="0.8"/>
         <circle cx="80" cy="55" r="1" fill="white" opacity="0.6"/>
         <circle cx="130" cy="20" r="1.4" fill="white" opacity="0.9"/>
@@ -44,7 +68,6 @@
         <circle cx="60" cy="80" r="0.8" fill="white" opacity="0.5"/>
         <circle cx="190" cy="70" r="1" fill="white" opacity="0.65"/>
         <circle cx="370" cy="60" r="1.2" fill="white" opacity="0.7"/>
-        <!-- Prédios fundo (skyline) -->
         <rect x="0"   y="200" width="45" height="200" fill="#0b1e3a" opacity="0.9"/>
         <rect x="10"  y="170" width="25" height="30"  fill="#0b1e3a" opacity="0.9"/>
         <rect x="45"  y="220" width="35" height="180" fill="#0d2248" opacity="0.9"/>
@@ -53,64 +76,41 @@
         <rect x="300" y="205" width="35" height="195" fill="#0b1e3a" opacity="0.9"/>
         <rect x="330" y="185" width="25" height="215" fill="#0d2248" opacity="0.9"/>
         <rect x="355" y="215" width="45" height="185" fill="#0b1e3a" opacity="0.9"/>
-        <!-- Janelas dos prédios com luz -->
         <rect x="15"  y="180" width="5" height="4" fill="#fbbf24" opacity="0.7"/>
         <rect x="25"  y="180" width="5" height="4" fill="#fbbf24" opacity="0.5"/>
         <rect x="50"  y="230" width="6" height="5" fill="#93c5fd" opacity="0.6"/>
         <rect x="62"  y="230" width="6" height="5" fill="#fbbf24" opacity="0.7"/>
-        <rect x="50"  y="245" width="6" height="5" fill="#fbbf24" opacity="0.5"/>
         <rect x="105" y="220" width="7" height="5" fill="#93c5fd" opacity="0.6"/>
         <rect x="120" y="220" width="7" height="5" fill="#fbbf24" opacity="0.7"/>
-        <rect x="105" y="235" width="7" height="5" fill="#fbbf24" opacity="0.5"/>
-        <rect x="120" y="235" width="7" height="5" fill="#93c5fd" opacity="0.6"/>
         <rect x="305" y="215" width="7" height="5" fill="#fbbf24" opacity="0.7"/>
-        <rect x="318" y="215" width="7" height="5" fill="#93c5fd" opacity="0.6"/>
         <rect x="335" y="195" width="6" height="5" fill="#fbbf24" opacity="0.65"/>
-        <rect x="360" y="225" width="7" height="5" fill="#93c5fd" opacity="0.6"/>
-        <rect x="373" y="225" width="7" height="5" fill="#fbbf24" opacity="0.7"/>
-        <!-- Gramado / chão -->
         <rect x="0" y="370" width="400" height="150" fill="#071428"/>
-        <!-- Árvores -->
         <rect x="85" y="310" width="8" height="65" fill="#040e22"/>
         <ellipse cx="89" cy="295" rx="28" ry="38" fill="#061628"/>
         <ellipse cx="89" cy="280" rx="20" ry="28" fill="#071c32"/>
         <rect x="298" y="315" width="8" height="60" fill="#040e22"/>
         <ellipse cx="302" cy="300" rx="26" ry="36" fill="#061628"/>
         <ellipse cx="302" cy="286" rx="18" ry="26" fill="#071c32"/>
-        <!-- Casa principal -->
-        <!-- Corpo da casa -->
         <rect x="120" y="295" width="160" height="110" rx="4" fill="#0f2a5a"/>
-        <!-- Telhado -->
         <polygon points="110,298 200,230 290,298" fill="#1a3a70"/>
         <polygon points="110,298 130,298 200,248 270,298 290,298 200,230" fill="#0d2050"/>
-        <!-- Chaminé -->
         <rect x="230" y="240" width="14" height="32" fill="#0d2050"/>
         <rect x="226" y="237" width="22" height="8" rx="2" fill="#1a3a70"/>
-        <!-- Janela esquerda -->
         <rect x="138" y="318" width="42" height="38" rx="3" fill="#1a3a70"/>
         <rect x="140" y="320" width="38" height="34" rx="2" fill="#fbbf24" opacity="0.25"/>
         <rect x="157" y="320" width="3" height="34" fill="#0f2a5a"/>
         <rect x="140" y="336" width="38" height="3" fill="#0f2a5a"/>
-        <!-- Janela direita -->
         <rect x="220" y="318" width="42" height="38" rx="3" fill="#1a3a70"/>
         <rect x="222" y="320" width="38" height="34" rx="2" fill="#fbbf24" opacity="0.25"/>
         <rect x="239" y="320" width="3" height="34" fill="#0f2a5a"/>
         <rect x="222" y="336" width="38" height="3" fill="#0f2a5a"/>
-        <!-- Janela telhado (mansarda) -->
         <rect x="180" y="258" width="40" height="28" rx="3" fill="#1a3a70"/>
         <rect x="182" y="260" width="36" height="24" rx="2" fill="#93c5fd" opacity="0.18"/>
-        <!-- Porta -->
         <rect x="173" y="333" width="54" height="72" rx="4" fill="#0a1e45"/>
         <rect x="175" y="335" width="50" height="68" rx="3" fill="#1a3a70"/>
         <circle cx="222" cy="372" r="3" fill="#fbbf24" opacity="0.9"/>
-        <!-- Iluminação quente nas janelas -->
-        <rect x="141" y="321" width="36" height="32" rx="2" fill="#f59e0b" opacity="0.12"/>
-        <rect x="223" y="321" width="36" height="32" rx="2" fill="#f59e0b" opacity="0.12"/>
-        <!-- Luz da porta (reflexo no chão) -->
         <ellipse cx="200" cy="408" rx="30" ry="8" fill="#fbbf24" opacity="0.08"/>
-        <!-- Caminho até a porta -->
         <rect x="185" y="405" width="30" height="65" fill="#0a1c3a" opacity="0.6"/>
-        <!-- Overlay gradiente final para fundir com conteúdo -->
         <rect width="400" height="520" fill="url(#fade-bottom)"/>
       </svg>
     </div>
@@ -132,7 +132,7 @@
     </div>
   </section>
 
-  <!-- TELA 2 - ONBOARDING: IDENTIFICAÇÃO -->
+  <!-- ===== ONBOARDING TELA 2: IDENTIFICAÇÃO ===== -->
   <section id="onboarding-name" class="onboarding-container onboarding-light hidden">
     <button id="onboarding-back-btn" class="back-btn back-btn-onboarding" aria-label="Voltar">&#8592;</button>
     <div class="onboarding-content onboarding-content-light">
@@ -149,7 +149,7 @@
           <span class="security-icon">✓</span>
           <div class="security-text">
             <strong>Seus dados estão seguros</strong>
-            <p>Usamos criptografia para proteger suas informações.</p>
+            <p>Suas informações ficam apenas neste dispositivo.</p>
           </div>
         </div>
         <p class="onboarding-terms">Ao continuar, você concorda com nossos <a href="#">Termos de Uso</a> e <a href="#">Política de Privacidade</a>.</p>
@@ -157,155 +157,454 @@
     </div>
   </section>
 
-  <section id="splash-screen" class="splash">
-    <div class="splash-content">
-      <div class="splash-logo">
-        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
-          <rect width="64" height="64" rx="16" fill="#2563eb"/>
-          <path d="M32 10L10 28h6v26h14V40h4v14h14V28h6L32 10z" fill="white"/>
-          <rect x="26" y="40" width="12" height="14" rx="2" fill="#2563eb"/>
-          <rect x="18" y="32" width="8" height="8" rx="1" fill="#93c5fd"/>
-          <rect x="38" y="32" width="8" height="8" rx="1" fill="#93c5fd"/>
-        </svg>
-      </div>
-      <h1>Vistoria App</h1>
-      <p>Seu assistente de vistorias</p>
-      <button id="splash-enter-btn" class="splash-enter-btn">Entrar</button>
-    </div>
-  </section>
+  <!-- ===== APP SHELL ===== -->
+  <div class="app-shell hidden">
+    <div class="phone">
 
-  <main class="app-shell hidden">
-    <section class="phone">
-      <header class="app-header">
-        <button id="app-back-btn" class="back-btn back-btn-app hidden" aria-label="Voltar">&#8592;</button>
-        <div id="user-greeting">
-          <h1>Vistoria App</h1>
-          <p>Seu assistente de vistorias</p>
+      <!-- HEADER -->
+      <header class="app-header" id="app-header">
+        <div class="header-left">
+          <div class="header-logo">
+            <svg width="20" height="20" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 5L4 16h4v15h8v-9h4v9h8V16h4L18 5z" fill="white"/>
+            </svg>
+          </div>
+          <span id="header-title" class="header-title">Vistoria App</span>
         </div>
-        <button id="profile-button" class="profile-button" aria-label="Acessar perfil">👤</button>
+        <button id="profile-button" class="profile-button" aria-label="Acessar perfil">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+        </button>
       </header>
 
-      <div id="alertas-container" class="alertas-container"></div>
+      <!-- CONTENT AREA -->
+      <main class="screens-container">
 
-      <nav class="view-tabs" aria-label="Navegação do app">
-        <button id="aba-nova-vistoria" class="tab-button active" type="button">Nova Vistoria</button>
-        <button id="aba-agenda" class="tab-button" type="button">Agenda</button>
-        <button id="aba-resumo" class="tab-button" type="button">Resumo</button>
-      </nav>
+        <!-- TELA HOME -->
+        <section id="tela-home" class="view-section">
+          <div class="home-content">
 
-      <!-- 1. TELA NOVA VISTORIA -->
-      <section id="tela-nova-vistoria" class="view-section">
-        <form id="vistoria-form" class="calculator">
-          <label class="field">
-            <span>Data da vistoria</span>
-            <input id="vistoria-data" type="date" required>
-          </label>
-          <label class="field">
-            <span>Metragem do imóvel</span>
-            <input id="vistoria-metragem" type="number" min="1" step="0.01" placeholder="Ex: 72" required>
-          </label>
-          <fieldset class="field-group">
-            <legend>Tipo</legend>
-            <div class="segmented">
-              <label><input type="radio" name="vistoria-tipo" value="entrada" checked><span>Entrada</span></label>
-              <label><input type="radio" name="vistoria-tipo" value="saida"><span>Saída</span></label>
-            </div>
-          </fieldset>
-          <div class="switch-grid">
-            <label class="switch-card"><span>Mobília</span><input id="vistoria-mobilia" type="checkbox"><strong>+10%</strong></label>
-            <label class="switch-card"><span>Qualidade</span><input id="vistoria-qualidade" type="checkbox"><strong>+R$ 15</strong></label>
-          </div>
-          <section class="result-panel" aria-live="polite">
-            <span>Valor calculado</span>
-            <strong id="vistoria-valor-preview">R$ 0,00</strong>
-          </section>
-          <div class="button-group">
-            <button id="vistoria-calcular-btn" class="secondary-button" type="button">Calcular</button>
-            <button id="vistoria-salvar-btn" class="primary-button" type="button">Salvar Vistoria</button>
-          </div>
-        </form>
-      </section>
-
-      <!-- 2. TELA AGENDA -->
-      <section id="tela-agenda" class="view-section hidden">
-        <div class="page-content">
-          <div class="section-title">
-            <h2>Agendar um compromisso</h2>
-          </div>
-          <form id="agenda-form" class="form-stack">
-            <label class="field"><span>Data</span><input id="agenda-data" type="date" required></label>
-            <label class="field"><span>Hora</span><input id="agenda-hora" type="time" required></label>
-            <fieldset class="field-group">
-              <legend>Tipo de Agendamento</legend>
-              <div class="segmented">
-                <label><input type="radio" name="agenda-tipo" value="entrada" checked><span>Entrada</span></label>
-                <label><input type="radio" name="agenda-tipo" value="saida"><span>Saída</span></label>
+            <!-- Saudação -->
+            <div class="home-greeting">
+              <div>
+                <p id="greeting-period" class="greeting-period">Bom dia</p>
+                <h2 id="greeting-name" class="greeting-name">Bem-vindo! 👋</h2>
               </div>
-            </fieldset>
-            <label class="field"><span>Endereço</span><input id="agenda-endereco" type="text" placeholder="Rua, Número, Bairro" required></label>
-            <label class="field"><span>Observação</span><textarea id="agenda-obs" placeholder="Detalhes, contato..."></textarea></label>
-            <button class="primary-button" type="submit">Agendar</button>
-          </form>
+              <div id="greeting-date" class="greeting-date"></div>
+            </div>
 
-          <div id="agenda-grupos">
+            <!-- Alertas (dentro do home) -->
+            <div id="alertas-container" class="alertas-container"></div>
+
+            <!-- Card hoje -->
+            <div class="today-card">
+              <div class="today-card-header">
+                <span class="today-label">Hoje</span>
+                <span id="today-date-badge" class="today-date-badge"></span>
+              </div>
+              <strong id="today-total" class="today-total">R$ 0,00</strong>
+              <span id="today-count" class="today-count">0 vistorias realizadas</span>
+              <div class="today-progress-wrap">
+                <div class="today-progress-bar">
+                  <div id="today-progress-fill" class="today-progress-fill" style="width:0%"></div>
+                </div>
+                <div class="today-progress-labels">
+                  <span id="today-progress-pct">0%</span>
+                  <span id="today-meta-label">Meta: R$ 200,00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Próxima vistoria -->
+            <div id="next-card-wrap">
+              <h3 class="section-label">Próxima vistoria</h3>
+              <div id="home-next-card" class="next-card"></div>
+            </div>
+
+            <!-- Ações rápidas -->
+            <div class="home-actions">
+              <h3 class="section-label">Ações rápidas</h3>
+              <div class="actions-grid">
+                <button class="action-card" data-tela="novaVistoria">
+                  <span class="action-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+                    </svg>
+                  </span>
+                  <span>Nova Vistoria</span>
+                </button>
+                <button class="action-card" data-tela="agenda">
+                  <span class="action-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                  </span>
+                  <span>Agenda</span>
+                </button>
+                <button class="action-card" data-tela="resumo">
+                  <span class="action-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+                    </svg>
+                  </span>
+                  <span>Resumo</span>
+                </button>
+                <button class="action-card" data-tela="config">
+                  <span class="action-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="3"/>
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                  </span>
+                  <span>Config</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Últimas vistorias -->
+            <div class="home-recent">
+              <div class="section-row">
+                <h3 class="section-label">Últimas vistorias</h3>
+                <button class="link-btn" data-tela="resumo">Ver todas</button>
+              </div>
+              <ul id="home-recent-list" class="recent-list"></ul>
+              <p id="home-recent-empty" class="empty-state hidden">Nenhuma vistoria registrada ainda.</p>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- TELA NOVA VISTORIA -->
+        <section id="tela-nova-vistoria" class="view-section hidden">
+          <div class="page-content">
+            <form id="vistoria-form" class="form-card">
+              <label class="field">
+                <span>Data da vistoria</span>
+                <input id="vistoria-data" type="date" required>
+              </label>
+              <label class="field">
+                <span>Hora da vistoria</span>
+                <input id="vistoria-hora" type="time" required>
+              </label>
+              <label class="field">
+                <span>Metragem do imóvel (m²)</span>
+                <input id="vistoria-metragem" type="number" min="1" step="0.01" placeholder="Ex: 72" required>
+              </label>
+              <fieldset class="field-group">
+                <legend>Tipo</legend>
+                <div class="segmented">
+                  <label><input type="radio" name="vistoria-tipo" value="entrada" checked><span>Entrada</span></label>
+                  <label><input type="radio" name="vistoria-tipo" value="saida"><span>Saída</span></label>
+                </div>
+              </fieldset>
+              <div class="switch-grid">
+                <label class="switch-card">
+                  <div class="switch-card-info">
+                    <span class="switch-icon">🛋️</span>
+                    <span class="switch-label">Mobília</span>
+                  </div>
+                  <div class="switch-card-right">
+                    <strong>+10%</strong>
+                    <input id="vistoria-mobilia" type="checkbox">
+                  </div>
+                </label>
+                <label class="switch-card">
+                  <div class="switch-card-info">
+                    <span class="switch-icon">⭐</span>
+                    <span class="switch-label">Qualidade</span>
+                  </div>
+                  <div class="switch-card-right">
+                    <strong>+R$ 15</strong>
+                    <input id="vistoria-qualidade" type="checkbox">
+                  </div>
+                </label>
+              </div>
+              <section class="result-panel" aria-live="polite">
+                <span>Valor calculado</span>
+                <strong id="vistoria-valor-preview">R$ 0,00</strong>
+              </section>
+              <div class="button-group">
+                <button id="vistoria-calcular-btn" class="secondary-button" type="button">Calcular</button>
+                <button id="vistoria-salvar-btn" class="primary-button" type="button">Salvar</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- TELA AGENDA -->
+        <section id="tela-agenda" class="view-section hidden">
+          <div class="page-content">
+            <form id="agenda-form" class="form-card">
+              <h3 class="form-title">Novo agendamento</h3>
+              <div class="field-row">
+                <label class="field">
+                  <span>Data</span>
+                  <input id="agenda-data" type="date" required>
+                </label>
+                <label class="field">
+                  <span>Hora</span>
+                  <input id="agenda-hora" type="time" required>
+                </label>
+              </div>
+              <fieldset class="field-group">
+                <legend>Tipo</legend>
+                <div class="segmented">
+                  <label><input type="radio" name="agenda-tipo" value="entrada" checked><span>Entrada</span></label>
+                  <label><input type="radio" name="agenda-tipo" value="saida"><span>Saída</span></label>
+                </div>
+              </fieldset>
+              <label class="field">
+                <span>Endereço</span>
+                <input id="agenda-endereco" type="text" placeholder="Rua, Número, Bairro" required>
+              </label>
+              <label class="field">
+                <span>Observação (opcional)</span>
+                <textarea id="agenda-obs" placeholder="Detalhes, contato..."></textarea>
+              </label>
+              <button class="primary-button" type="submit">Agendar</button>
+            </form>
+
+            <div id="agenda-grupos">
               <div class="agenda-group">
-                <div class="section-title"><h2>Hoje</h2></div>
-                <ul id="agenda-lista-hoje" class="agenda-list"></ul>
+                <div class="agenda-group-header">
+                  <h3>Hoje</h3>
+                  <span id="agenda-badge-hoje" class="agenda-badge hidden">0</span>
+                </div>
+                <ul id="agenda-lista-hoje" class="agenda-list hidden"></ul>
                 <p id="agenda-vazia-hoje" class="empty-state">Nenhum compromisso para hoje.</p>
               </div>
               <div class="agenda-group">
-                <div class="section-title"><h2>Amanhã</h2></div>
-                <ul id="agenda-lista-amanha" class="agenda-list"></ul>
+                <div class="agenda-group-header">
+                  <h3>Amanhã</h3>
+                  <span id="agenda-badge-amanha" class="agenda-badge hidden">0</span>
+                </div>
+                <ul id="agenda-lista-amanha" class="agenda-list hidden"></ul>
                 <p id="agenda-vazia-amanha" class="empty-state">Nenhum compromisso para amanhã.</p>
               </div>
               <div class="agenda-group">
-                <div class="section-title"><h2>Próximos 7 dias</h2></div>
-                <ul id="agenda-lista-semana" class="agenda-list"></ul>
+                <div class="agenda-group-header">
+                  <h3>Próximos 7 dias</h3>
+                  <span id="agenda-badge-semana" class="agenda-badge hidden">0</span>
+                </div>
+                <ul id="agenda-lista-semana" class="agenda-list hidden"></ul>
                 <p id="agenda-vazia-semana" class="empty-state">Nenhum compromisso para os próximos 7 dias.</p>
               </div>
               <div class="agenda-group">
-                <div class="section-title"><h2>Futuras</h2></div>
-                <ul id="agenda-lista-futuras" class="agenda-list"></ul>
+                <div class="agenda-group-header">
+                  <h3>Futuras</h3>
+                  <span id="agenda-badge-futuras" class="agenda-badge hidden">0</span>
+                </div>
+                <ul id="agenda-lista-futuras" class="agenda-list hidden"></ul>
                 <p id="agenda-vazia-futuras" class="empty-state">Nenhum compromisso futuro.</p>
               </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- 3. TELA RESUMO -->
-      <section id="tela-resumo" class="view-section hidden">
-        <div class="page-content">
-          <div class="section-title">
-            <h2>Dashboard</h2>
-          </div>
-          <div class="dashboard-grid">
-            <div class="dashboard-card"><small>Hoje</small><strong id="dashboard-hoje-valor">R$ 0,00</strong><span id="dashboard-hoje-qtd">0 vistorias</span></div>
-            <div class="dashboard-card"><small>Semana</small><strong id="dashboard-semana-valor">R$ 0,00</strong><span id="dashboard-semana-qtd">0 vistorias</span></div>
-            <div class="dashboard-card"><small>Mês</small><strong id="dashboard-mes-valor">R$ 0,00</strong><span id="dashboard-mes-qtd">0 vistorias</span></div>
-            <div class="dashboard-card"><small>Ano</small><strong id="dashboard-ano-valor">R$ 0,00</strong><span id="dashboard-ano-qtd">0 vistorias</span></div>
-          </div>
+        <!-- TELA RESUMO -->
+        <section id="tela-resumo" class="view-section hidden">
+          <div class="page-content">
 
-          <div class="section-title">
-            <h2>Métricas Gerais</h2>
-          </div>
-          <div class="metrics-grid">
-            <div class="metric-card"><small>Entradas</small><strong id="ganho-entradas-valor">R$ 0,00</strong><span id="ganho-entradas-qtd">0 vistorias</span></div>
-            <div class="metric-card"><small>Saídas</small><strong id="ganho-saidas-valor">R$ 0,00</strong><span id="ganho-saidas-qtd">0 vistorias</span></div>
-            <div class="metric-card"><small>Maior vistoria</small><strong id="ranking-maior-valor">R$ 0,00</strong></div>
-            <div class="metric-card"><small>Menor vistoria</small><strong id="ranking-menor-valor">R$ 0,00</strong></div>
-            <div class="metric-card"><small>Valor médio</small><strong id="ranking-media-valor">R$ 0,00</strong></div>
-            <div class="metric-card"><small>Melhor dia</small><strong id="melhor-dia-nome">N/A</strong><span id="melhor-dia-valor">R$ 0,00</span></div>
-          </div>
+            <h3 class="section-label">Dashboard</h3>
+            <div class="dashboard-grid">
+              <div class="dashboard-card dashboard-card--today">
+                <small>Hoje</small>
+                <strong id="dashboard-hoje-valor">R$ 0,00</strong>
+                <span id="dashboard-hoje-qtd">0 vistorias</span>
+              </div>
+              <div class="dashboard-card">
+                <small>Semana</small>
+                <strong id="dashboard-semana-valor">R$ 0,00</strong>
+                <span id="dashboard-semana-qtd">0 vistorias</span>
+              </div>
+              <div class="dashboard-card">
+                <small>Mês</small>
+                <strong id="dashboard-mes-valor">R$ 0,00</strong>
+                <span id="dashboard-mes-qtd">0 vistorias</span>
+              </div>
+              <div class="dashboard-card">
+                <small>Ano</small>
+                <strong id="dashboard-ano-valor">R$ 0,00</strong>
+                <span id="dashboard-ano-qtd">0 vistorias</span>
+              </div>
+            </div>
 
-          <div class="section-title">
-            <h2>Histórico de Vistorias Salvas</h2>
+            <!-- Meta diária progress -->
+            <div class="meta-card">
+              <div class="meta-card-header">
+                <span class="meta-label">Meta diária</span>
+                <span id="meta-diaria-pct" class="meta-pct">0%</span>
+              </div>
+              <div class="progress-bar">
+                <div id="meta-diaria-fill" class="progress-fill" style="width:0%"></div>
+              </div>
+              <div class="meta-card-footer">
+                <span id="meta-diaria-atual">R$ 0,00</span>
+                <span id="meta-diaria-total">Meta: R$ 200,00</span>
+              </div>
+            </div>
+
+            <!-- Meta mensal progress -->
+            <div class="meta-card">
+              <div class="meta-card-header">
+                <span class="meta-label">Meta mensal</span>
+                <span id="meta-mensal-pct" class="meta-pct">0%</span>
+              </div>
+              <div class="progress-bar">
+                <div id="meta-mensal-fill" class="progress-fill progress-fill--mensal" style="width:0%"></div>
+              </div>
+              <div class="meta-card-footer">
+                <span id="meta-mensal-atual">R$ 0,00</span>
+                <span id="meta-mensal-total">Meta: R$ 4.000,00</span>
+              </div>
+            </div>
+
+            <h3 class="section-label">Métricas gerais</h3>
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <small>Entradas</small>
+                <strong id="ganho-entradas-valor">R$ 0,00</strong>
+                <span id="ganho-entradas-qtd">0 vistorias</span>
+              </div>
+              <div class="metric-card">
+                <small>Saídas</small>
+                <strong id="ganho-saidas-valor">R$ 0,00</strong>
+                <span id="ganho-saidas-qtd">0 vistorias</span>
+              </div>
+              <div class="metric-card">
+                <small>Maior vistoria</small>
+                <strong id="ranking-maior-valor">R$ 0,00</strong>
+              </div>
+              <div class="metric-card">
+                <small>Menor vistoria</small>
+                <strong id="ranking-menor-valor">R$ 0,00</strong>
+              </div>
+              <div class="metric-card">
+                <small>Valor médio</small>
+                <strong id="ranking-media-valor">R$ 0,00</strong>
+              </div>
+              <div class="metric-card">
+                <small>Melhor dia</small>
+                <strong id="melhor-dia-nome">N/A</strong>
+                <span id="melhor-dia-valor">R$ 0,00</span>
+              </div>
+            </div>
+
+            <h3 class="section-label">Histórico</h3>
+            <ul id="historico-lista" class="historic-list"></ul>
+            <p id="historico-vazio" class="empty-state">Nenhuma vistoria salva.</p>
+
           </div>
-          <ul id="historico-lista" class="historic-list"></ul>
-          <p id="historico-vazio" class="empty-state">Nenhuma vistoria salva.</p>
-        </div>
-      </section>
-    </section>
-  </main>
+        </section>
+
+        <!-- TELA CONFIGURAÇÕES -->
+        <section id="tela-config" class="view-section hidden">
+          <div class="page-content">
+
+            <div class="config-group">
+              <h3 class="config-group-title">🎯 Metas</h3>
+              <label class="field">
+                <span>Meta diária (R$)</span>
+                <input id="config-meta-diaria" type="number" min="0" step="1" placeholder="200">
+              </label>
+              <label class="field">
+                <span>Meta mensal (R$)</span>
+                <input id="config-meta-mensal" type="number" min="0" step="1" placeholder="4000">
+              </label>
+            </div>
+
+            <div class="config-group">
+              <h3 class="config-group-title">⛽ Custos por vistoria</h3>
+              <label class="field">
+                <span>Combustível (R$)</span>
+                <input id="config-combustivel" type="number" min="0" step="0.01" placeholder="0,00">
+              </label>
+              <label class="field">
+                <span>Pedágio (R$)</span>
+                <input id="config-pedagio" type="number" min="0" step="0.01" placeholder="0,00">
+              </label>
+            </div>
+
+            <div class="config-group">
+              <h3 class="config-group-title">👤 Perfil</h3>
+              <label class="field">
+                <span>Seu nome</span>
+                <input id="config-nome" type="text" placeholder="Nome da vistoriadora">
+              </label>
+            </div>
+
+            <div class="config-group">
+              <h3 class="config-group-title">🎨 Aparência</h3>
+              <div class="config-toggle-row">
+                <div>
+                  <span class="config-toggle-label">Tema escuro</span>
+                  <p class="config-toggle-desc">Reduz o brilho da tela</p>
+                </div>
+                <label class="toggle-switch">
+                  <input id="config-tema" type="checkbox">
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+            </div>
+
+            <button id="config-save-btn" class="primary-button">Salvar configurações</button>
+
+          </div>
+        </section>
+
+      </main>
+
+      <!-- FAB BUTTON -->
+      <button id="fab-btn" class="fab-btn" title="Nova Vistoria" aria-label="Nova Vistoria">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
+
+      <!-- BOTTOM NAV -->
+      <nav class="bottom-nav" aria-label="Navegação principal">
+        <button class="nav-btn active" data-tela="home">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          <span>Home</span>
+        </button>
+        <button class="nav-btn" data-tela="agenda">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span>Agenda</span>
+        </button>
+        <button class="nav-btn nav-btn-center" data-tela="novaVistoria" aria-label="Nova Vistoria">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
+        <button class="nav-btn" data-tela="resumo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          <span>Resumo</span>
+        </button>
+        <button class="nav-btn" data-tela="config">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Config</span>
+        </button>
+      </nav>
+
+    </div><!-- /phone -->
+  </div><!-- /app-shell -->
 
   <script src="css/js/calculadora.js"></script>
   <script src="css/js/memoria.js"></script>

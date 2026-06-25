@@ -79,3 +79,33 @@ function calcularProximoId(lista) {
 function calcularTotalAcumulado() {
   return vistorias.reduce((total, vistoria) => total + vistoria.valor, 0);
 }
+
+
+// --- CONFIGURAÇÕES ---
+const CHAVE_CONFIG = "vistorias.config";
+
+const CONFIG_PADRAO = {
+  metaDiaria: 200,
+  metaMensal: 4000,
+  combustivel: 0,
+  pedagio: 0,
+  nome: "",
+  tema: "light",
+};
+
+function carregarConfig() {
+  try {
+    const dados = localStorage.getItem(CHAVE_CONFIG);
+    return dados ? { ...CONFIG_PADRAO, ...JSON.parse(dados) } : { ...CONFIG_PADRAO };
+  } catch {
+    return { ...CONFIG_PADRAO };
+  }
+}
+
+function salvarConfigDados(novaConfig) {
+  const configFinal = { ...carregarConfig(), ...novaConfig };
+  localStorage.setItem(CHAVE_CONFIG, JSON.stringify(configFinal));
+  return configFinal;
+}
+
+const appConfig = carregarConfig();
