@@ -670,102 +670,123 @@ h1 {
   pointer-events: none;
 }
 
-/* TELA 1 - CAPA: dark/night theme */
-.onboarding-background {
+/* TELA 1 - CAPA: imagem de fundo com overlay */
+.onboarding-cover-bg {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(170deg, #081C3A 0%, #0E4CB5 100%);
-  z-index: -1;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
 }
 
-.onboarding-content {
+.onboarding-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  display: block;
+}
+
+.onboarding-cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 18, 45, 0.50) 0%,
+    rgba(6, 18, 45, 0.20) 35%,
+    rgba(6, 18, 45, 0.65) 70%,
+    rgba(6, 18, 45, 0.92) 100%
+  );
+}
+
+.onboarding-cover-content {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 460px;
-  padding: 24px;
+  padding: 52px 28px 36px;
   display: flex;
   flex-direction: column;
   align-items: center;
   flex-grow: 1;
+  text-align: center;
+}
+
+.onboarding-cover-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+  justify-content: flex-start;
 }
 
 .onboarding-logo {
-  width: 60px;
-  height: 60px;
-  margin-bottom: 20px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 14px;
 }
 
-.onboarding-illustration {
-  width: 100%;
-  max-width: 350px;
-  height: auto;
-  margin-top: auto;
-  margin-bottom: auto;
-  padding: 20px 0;
+.onboarding-cover-title {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
 }
 
-.onboarding-text {
-  margin-bottom: 30px;
-}
-
-.onboarding-text h1 {
-  font-size: 2.8rem;
-  font-weight: 800;
-  margin-bottom: 12px;
-}
-
-.onboarding-text p {
-  font-size: 1.1rem;
-  color: #a7c5f5;
-  max-width: 30ch;
-  margin: 0 auto;
+.onboarding-cover-sub {
+  font-size: 1rem;
+  color: #c7deff;
+  line-height: 1.5;
+  margin: 0;
 }
 
 .onboarding-card {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.10);
   border-radius: 24px;
   padding: 24px;
   width: 100%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-#onboarding-welcome .onboarding-card {
-  margin-top: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .onboarding-card h2 {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 700;
-  margin-bottom: 8px;
+  color: #ffffff;
+  margin-bottom: 6px;
 }
 
 .onboarding-card p {
-  color: #dbeaff;
-  font-size: 1rem;
-  margin-bottom: 24px;
+  color: #c7deff;
+  font-size: 0.97rem;
+  margin-bottom: 20px;
 }
 
 .onboarding-button {
   width: 100%;
-  height: 56px;
+  height: 54px;
   border: none;
-  border-radius: 18px;
-  background: #ffffff;
-  color: #0E4CB5;
+  border-radius: 16px;
+  background: #2563eb;
+  color: #ffffff;
   font-size: 1rem;
   font-weight: 800;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   transition: transform 0.2s ease, background-color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
 }
 
 .onboarding-button:hover {
-  transform: scale(1.03);
+  background: #1d4ed8;
+  transform: scale(1.02);
 }
 
 .onboarding-button:active {
