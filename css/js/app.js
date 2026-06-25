@@ -6,12 +6,14 @@ const onboardingName = document.querySelector("#onboarding-name");
 const startBtn = document.querySelector("#onboarding-start-btn");
 const continueBtn = document.querySelector("#onboarding-continue-btn");
 const nameInput = document.querySelector("#onboarding-name-input");
+const onboardingBackBtn = document.querySelector("#onboarding-back-btn");
 
 // App Principal
 const splashScreen = document.querySelector("#splash-screen");
 const appShell = document.querySelector(".app-shell");
 const userGreeting = document.querySelector("#user-greeting");
 const profileButton = document.querySelector("#profile-button");
+const appBackBtn = document.querySelector("#app-back-btn");
 
 const alertasContainer = document.querySelector("#alertas-container");
 const abas = {
@@ -157,12 +159,30 @@ function amanhaISO() {
 
 // --- LÓGICA DE NAVEGAÇÃO ---
 
+const navHistory = [];
+
 function trocarTela(telaAtiva) {
+  const telaAtual = Object.keys(telas).find(n => !telas[n].classList.contains("hidden"));
+  if (telaAtual && telaAtual !== telaAtiva) navHistory.push(telaAtual);
+
   Object.keys(telas).forEach((nomeTela) => {
     const mostrar = nomeTela === telaAtiva;
     telas[nomeTela].classList.toggle("hidden", !mostrar);
     abas[nomeTela].classList.toggle("active", mostrar);
   });
+
+  appBackBtn.classList.toggle("hidden", navHistory.length === 0);
+}
+
+function voltarTela() {
+  if (navHistory.length === 0) return;
+  const anterior = navHistory.pop();
+  Object.keys(telas).forEach((nomeTela) => {
+    const mostrar = nomeTela === anterior;
+    telas[nomeTela].classList.toggle("hidden", !mostrar);
+    abas[nomeTela].classList.toggle("active", mostrar);
+  });
+  appBackBtn.classList.toggle("hidden", navHistory.length === 0);
 }
 
 // --- TELA: NOVA VISTORIA ---
@@ -442,6 +462,7 @@ function inicializar() {
     onboardingWelcome.classList.add("hidden");
     onboardingName.classList.remove("hidden");
     nameInput.focus();
+    nameInput.focus();
   });
 
   continueBtn.addEventListener("click", () => {
@@ -453,6 +474,15 @@ function inicializar() {
       alert("Por favor, digite seu nome para continuar.");
     }
   });
+
+  // Botão voltar do onboarding (tela 2 → tela 1)
+  onboardingBackBtn.addEventListener("click", () => {
+    onboardingName.classList.add("hidden");
+    onboardingWelcome.classList.remove("hidden");
+  });
+
+  // Botão voltar do app principal
+  appBackBtn.addEventListener("click", voltarTela);
 
   // Listener do botão de Perfil
   profileButton.addEventListener("click", changeUserName);

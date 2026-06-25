@@ -969,6 +969,43 @@ h1 {
   text-decoration: underline;
 }
 
+/* --- BACK BUTTON --- */
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.back-btn:hover { transform: scale(1.1); }
+.back-btn:active { transform: scale(0.93); }
+
+.back-btn-dark {
+  background: rgba(255, 255, 255, 0.15);
+  color: #15202b;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.back-btn-light {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  position: static;
+  flex-shrink: 0;
+}
+
 /* --- PROFILE BUTTON --- */
 .profile-button {
   display: grid;
