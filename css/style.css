@@ -543,6 +543,12 @@ h1 {
   .app-header {
     padding-top: 26px;
   }
+
+  .splash,
+  .onboarding-container {
+    border-radius: 0;
+    box-shadow: none;
+  }
 }
 
 @media (max-width: 380px) {
@@ -599,11 +605,15 @@ h1 {
 /* --- ESTILOS DA TELA DE CAPA (SPLASH SCREEN) --- */
 .splash {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #142532; /* Cor de fundo similar ao header */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(100%, 460px);
+  height: min(100vh, 940px);
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: #142532;
   display: grid;
   place-items: center;
   z-index: 100;
@@ -647,10 +657,14 @@ h1 {
 /* --- ONBOARDING STYLES --- */
 .onboarding-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(100%, 460px);
+  height: min(100vh, 940px);
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
   z-index: 99;
   color: #ffffff;
   display: flex;
