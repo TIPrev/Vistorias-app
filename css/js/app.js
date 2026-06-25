@@ -9,6 +9,7 @@ const nameInput = document.querySelector("#onboarding-name-input");
 const onboardingBackBtn = document.querySelector("#onboarding-back-btn");
 
 // App Principal
+const splashEnterBtn = document.querySelector("#splash-enter-btn");
 const splashScreen = document.querySelector("#splash-screen");
 const appShell = document.querySelector(".app-shell");
 const userGreeting = document.querySelector("#user-greeting");
@@ -452,10 +453,7 @@ function renderizarTudo() {
 }
 
 function inicializar() {
-  // Lógica de Onboarding ou início direto
-  window.addEventListener("load", () => {
-    setTimeout(handleOnboarding, 2500);
-  });
+  splashEnterBtn.addEventListener("click", handleOnboarding);
 
   // Listeners do Onboarding
   startBtn.addEventListener("click", () => {
