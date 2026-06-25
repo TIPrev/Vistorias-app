@@ -11,7 +11,6 @@
   <section id="onboarding-welcome" class="onboarding-container hidden">
     <div class="onboarding-cover-bg">
       <svg class="onboarding-scene" viewBox="0 0 400 520" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-        <!-- Céu noturno -->
         <defs>
           <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stop-color="#050d1f"/>
@@ -22,6 +21,11 @@
             <stop offset="0%" stop-color="#fef9c3" stop-opacity="0.35"/>
             <stop offset="100%" stop-color="#0a1f4a" stop-opacity="0"/>
           </radialGradient>
+          <linearGradient id="fade-bottom" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#050d1f" stop-opacity="0"/>
+            <stop offset="55%"  stop-color="#050d1f" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#050d1f" stop-opacity="0.85"/>
+          </linearGradient>
         </defs>
         <rect width="400" height="520" fill="url(#sky)"/>
         <!-- Brilho da lua -->
@@ -108,13 +112,6 @@
         <rect x="185" y="405" width="30" height="65" fill="#0a1c3a" opacity="0.6"/>
         <!-- Overlay gradiente final para fundir com conteúdo -->
         <rect width="400" height="520" fill="url(#fade-bottom)"/>
-        <defs>
-          <linearGradient id="fade-bottom" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#050d1f" stop-opacity="0"/>
-            <stop offset="55%"  stop-color="#050d1f" stop-opacity="0"/>
-            <stop offset="100%" stop-color="#050d1f" stop-opacity="0.85"/>
-          </linearGradient>
-        </defs>
       </svg>
     </div>
     <div class="onboarding-cover-content">
