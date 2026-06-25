@@ -971,39 +971,41 @@ h1 {
 
 /* --- BACK BUTTON --- */
 .back-btn {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 10;
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: none;
-  font-size: 1.3rem;
+  font-size: 1.25rem;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.15s ease, background 0.15s ease;
   -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
 }
 
 .back-btn:hover { transform: scale(1.1); }
 .back-btn:active { transform: scale(0.93); }
 
-.back-btn-dark {
-  background: rgba(255, 255, 255, 0.15);
+/* Botão no onboarding claro (tela 2) */
+.back-btn-onboarding {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  background: #e2e8f0;
   color: #15202b;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.2);
 }
 
-.back-btn-light {
-  background: rgba(255, 255, 255, 0.18);
+.back-btn-onboarding:hover { background: #cbd5e1; }
+
+/* Botão no header do app (fundo escuro) */
+.back-btn-app {
+  background: rgba(255, 255, 255, 0.22);
   color: #ffffff;
-  position: static;
-  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.30);
 }
 
 /* --- PROFILE BUTTON --- */
