@@ -185,7 +185,7 @@ function renderizarAgenda() {
             <button class="remove-button" data-id="${ag.id}">&times;</button>
             <div class="agenda-card-header">
               <span>${formatarData(ag.data)}</span>
-              <span>${ag.hora}</span>
+              <span>${ag.hora} - <strong>${ag.tipo.charAt(0).toUpperCase() + ag.tipo.slice(1)}</strong></span>
             </div>
             <p><strong>Endereço:</strong> ${ag.endereco}</p>
             ${ag.obs ? `<p><strong>Obs:</strong> ${ag.obs}</p>` : ''}
@@ -205,13 +205,14 @@ function adicionarAgendamentoPeloFormulario(event) {
   const hora = agendaHoraInput.value;
   const endereco = agendaEnderecoInput.value;
   const obs = agendaObsInput.value;
+  const tipo = document.querySelector('input[name="agenda-tipo"]:checked').value;
 
   if (!data || !hora || !endereco) {
     alert("Preencha Data, Hora e Endereço.");
     return;
   }
 
-  adicionarAgendamento({ data, hora, endereco, obs });
+  adicionarAgendamento({ data, hora, endereco, obs, tipo });
   agendaForm.reset();
   agendaDataInput.value = hojeISO();
   renderizarTudo();
@@ -360,6 +361,27 @@ function renderizarTudo() {
 }
 
 function inicializar() {
+  // Lógica da Splash Screen
+  const splashScreen = document.querySelector("#splash-screen");
+  const appShell = document.querySelector(".app-shell");
+
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      if (splashScreen) {
+        splashScreen.classList.add("fade-out");
+      }
+      if (appShell) {
+        appShell.classList.remove("hidden");
+      }
+      // Garante que o splash não atrapalhe a interação depois da animação
+      setTimeout(() => {
+        if (splashScreen) {
+          splashScreen.style.display = 'none';
+        }
+      }, 500); // Mesmo tempo da transição do CSS
+    }, 1500); // 1.5 segundos de espera
+  });
+
   vistoriaDataInput.value = hojeISO();
   agendaDataInput.value = hojeISO();
   

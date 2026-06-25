@@ -7,7 +7,15 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <main class="app-shell">
+  <section id="splash-screen" class="splash">
+    <div class="splash-content">
+      <img src="img/logo.png" alt="Vistoria App Logo" class="splash-logo">
+      <h1>Vistoria App</h1>
+      <p>Seu assistente de vistorias</p>
+    </div>
+  </section>
+
+  <main class="app-shell hidden">
     <section class="phone">
       <header class="app-header">
         <div>
@@ -67,6 +75,13 @@
           <form id="agenda-form" class="form-stack">
             <label class="field"><span>Data</span><input id="agenda-data" type="date" required></label>
             <label class="field"><span>Hora</span><input id="agenda-hora" type="time" required></label>
+            <fieldset class="field-group">
+              <legend>Tipo de Agendamento</legend>
+              <div class="segmented">
+                <label><input type="radio" name="agenda-tipo" value="entrada" checked><span>Entrada</span></label>
+                <label><input type="radio" name="agenda-tipo" value="saida"><span>Saída</span></label>
+              </div>
+            </fieldset>
             <label class="field"><span>Endereço</span><input id="agenda-endereco" type="text" placeholder="Rua, Número, Bairro" required></label>
             <label class="field"><span>Observação</span><textarea id="agenda-obs" placeholder="Detalhes, contato..."></textarea></label>
             <button class="primary-button" type="submit">Agendar</button>
