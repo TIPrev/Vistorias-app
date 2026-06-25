@@ -678,11 +678,9 @@ h1 {
   overflow: hidden;
 }
 
-.onboarding-cover-img {
+.onboarding-scene {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center bottom;
   display: block;
 }
 
@@ -719,10 +717,16 @@ h1 {
   justify-content: flex-start;
 }
 
-.onboarding-logo {
+.onboarding-logo-box {
   width: 64px;
   height: 64px;
+  background: #2563eb;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 14px;
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.5);
 }
 
 .onboarding-cover-title {
