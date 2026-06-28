@@ -1,4 +1,4 @@
-const CACHE = 'vistoria-v7-resposta-publica';
+const CACHE = 'vistoria-v8-rota-publica-prioritaria';
 const ASSETS = [
   '/',
   '/index.html',
@@ -28,6 +28,14 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match('/index.html'))
+    );
+    return;
+  }
+
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
       if (res && res.status === 200 && res.type === 'basic') {

@@ -1,3 +1,42 @@
+// Detecta e isola rotas públicas antes de qualquer fluxo de autenticação.
+const ROTA_PUBLICA = (() => {
+  const pathname = window.location.pathname;
+  const pathnameMinusculo = pathname.toLowerCase();
+  const confirmarPrefixo = "/agendamento/confirmar/";
+  const reagendarPrefixo = "/agendamento/reagendar/";
+  let prefixo;
+  let resposta;
+
+  if (pathnameMinusculo.startsWith(confirmarPrefixo)) {
+    prefixo = confirmarPrefixo;
+    resposta = "Confirmado";
+    console.log("ROTA_PUBLICA_CONFIRMAR_DETECTADA");
+  } else if (pathnameMinusculo.startsWith(reagendarPrefixo)) {
+    prefixo = reagendarPrefixo;
+    resposta = "Reagendar";
+    console.log("ROTA_PUBLICA_REAGENDAR_DETECTADA");
+  } else {
+    return null;
+  }
+
+  document.documentElement.classList.add("public-route-active");
+  document.body.classList.add("public-route-active");
+  document.querySelectorAll("#login-screen, #splash-screen, #onboarding-welcome, #onboarding-name, .app-shell")
+    .forEach(elemento => {
+      elemento.classList.add("hidden");
+      elemento.setAttribute("aria-hidden", "true");
+    });
+
+  const respostaPublica = document.querySelector("#public-response");
+  respostaPublica.classList.remove("hidden");
+  respostaPublica.removeAttribute("aria-hidden");
+
+  return {
+    resposta,
+    tokenCodificado: pathname.slice(prefixo.length).replace(/\/+$/, "")
+  };
+})();
+
 // ============================================================
 // ELEMENTOS DO DOM
 // ============================================================
@@ -1057,10 +1096,7 @@ function importarDados(arquivo) {
 // INICIALIZAÇÃO
 // ============================================================
 
-async function tratarRotaPublica() {
-  const match = location.pathname.match(/^\/agendamento\/(confirmar|reagendar)\/([^/]+)\/?$/i);
-  if (!match) return false;
-
+async function tratarRotaPublica(rotaPublica) {
   splashScreen.style.display = "none";
   loginScreen.classList.add("hidden");
   appShell.classList.add("hidden");
@@ -1069,12 +1105,12 @@ async function tratarRotaPublica() {
   publicResponse.classList.remove("hidden");
 
   const mensagem = document.querySelector("#public-response-message");
-  const resposta = match[1] === "confirmar" ? "Confirmado" : "Reagendar";
+  const resposta = rotaPublica.resposta;
   document.title = resposta === "Confirmado" ? "Confirmação de vistoria" : "Reagendamento de vistoria";
 
   try {
     if (!onlineBackend.configured) throw new Error("Firebase ainda não configurado.");
-    const token = decodeURIComponent(match[2]);
+    const token = decodeURIComponent(rotaPublica.tokenCodificado);
     if (!/^[0-9a-f-]{36}$/i.test(token)) throw new Error("Token inválido.");
     const resultado = await onlineBackend.publicAction(token, resposta);
     if (!resultado?.ok) throw new Error("Agendamento não encontrado ou indisponível.");
@@ -1085,17 +1121,9 @@ async function tratarRotaPublica() {
     console.error("Falha ao processar link público:", erro);
     mensagem.textContent = "Link inválido ou expirado.";
   }
-  return true;
 }
 
 async function inicializar() {
-  // PWA service worker
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
-  }
-
-  if (await tratarRotaPublica()) return;
-
   // Splash → Login → App
   splashEnterBtn.addEventListener("click", handleOnboarding);
   loginForm.addEventListener("submit", autenticar);
@@ -1173,4 +1201,13 @@ async function inicializar() {
   });
 }
 
-inicializar();
+// A decisão entre rota pública e app autenticado já foi tomada no topo do arquivo.
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch(() => {});
+}
+
+if (ROTA_PUBLICA) {
+  tratarRotaPublica(ROTA_PUBLICA);
+} else {
+  inicializar();
+}
