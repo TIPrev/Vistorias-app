@@ -64,10 +64,18 @@ const agendaForm         = document.querySelector("#agenda-form");
 const agendaIdInput      = document.querySelector("#agenda-id");
 const agendaDataInput    = document.querySelector("#agenda-data");
 const agendaHoraInput    = document.querySelector("#agenda-hora");
-const agendaUnidadeInput = document.querySelector("#agenda-unidade");
-const agendaResponsavelInput = document.querySelector("#agenda-responsavel");
-const agendaTelefoneInput= document.querySelector("#agenda-telefone");
-const agendaEnderecoInput= document.querySelector("#agenda-endereco");
+const agendaClienteNomeInput = document.querySelector("#agenda-cliente-nome");
+const agendaClienteTelefoneInput = document.querySelector("#agenda-cliente-telefone");
+const agendaImovelTipoInput = document.querySelector("#agenda-imovel-tipo");
+const agendaImovelIdentificacaoInput = document.querySelector("#agenda-imovel-identificacao");
+const agendaCepInput = document.querySelector("#agenda-cep");
+const agendaRuaInput = document.querySelector("#agenda-rua");
+const agendaNumeroInput = document.querySelector("#agenda-numero");
+const agendaComplementoInput = document.querySelector("#agenda-complemento");
+const agendaBairroInput = document.querySelector("#agenda-bairro");
+const agendaCidadeInput = document.querySelector("#agenda-cidade");
+const agendaUfInput = document.querySelector("#agenda-uf");
+const agendaEnderecoCompletoInput = document.querySelector("#agenda-endereco-completo");
 const agendaObsInput     = document.querySelector("#agenda-obs");
 const agendaStatusInput  = document.querySelector("#agenda-status");
 const agendaLista        = document.querySelector("#agenda-lista");
@@ -154,13 +162,6 @@ function horaAtual() {
   return `${String(h.getHours()).padStart(2,'0')}:${String(h.getMinutes()).padStart(2,'0')}`;
 }
 
-function getGreeting() {
-  const h = new Date().getHours();
-  if (h >= 5  && h < 12) return "Bom dia";
-  if (h >= 12 && h < 18) return "Boa tarde";
-  return "Boa noite";
-}
-
 function getDataFormatada() {
   const d = new Date();
   return `${DIAS_SEMANA[d.getDay()]}, ${d.getDate()} de ${MESES[d.getMonth()]}`;
@@ -170,6 +171,37 @@ function primeiroNomeUsuario(nome, email = "") {
   const base = String(nome || "").trim() || String(email).split("@")[0];
   const primeiro = base.split(/[\s._-]+/).find(Boolean) || "Usuário";
   return primeiro.charAt(0).toUpperCase() + primeiro.slice(1).toLowerCase();
+}
+
+function clienteDoAgendamento(ag) {
+  return String(ag?.clienteNome || ag?.responsavel || "").trim();
+}
+
+function imovelDoAgendamento(ag) {
+  return String(ag?.imovelIdentificacao || ag?.unidadeCliente || ag?.imovelTipo || "").trim();
+}
+
+function montarEnderecoCompleto(dados) {
+  const ruaNumero = [dados.rua, dados.numero].filter(Boolean).join(", ");
+  const cidadeUf = [dados.cidade, dados.uf].filter(Boolean).join(" - ");
+  return [ruaNumero, dados.complemento, dados.bairro, cidadeUf].map(v => String(v || "").trim()).filter(Boolean).join(", ");
+}
+
+function enderecoDoAgendamento(ag) {
+  return String(ag?.enderecoCompleto || montarEnderecoCompleto(ag || {}) || ag?.endereco || "").trim();
+}
+
+function enderecoResumidoDoAgendamento(ag) {
+  const ruaNumero = [ag?.rua, ag?.numero].filter(Boolean).join(", ");
+  return [ruaNumero, ag?.bairro].filter(Boolean).join(" · ") || enderecoDoAgendamento(ag);
+}
+
+function atualizarEnderecoCompletoFormulario() {
+  agendaEnderecoCompletoInput.value = montarEnderecoCompleto({
+    rua: agendaRuaInput.value, numero: agendaNumeroInput.value,
+    complemento: agendaComplementoInput.value, bairro: agendaBairroInput.value,
+    cidade: agendaCidadeInput.value, uf: agendaUfInput.value.toUpperCase()
+  });
 }
 
 function textoSeguro(valor) {
@@ -401,7 +433,6 @@ function renderizarHome() {
   const primeiroNome = primeiroNomeUsuario(nome);
 
   // Saudação
-  document.querySelector("#greeting-period").textContent = getGreeting();
   document.querySelector("#greeting-name").textContent = `Olá, ${primeiroNome}`;
   document.querySelector("#greeting-date").innerHTML = getDataFormatada().replace(", ", ",<br>");
 
@@ -433,8 +464,8 @@ function renderizarHome() {
       <div class="next-card-content">
         <span class="next-tipo entrada">${textoSeguro(proxima.statusConfirmacao || "Agendado")}</span>
         <div class="next-time">${proxima.hora} &mdash; ${formatarDataCurta(proxima.data)}</div>
-        <div class="next-address"><strong>${textoSeguro(proxima.unidadeCliente || proxima.responsavel)}</strong></div>
-        <div class="next-address">📍 ${textoSeguro(proxima.endereco)}</div>
+        <div class="next-address"><strong>${textoSeguro(clienteDoAgendamento(proxima))}</strong></div>
+        <div class="next-address">📍 ${textoSeguro(enderecoResumidoDoAgendamento(proxima))}</div>
         ${proxima.obs ? `<div class="next-address">📝 ${textoSeguro(proxima.obs)}</div>` : ""}
       </div>
     `;
@@ -546,12 +577,12 @@ function renderizarAgenda() {
     li.dataset.id = ag.id;
     li.innerHTML = `
       <div class="agenda-card-header">
-        <div><small>${textoSeguro(ag.unidadeCliente)}</small><strong>${textoSeguro(ag.responsavel)}</strong></div>
+        <div><small>${textoSeguro(imovelDoAgendamento(ag))}</small><strong>${textoSeguro(clienteDoAgendamento(ag))}</strong></div>
         <span class="status-badge">${textoSeguro(ag.statusConfirmacao)}</span>
       </div>
       <div class="agenda-card-time">${textoSeguro(ag.hora)} · ${formatarData(ag.data)}</div>
-      <div class="agenda-card-address">📍 ${textoSeguro(ag.endereco)}</div>
-      <div class="agenda-card-address">WhatsApp: ${textoSeguro(ag.telefoneWhatsapp)}</div>
+      <div class="agenda-card-address">📍 ${textoSeguro(enderecoDoAgendamento(ag))}</div>
+      <div class="agenda-card-address">WhatsApp: ${textoSeguro(ag.clienteTelefone || ag.telefoneWhatsapp)}</div>
       ${ag.obs ? `<div class="agenda-card-obs">📝 ${textoSeguro(ag.obs)}</div>` : ""}
       <label class="inline-status">Status <select data-action="status">${["Aguardando envio","Mensagem enviada","Confirmado","Reagendar","Cancelado","Finalizado"].map(s => `<option${s === ag.statusConfirmacao ? " selected" : ""}>${s}</option>`).join("")}</select></label>
       <div class="card-actions"><button type="button" data-action="whatsapp">Enviar WhatsApp</button><button type="button" data-action="enviado">Marcar enviado</button><button type="button" data-action="editar">Editar</button><button type="button" class="danger-link" data-action="excluir">Excluir</button></div>`;
@@ -563,8 +594,14 @@ function abrirFormularioAgenda(ag = null) {
   agendaForm.classList.remove("hidden");
   agendaIdInput.value = ag?.id || "";
   agendaDataInput.value = ag?.data || hojeISO(); agendaHoraInput.value = ag?.hora || "";
-  agendaUnidadeInput.value = ag?.unidadeCliente || ""; agendaResponsavelInput.value = ag?.responsavel || "";
-  agendaTelefoneInput.value = ag?.telefoneWhatsapp || ""; agendaEnderecoInput.value = ag?.endereco || "";
+  agendaClienteNomeInput.value = ag?.clienteNome || ag?.responsavel || "";
+  agendaClienteTelefoneInput.value = ag?.clienteTelefone || ag?.telefoneWhatsapp || "";
+  agendaImovelTipoInput.value = ag?.imovelTipo || "";
+  agendaImovelIdentificacaoInput.value = ag?.imovelIdentificacao || ag?.unidadeCliente || "";
+  agendaCepInput.value = ag?.cep || ""; agendaRuaInput.value = ag?.rua || "";
+  agendaNumeroInput.value = ag?.numero || ""; agendaComplementoInput.value = ag?.complemento || "";
+  agendaBairroInput.value = ag?.bairro || ""; agendaCidadeInput.value = ag?.cidade || "";
+  agendaUfInput.value = ag?.uf || ""; agendaEnderecoCompletoInput.value = enderecoDoAgendamento(ag);
   agendaObsInput.value = ag?.obs || ""; agendaStatusInput.value = ag?.statusConfirmacao || "Aguardando envio";
 }
 function fecharFormularioAgenda() { agendaForm.reset(); agendaIdInput.value = ""; agendaForm.classList.add("hidden"); }
@@ -575,21 +612,50 @@ function normalizarTelefone(valor) {
 function telefoneValido(valor) { return /^55\d{10,11}$/.test(normalizarTelefone(valor)); }
 function linkWhatsAppAgendamento(ag) {
   if (!ag.publicToken) throw new Error("Sincronize este agendamento antes de enviar.");
-  if (!telefoneValido(ag.telefoneWhatsapp)) throw new Error("Use 55 + DDD + número.");
+  const telefone = ag.clienteTelefone || ag.telefoneWhatsapp || "";
+  if (!telefoneValido(telefone)) throw new Error("Use 55 + DDD + número.");
   const base = onlineBackend.siteUrl();
   const confirmar = `${base}/agendamento/confirmar/${ag.publicToken}`;
   const reagendar = `${base}/agendamento/reagendar/${ag.publicToken}`;
-  const texto = `Olá, ${ag.responsavel}. Tudo bem?\nConfirmando sua vistoria em ${formatarData(ag.data)}, às ${ag.hora}.\nEndereço: ${ag.endereco}\n\nConfirmar: ${confirmar}\nReagendar: ${reagendar}`;
-  return `https://wa.me/${normalizarTelefone(ag.telefoneWhatsapp)}?text=${encodeURIComponent(texto)}`;
+  const cliente = clienteDoAgendamento(ag);
+  const imovel = imovelDoAgendamento(ag);
+  const endereco = enderecoDoAgendamento(ag);
+  const linhas = [
+    `Olá, ${primeiroNomeUsuario(cliente)}. Tudo bem?`,
+    "",
+    "Passando para confirmar sua vistoria agendada.",
+    "",
+    cliente && `Cliente: ${cliente}`,
+    imovel && `Imóvel: ${imovel}`,
+    ag.data && `Data: ${formatarData(ag.data)}`,
+    ag.hora && `Horário: ${ag.hora}`,
+    endereco && `Endereço: ${endereco}`,
+    "",
+    "Para confirmar, clique aqui:",
+    confirmar,
+    "",
+    "Para reagendar, clique aqui:",
+    reagendar
+  ].filter(linha => linha !== false && linha != null);
+  return `https://wa.me/${normalizarTelefone(telefone)}?text=${encodeURIComponent(linhas.join("\n"))}`;
 }
 
 async function adicionarAgendamentoPeloFormulario(event) {
   event.preventDefault();
-  const telefone = normalizarTelefone(agendaTelefoneInput.value);
+  const telefone = normalizarTelefone(agendaClienteTelefoneInput.value);
   if (!telefoneValido(telefone)) return mostrarToast("Telefone inválido. Use 55 + DDD + número.", "error");
+  const enderecoCompleto = agendaEnderecoCompletoInput.value.trim() || montarEnderecoCompleto({
+    rua: agendaRuaInput.value, numero: agendaNumeroInput.value, complemento: agendaComplementoInput.value,
+    bairro: agendaBairroInput.value, cidade: agendaCidadeInput.value, uf: agendaUfInput.value.toUpperCase()
+  });
   const dados = { data: agendaDataInput.value, hora: agendaHoraInput.value,
-    unidadeCliente: agendaUnidadeInput.value.trim(), responsavel: agendaResponsavelInput.value.trim(),
-    telefoneWhatsapp: telefone, endereco: agendaEnderecoInput.value.trim(), obs: agendaObsInput.value.trim(),
+    clienteNome: agendaClienteNomeInput.value.trim(), clienteTelefone: telefone,
+    imovelTipo: agendaImovelTipoInput.value.trim(), imovelIdentificacao: agendaImovelIdentificacaoInput.value.trim(),
+    cep: agendaCepInput.value.trim(), rua: agendaRuaInput.value.trim(), numero: agendaNumeroInput.value.trim(),
+    complemento: agendaComplementoInput.value.trim(), bairro: agendaBairroInput.value.trim(),
+    cidade: agendaCidadeInput.value.trim(), uf: agendaUfInput.value.trim().toUpperCase(), enderecoCompleto,
+    unidadeCliente: agendaImovelIdentificacaoInput.value.trim(), responsavel: agendaClienteNomeInput.value.trim(),
+    telefoneWhatsapp: telefone, endereco: enderecoCompleto, obs: agendaObsInput.value.trim(),
     statusConfirmacao: agendaStatusInput.value };
   try {
     if (agendaIdInput.value) await atualizarAgendamento(agendaIdInput.value, dados);
@@ -1030,6 +1096,8 @@ async function inicializar() {
     renderizarAgenda();
   });
   agendaFiltroStatus.addEventListener("change", renderizarAgenda);
+  [agendaRuaInput, agendaNumeroInput, agendaComplementoInput, agendaBairroInput, agendaCidadeInput, agendaUfInput]
+    .forEach(input => input.addEventListener("input", atualizarEnderecoCompletoFormulario));
 
   // Resumo
   historicoLista.addEventListener("click", removerVistoriaDoHistorico);

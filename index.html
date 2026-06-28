@@ -214,7 +214,6 @@
             <!-- Saudação -->
             <div class="home-greeting">
               <div>
-                <p id="greeting-period" class="greeting-period">Bom dia</p>
                 <h2 id="greeting-name" class="greeting-name">Bem-vindo! 👋</h2>
               </div>
               <div id="greeting-date" class="greeting-date"></div>
@@ -382,10 +381,26 @@
                 <label class="field"><span>Data</span><input id="agenda-data" type="date" required></label>
                 <label class="field"><span>Hora</span><input id="agenda-hora" type="time" required></label>
               </div>
-              <label class="field"><span>Unidade/cliente</span><input id="agenda-unidade" type="text" required></label>
-              <label class="field"><span>Responsável</span><input id="agenda-responsavel" type="text" required></label>
-              <label class="field"><span>WhatsApp</span><input id="agenda-telefone" type="tel" inputmode="tel" placeholder="55 11 99999-9999" required></label>
-              <label class="field"><span>Endereço</span><input id="agenda-endereco" type="text" placeholder="Rua, número, bairro" required></label>
+              <label class="field"><span>Nome do cliente</span><input id="agenda-cliente-nome" type="text" required></label>
+              <label class="field"><span>Telefone do cliente</span><input id="agenda-cliente-telefone" type="tel" inputmode="tel" placeholder="55 11 99999-9999" required></label>
+              <div class="field-row">
+                <label class="field"><span>Tipo do imóvel</span><input id="agenda-imovel-tipo" type="text" placeholder="Casa, apartamento, sala..."></label>
+                <label class="field"><span>Identificação</span><input id="agenda-imovel-identificacao" type="text" placeholder="Apartamento 302"></label>
+              </div>
+              <div class="field-row">
+                <label class="field"><span>CEP</span><input id="agenda-cep" type="text" inputmode="numeric" placeholder="00000-000"></label>
+                <label class="field"><span>Rua</span><input id="agenda-rua" type="text"></label>
+              </div>
+              <div class="field-row">
+                <label class="field"><span>Número</span><input id="agenda-numero" type="text"></label>
+                <label class="field"><span>Complemento</span><input id="agenda-complemento" type="text"></label>
+              </div>
+              <label class="field"><span>Bairro</span><input id="agenda-bairro" type="text"></label>
+              <div class="field-row">
+                <label class="field"><span>Cidade</span><input id="agenda-cidade" type="text"></label>
+                <label class="field"><span>UF</span><input id="agenda-uf" type="text" maxlength="2" autocapitalize="characters"></label>
+              </div>
+              <label class="field"><span>Endereço completo</span><input id="agenda-endereco-completo" type="text" placeholder="Preenchido automaticamente ou manualmente"></label>
               <label class="field"><span>Observação</span><textarea id="agenda-obs" placeholder="Detalhes opcionais"></textarea></label>
               <label class="field"><span>Status</span><select id="agenda-status">
                 <option>Aguardando envio</option><option>Mensagem enviada</option><option>Confirmado</option>

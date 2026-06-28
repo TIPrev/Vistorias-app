@@ -1,4 +1,4 @@
-const CACHE = 'vistoria-v4-separacao-agenda';
+const CACHE = 'vistoria-v5-dados-imovel';
 const ASSETS = [
   '/',
   '/index.html',
