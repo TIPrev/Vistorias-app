@@ -1,13 +1,13 @@
-const CACHE = 'vistoria-v8-rota-publica-prioritaria';
+const CACHE = 'vistoria-v11-whatsapp-resposta';
 const ASSETS = [
   '/',
   '/index.html',
-  '/css/style.css',
-  '/css/js/calculadora.js',
-  '/css/js/memoria.js',
-  '/css/js/app.js',
-  '/config.js',
-  '/firebase.js',
+  '/css/style.css?v=11',
+  '/css/js/calculadora.js?v=11',
+  '/css/js/memoria.js?v=11',
+  '/css/js/app.js?v=11',
+  '/config.js?v=11',
+  '/firebase.js?v=11',
   '/manifest.json',
   '/icons/icon.svg',
 ];

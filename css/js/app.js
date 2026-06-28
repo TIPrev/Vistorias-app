@@ -165,8 +165,7 @@ function formatarDataCurta(dataISO) {
 
 function dataParaISO(data) {
   const d = new Date(data);
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d.toISOString().slice(0, 10);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 function hojeISO()   { return dataParaISO(new Date()); }
@@ -786,7 +785,7 @@ function abrirFormularioAgenda(ag = null) {
   ultimoCepConsultado = "";
   if (consultaCepController) consultaCepController.abort();
   agendaIdInput.value = ag?.id || "";
-  agendaDataInput.value = ag?.data || hojeISO(); agendaHoraInput.value = ag?.hora || "";
+  agendaDataInput.value = ag?.data || hojeISO(); agendaHoraInput.value = ag?.hora || horaAtual();
   agendaClienteNomeInput.value = ag?.clienteNome || ag?.responsavel || "";
   agendaClienteTelefoneInput.value = ag?.clienteTelefone || ag?.telefoneWhatsapp || "";
   agendaImovelTipoInput.value = ag?.imovelTipo || "";
@@ -805,14 +804,29 @@ function normalizarTelefone(valor) {
   return digitos.startsWith("55") ? digitos : `55${digitos}`;
 }
 function telefoneValido(valor) { return /^55\d{10,11}$/.test(normalizarTelefone(valor)); }
+function mensagemRespostaAgendamento(ag, acao) {
+  const cliente = clienteDoAgendamento(ag);
+  const imovel = imovelDoAgendamento(ag);
+  const endereco = enderecoDoAgendamento(ag);
+  return [
+    acao,
+    "",
+    cliente && `Cliente: ${cliente}`,
+    imovel && `Imóvel: ${imovel}`,
+    endereco && `Endereço: ${endereco}`,
+    ag.data && `Data: ${formatarData(ag.data)}`,
+    ag.hora && `Hora: ${ag.hora}`
+  ].filter(Boolean).join("\n");
+}
 function linkWhatsAppAgendamento(ag) {
-  if (!ag.publicToken) throw new Error("Sincronize este agendamento antes de enviar.");
   const telefone = ag.clienteTelefone || ag.telefoneWhatsapp || "";
   if (!telefoneValido(telefone)) throw new Error("Use 55 + DDD + número.");
-  const base = onlineBackend.siteUrl();
-  const token = encodeURIComponent(ag.publicToken);
-  const confirmar = `${base}/confirmar.html?token=${token}`;
-  const reagendar = `${base}/reagendar.html?token=${token}`;
+  const telefoneVistoriador = normalizarTelefone(appConfig.whatsapp);
+  if (!telefoneValido(telefoneVistoriador)) {
+    throw new Error("Cadastre o WhatsApp do vistoriador nas configurações.");
+  }
+  const confirmar = `https://wa.me/${telefoneVistoriador}?text=${encodeURIComponent(mensagemRespostaAgendamento(ag, "Confirmo minha vistoria"))}`;
+  const reagendar = `https://wa.me/${telefoneVistoriador}?text=${encodeURIComponent(mensagemRespostaAgendamento(ag, "Preciso reagendar minha vistoria"))}`;
   const cliente = clienteDoAgendamento(ag);
   const imovel = imovelDoAgendamento(ag);
   const endereco = enderecoDoAgendamento(ag);
@@ -827,10 +841,10 @@ function linkWhatsAppAgendamento(ag) {
     ag.hora && `Horário: ${ag.hora}`,
     endereco && `Endereço: ${endereco}`,
     "",
-    "Para confirmar, clique aqui:",
+    "Para confirmar pelo WhatsApp:",
     confirmar,
     "",
-    "Para reagendar, clique aqui:",
+    "Para pedir reagendamento pelo WhatsApp:",
     reagendar
   ].filter(linha => linha !== false && linha != null);
   return `https://wa.me/${normalizarTelefone(telefone)}?text=${encodeURIComponent(linhas.join("\n"))}`;
@@ -872,7 +886,6 @@ async function acaoAgenda(event) {
     if (alvo.dataset.action === "iniciar") await iniciarVistoriaDoAgendamento(ag);
     if (alvo.dataset.action === "whatsapp") {
       popupWhatsapp = window.open("about:blank", "_blank");
-      if (!ag.publicToken) ag = await atualizarAgendamento(ag.id, {});
       const url = linkWhatsAppAgendamento(ag);
       if (popupWhatsapp) popupWhatsapp.location.href = url;
       else window.location.href = url;
@@ -1276,7 +1289,6 @@ async function inicializar() {
   configTema.addEventListener("change", () => aplicarTema(configTema.checked ? "dark" : "light"));
 
   // WhatsApp
-  document.querySelector("#home-whatsapp-btn").addEventListener("click", () => enviarWhatsApp(gerarRelatorioHoje()));
   document.querySelector("#resumo-whatsapp-btn").addEventListener("click", () => enviarWhatsApp(gerarRelatorioCompleto()));
 
   // Backup
@@ -1288,7 +1300,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=11").catch(() => {});
 }
 
 inicializar();
