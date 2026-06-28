@@ -1,42 +1,3 @@
-// Detecta e isola rotas públicas antes de qualquer fluxo de autenticação.
-const ROTA_PUBLICA = (() => {
-  const pathname = window.location.pathname;
-  const pathnameMinusculo = pathname.toLowerCase();
-  const confirmarPrefixo = "/agendamento/confirmar/";
-  const reagendarPrefixo = "/agendamento/reagendar/";
-  let prefixo;
-  let resposta;
-
-  if (pathnameMinusculo.startsWith(confirmarPrefixo)) {
-    prefixo = confirmarPrefixo;
-    resposta = "Confirmado";
-    console.log("ROTA_PUBLICA_CONFIRMAR_DETECTADA");
-  } else if (pathnameMinusculo.startsWith(reagendarPrefixo)) {
-    prefixo = reagendarPrefixo;
-    resposta = "Reagendar";
-    console.log("ROTA_PUBLICA_REAGENDAR_DETECTADA");
-  } else {
-    return null;
-  }
-
-  document.documentElement.classList.add("public-route-active");
-  document.body.classList.add("public-route-active");
-  document.querySelectorAll("#login-screen, #splash-screen, #onboarding-welcome, #onboarding-name, .app-shell")
-    .forEach(elemento => {
-      elemento.classList.add("hidden");
-      elemento.setAttribute("aria-hidden", "true");
-    });
-
-  const respostaPublica = document.querySelector("#public-response");
-  respostaPublica.classList.remove("hidden");
-  respostaPublica.removeAttribute("aria-hidden");
-
-  return {
-    resposta,
-    tokenCodificado: pathname.slice(prefixo.length).replace(/\/+$/, "")
-  };
-})();
-
 // ============================================================
 // ELEMENTOS DO DOM
 // ============================================================
@@ -64,7 +25,6 @@ const logoutButton   = document.querySelector("#logout-button");
 const syncButton     = document.querySelector("#sync-button");
 const syncDataButton = document.querySelector("#sync-data-button");
 const syncStatus     = document.querySelector("#sync-status");
-const publicResponse = document.querySelector("#public-response");
 
 // App shell
 const appShell      = document.querySelector(".app-shell");
@@ -89,6 +49,9 @@ const alertasContainer = document.querySelector("#alertas-container");
 
 // Tela: Nova Vistoria
 const vistoriaForm          = document.querySelector("#vistoria-form");
+const vistoriaIdInput       = document.querySelector("#vistoria-id");
+const vistoriaAgendamentoIdInput = document.querySelector("#vistoria-agendamento-id");
+const vistoriaOrigem        = document.querySelector("#vistoria-origem");
 const vistoriaDataInput     = document.querySelector("#vistoria-data");
 const vistoriaHoraInput     = document.querySelector("#vistoria-hora");
 const vistoriaMetragemInput = document.querySelector("#vistoria-metragem");
@@ -97,6 +60,22 @@ const vistoriaQualidadeInput= document.querySelector("#vistoria-qualidade");
 const vistoriaValorPreview  = document.querySelector("#vistoria-valor-preview");
 const vistoriaCalcularBtn   = document.querySelector("#vistoria-calcular-btn");
 const vistoriaSalvarBtn     = document.querySelector("#vistoria-salvar-btn");
+const vistoriaClienteNomeInput = document.querySelector("#vistoria-cliente-nome");
+const vistoriaClienteTelefoneInput = document.querySelector("#vistoria-cliente-telefone");
+const vistoriaImovelTipoInput = document.querySelector("#vistoria-imovel-tipo");
+const vistoriaImovelIdentificacaoInput = document.querySelector("#vistoria-imovel-identificacao");
+const vistoriaCepInput = document.querySelector("#vistoria-cep");
+const vistoriaRuaInput = document.querySelector("#vistoria-rua");
+const vistoriaNumeroInput = document.querySelector("#vistoria-numero");
+const vistoriaComplementoInput = document.querySelector("#vistoria-complemento");
+const vistoriaBairroInput = document.querySelector("#vistoria-bairro");
+const vistoriaCidadeInput = document.querySelector("#vistoria-cidade");
+const vistoriaUfInput = document.querySelector("#vistoria-uf");
+const vistoriaEnderecoCompletoInput = document.querySelector("#vistoria-endereco-completo");
+const vistoriaNomeResponsavelAceiteInput = document.querySelector("#vistoria-nome-responsavel-aceite");
+const vistoriaDocumentoResponsavelInput = document.querySelector("#vistoria-documento-responsavel");
+const vistoriaObservacaoAceiteInput = document.querySelector("#vistoria-observacao-aceite");
+const vistoriaAceiteConfirmadoInput = document.querySelector("#vistoria-aceite-confirmado");
 
 // Tela: Agenda
 const agendaForm         = document.querySelector("#agenda-form");
@@ -333,8 +312,10 @@ function aplicarTema(tema) {
 
 let telaAtiva = "home";
 
-function trocarTela(nomeTela) {
+function trocarTela(nomeTela, preservarFormularioVistoria = false) {
   if (!telaEls[nomeTela]) return;
+
+  if (nomeTela === "novaVistoria" && !preservarFormularioVistoria) limparFormularioVistoria();
 
   telaAtiva = nomeTela;
 
@@ -512,8 +493,11 @@ function getProximaVistoria() {
 function renderizarHome() {
   const nome = localStorage.getItem("vistoriaUserName") || "";
   const primeiroNome = primeiroNomeUsuario(nome);
+  const hora = new Date().getHours();
+  const periodo = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
 
   // Saudação
+  document.querySelector("#greeting-period").textContent = periodo;
   document.querySelector("#greeting-name").textContent = `Olá, ${primeiroNome}`;
   document.querySelector("#greeting-date").innerHTML = getDataFormatada().replace(", ", ",<br>");
 
@@ -592,6 +576,106 @@ function renderizarHome() {
 // TELA: NOVA VISTORIA
 // ============================================================
 
+const ACEITE_TEXTO_PADRAO = "Declaro que acompanhei a vistoria e estou ciente das informações registradas.";
+const agendamentosIniciando = new Set();
+
+function limparFormularioVistoria() {
+  vistoriaForm.reset();
+  vistoriaIdInput.value = "";
+  vistoriaAgendamentoIdInput.value = "";
+  vistoriaOrigem.classList.add("hidden");
+  vistoriaDataInput.value = hojeISO();
+  vistoriaHoraInput.value = horaAtual();
+  vistoriaValorPreview.textContent = formatarMoeda(0);
+  vistoriaSalvarBtn.textContent = "Finalizar vistoria";
+}
+
+function abrirVistoriaNoFormulario(vistoria) {
+  limparFormularioVistoria();
+  vistoriaIdInput.value = vistoria.id || "";
+  vistoriaAgendamentoIdInput.value = vistoria.agendamentoId || "";
+  vistoriaDataInput.value = vistoria.dataAgendada || hojeISO();
+  vistoriaHoraInput.value = vistoria.hora || horaAtual();
+  vistoriaMetragemInput.value = Number(vistoria.metragem) > 0 ? vistoria.metragem : "";
+  vistoriaMobiliaInput.checked = Boolean(vistoria.mobilia);
+  vistoriaQualidadeInput.checked = Boolean(vistoria.qualidade);
+  document.querySelectorAll("input[name='vistoria-tipo']").forEach(input => {
+    input.checked = input.value === (vistoria.tipo || "entrada");
+  });
+
+  const camposOrigem = [
+    [vistoriaClienteNomeInput, vistoria.clienteNome], [vistoriaClienteTelefoneInput, vistoria.clienteTelefone],
+    [vistoriaImovelTipoInput, vistoria.imovelTipo], [vistoriaImovelIdentificacaoInput, vistoria.imovelIdentificacao],
+    [vistoriaCepInput, vistoria.cep], [vistoriaRuaInput, vistoria.rua], [vistoriaNumeroInput, vistoria.numero],
+    [vistoriaComplementoInput, vistoria.complemento], [vistoriaBairroInput, vistoria.bairro],
+    [vistoriaCidadeInput, vistoria.cidade], [vistoriaUfInput, vistoria.uf],
+    [vistoriaEnderecoCompletoInput, vistoria.enderecoCompleto]
+  ];
+  camposOrigem.forEach(([input, valor]) => { input.value = valor || ""; });
+  vistoriaOrigem.classList.toggle("hidden", !vistoria.agendamentoId);
+
+  const acompanhou = vistoria.clienteAcompanhou || "Não";
+  document.querySelectorAll("input[name='cliente-acompanhou']").forEach(input => {
+    input.checked = input.value === acompanhou;
+  });
+  vistoriaNomeResponsavelAceiteInput.value = vistoria.nomeResponsavelAceite || vistoria.clienteNome || "";
+  vistoriaDocumentoResponsavelInput.value = vistoria.documentoResponsavel || "";
+  vistoriaObservacaoAceiteInput.value = vistoria.observacaoAceite || "";
+  vistoriaAceiteConfirmadoInput.checked = Boolean(vistoria.aceiteConfirmado);
+  vistoriaSalvarBtn.textContent = vistoria.rascunho ? "Finalizar vistoria" : "Salvar alterações";
+  calcularEExibirValor();
+  trocarTela("novaVistoria", true);
+}
+
+function dadosVistoriaDoAgendamento(agendamento) {
+  return {
+    agendamentoId: agendamento.onlineId || agendamento.id,
+    dataAgendada: agendamento.data || hojeISO(), hora: agendamento.hora || horaAtual(),
+    clienteNome: agendamento.clienteNome || agendamento.responsavel || "",
+    clienteTelefone: agendamento.clienteTelefone || agendamento.telefoneWhatsapp || "",
+    imovelTipo: agendamento.imovelTipo || "",
+    imovelIdentificacao: agendamento.imovelIdentificacao || agendamento.unidadeCliente || "",
+    cep: agendamento.cep || "", rua: agendamento.rua || "", numero: agendamento.numero || "",
+    complemento: agendamento.complemento || "", bairro: agendamento.bairro || "",
+    cidade: agendamento.cidade || "", uf: agendamento.uf || "",
+    enderecoCompleto: agendamento.enderecoCompleto || agendamento.endereco || "",
+    metragem: 0, tipo: "entrada", mobilia: false, qualidade: false, valor: 0,
+    clienteAcompanhou: "Não", nomeResponsavelAceite: agendamento.clienteNome || agendamento.responsavel || "",
+    documentoResponsavel: "", observacaoAceite: "", aceiteTexto: ACEITE_TEXTO_PADRAO,
+    aceiteConfirmado: false, rascunho: true
+  };
+}
+
+async function iniciarVistoriaDoAgendamento(agendamento) {
+  const chave = String(agendamento.onlineId || agendamento.id);
+  if (agendamentosIniciando.has(chave)) return;
+  agendamentosIniciando.add(chave);
+  try {
+    let vistoria = buscarVistoriaPorAgendamento(agendamento);
+    if (!vistoria) {
+      try {
+        vistoria = await adicionarVistoria(dadosVistoriaDoAgendamento(agendamento));
+      } catch (erro) {
+        vistoria = buscarVistoriaPorAgendamento(agendamento);
+        if (!vistoria) throw erro;
+        definirSync("error", "Pendente de sincronização");
+        mostrarToast(erro.message, "error");
+      }
+    }
+    if (agendamento.statusConfirmacao !== "Vistoria iniciada") {
+      try {
+        await atualizarAgendamento(agendamento.id, { statusConfirmacao: "Vistoria iniciada" });
+      } catch (erro) {
+        definirSync("error", "Pendente de sincronização");
+        mostrarToast(erro.message, "error");
+      }
+    }
+    abrirVistoriaNoFormulario(vistoria);
+  } finally {
+    agendamentosIniciando.delete(chave);
+  }
+}
+
 function calcularEExibirValor() {
   const metragem = Number(vistoriaMetragemInput.value);
   if (!metragem) { vistoriaValorPreview.textContent = formatarMoeda(0); return; }
@@ -615,20 +699,45 @@ async function salvarVistoria() {
     mostrarToast("Preencha a data e a metragem.", "error");
     return;
   }
+  if (!vistoriaNomeResponsavelAceiteInput.value.trim()) {
+    mostrarToast("Informe o nome do responsável pelo aceite.", "error");
+    vistoriaNomeResponsavelAceiteInput.focus();
+    return;
+  }
+  if (!vistoriaAceiteConfirmadoInput.checked) {
+    mostrarToast("Confirme o aceite do cliente para finalizar.", "error");
+    vistoriaAceiteConfirmadoInput.focus();
+    return;
+  }
   try {
     const tipo     = document.querySelector("input[name='vistoria-tipo']:checked").value;
     const mobilia  = vistoriaMobiliaInput.checked;
     const qualidade= vistoriaQualidadeInput.checked;
     const valor    = calcularVistoria(metragem, tipo, mobilia, qualidade);
 
-    await adicionarVistoria({ dataAgendada: data, hora, metragem, tipo, mobilia, qualidade, valor });
+    const dados = {
+      dataAgendada: data, hora, metragem, tipo, mobilia, qualidade, valor,
+      agendamentoId: vistoriaAgendamentoIdInput.value || "",
+      clienteNome: vistoriaClienteNomeInput.value || "",
+      clienteTelefone: vistoriaClienteTelefoneInput.value || "",
+      imovelTipo: vistoriaImovelTipoInput.value || "",
+      imovelIdentificacao: vistoriaImovelIdentificacaoInput.value || "",
+      cep: vistoriaCepInput.value || "", rua: vistoriaRuaInput.value || "",
+      numero: vistoriaNumeroInput.value || "", complemento: vistoriaComplementoInput.value || "",
+      bairro: vistoriaBairroInput.value || "", cidade: vistoriaCidadeInput.value || "",
+      uf: vistoriaUfInput.value || "", enderecoCompleto: vistoriaEnderecoCompletoInput.value || "",
+      clienteAcompanhou: document.querySelector("input[name='cliente-acompanhou']:checked")?.value || "Não",
+      nomeResponsavelAceite: vistoriaNomeResponsavelAceiteInput.value.trim(),
+      documentoResponsavel: vistoriaDocumentoResponsavelInput.value.trim(),
+      observacaoAceite: vistoriaObservacaoAceiteInput.value.trim(),
+      aceiteTexto: ACEITE_TEXTO_PADRAO, aceiteConfirmado: true, rascunho: false
+    };
+    if (vistoriaIdInput.value) await atualizarVistoria(vistoriaIdInput.value, dados);
+    else await adicionarVistoria(dados);
 
     mostrarToast("Vistoria salva com sucesso! ✓");
     definirSync("synced", "Sincronizado");
-    vistoriaForm.reset();
-    vistoriaDataInput.value = hojeISO();
-    vistoriaHoraInput.value = horaAtual();
-    vistoriaValorPreview.textContent = formatarMoeda(0);
+    limparFormularioVistoria();
   } catch (err) {
     definirSync("error", "Erro na sincronização");
     renderizarHome();
@@ -653,6 +762,7 @@ function renderizarAgenda() {
   agendaLista.innerHTML = "";
   agendaVazia.classList.toggle("hidden", lista.length > 0);
   lista.forEach(ag => {
+    const vistoriaVinculada = buscarVistoriaPorAgendamento(ag);
     const li = document.createElement("li");
     li.className = "agenda-card";
     li.dataset.id = ag.id;
@@ -665,8 +775,8 @@ function renderizarAgenda() {
       <div class="agenda-card-address">📍 ${textoSeguro(enderecoDoAgendamento(ag))}</div>
       <div class="agenda-card-address">WhatsApp: ${textoSeguro(ag.clienteTelefone || ag.telefoneWhatsapp)}</div>
       ${ag.obs ? `<div class="agenda-card-obs">📝 ${textoSeguro(ag.obs)}</div>` : ""}
-      <label class="inline-status">Status <select data-action="status">${["Aguardando envio","Mensagem enviada","Confirmado","Reagendar","Cancelado","Finalizado"].map(s => `<option${s === ag.statusConfirmacao ? " selected" : ""}>${s}</option>`).join("")}</select></label>
-      <div class="card-actions"><button type="button" data-action="whatsapp">Enviar WhatsApp</button><button type="button" data-action="enviado">Marcar enviado</button><button type="button" data-action="editar">Editar</button><button type="button" class="danger-link" data-action="excluir">Excluir</button></div>`;
+      <label class="inline-status">Status <select data-action="status">${["Aguardando envio","Mensagem enviada","Confirmado","Vistoria iniciada","Reagendar","Cancelado","Finalizado"].map(s => `<option${s === ag.statusConfirmacao ? " selected" : ""}>${s}</option>`).join("")}</select></label>
+      <div class="card-actions"><button type="button" data-action="iniciar">${vistoriaVinculada ? "Abrir vistoria" : "Iniciar vistoria"}</button><button type="button" data-action="whatsapp">Enviar WhatsApp</button><button type="button" data-action="enviado">Marcar enviado</button><button type="button" data-action="editar">Editar</button><button type="button" class="danger-link" data-action="excluir">Excluir</button></div>`;
     agendaLista.appendChild(li);
   });
 }
@@ -700,8 +810,9 @@ function linkWhatsAppAgendamento(ag) {
   const telefone = ag.clienteTelefone || ag.telefoneWhatsapp || "";
   if (!telefoneValido(telefone)) throw new Error("Use 55 + DDD + número.");
   const base = onlineBackend.siteUrl();
-  const confirmar = `${base}/agendamento/confirmar/${ag.publicToken}`;
-  const reagendar = `${base}/agendamento/reagendar/${ag.publicToken}`;
+  const token = encodeURIComponent(ag.publicToken);
+  const confirmar = `${base}/confirmar.html?token=${token}`;
+  const reagendar = `${base}/reagendar.html?token=${token}`;
   const cliente = clienteDoAgendamento(ag);
   const imovel = imovelDoAgendamento(ag);
   const endereco = enderecoDoAgendamento(ag);
@@ -758,6 +869,7 @@ async function acaoAgenda(event) {
   if (!ag) return;
   let popupWhatsapp = null;
   try {
+    if (alvo.dataset.action === "iniciar") await iniciarVistoriaDoAgendamento(ag);
     if (alvo.dataset.action === "whatsapp") {
       popupWhatsapp = window.open("about:blank", "_blank");
       if (!ag.publicToken) ag = await atualizarAgendamento(ag.id, {});
@@ -1050,7 +1162,7 @@ function exportarDados() {
   const dados = {
     versao: "2",
     exportadoEm: new Date().toISOString(),
-    vistorias:    listarVistorias(),
+    vistorias:    listarVistoriasComRascunhos(),
     agendamentos: listarAgendamentos(),
     config:       { ...appConfig },
     userName:     localStorage.getItem("vistoriaUserName") || "",
@@ -1095,33 +1207,6 @@ function importarDados(arquivo) {
 // ============================================================
 // INICIALIZAÇÃO
 // ============================================================
-
-async function tratarRotaPublica(rotaPublica) {
-  splashScreen.style.display = "none";
-  loginScreen.classList.add("hidden");
-  appShell.classList.add("hidden");
-  onboardingWelcome.classList.add("hidden");
-  onboardingName.classList.add("hidden");
-  publicResponse.classList.remove("hidden");
-
-  const mensagem = document.querySelector("#public-response-message");
-  const resposta = rotaPublica.resposta;
-  document.title = resposta === "Confirmado" ? "Confirmação de vistoria" : "Reagendamento de vistoria";
-
-  try {
-    if (!onlineBackend.configured) throw new Error("Firebase ainda não configurado.");
-    const token = decodeURIComponent(rotaPublica.tokenCodificado);
-    if (!/^[0-9a-f-]{36}$/i.test(token)) throw new Error("Token inválido.");
-    const resultado = await onlineBackend.publicAction(token, resposta);
-    if (!resultado?.ok) throw new Error("Agendamento não encontrado ou indisponível.");
-    mensagem.textContent = resposta === "Confirmado"
-      ? "✅ Vistoria confirmada com sucesso."
-      : "🔁 Solicitação recebida. Aguarde contato do vistoriador.";
-  } catch (erro) {
-    console.error("Falha ao processar link público:", erro);
-    mensagem.textContent = "Link inválido ou expirado.";
-  }
-}
 
 async function inicializar() {
   // Splash → Login → App
@@ -1191,6 +1276,7 @@ async function inicializar() {
   configTema.addEventListener("change", () => aplicarTema(configTema.checked ? "dark" : "light"));
 
   // WhatsApp
+  document.querySelector("#home-whatsapp-btn").addEventListener("click", () => enviarWhatsApp(gerarRelatorioHoje()));
   document.querySelector("#resumo-whatsapp-btn").addEventListener("click", () => enviarWhatsApp(gerarRelatorioCompleto()));
 
   // Backup
@@ -1201,13 +1287,8 @@ async function inicializar() {
   });
 }
 
-// A decisão entre rota pública e app autenticado já foi tomada no topo do arquivo.
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js").catch(() => {});
 }
 
-if (ROTA_PUBLICA) {
-  tratarRotaPublica(ROTA_PUBLICA);
-} else {
-  inicializar();
-}
+inicializar();

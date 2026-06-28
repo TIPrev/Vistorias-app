@@ -26,6 +26,19 @@ function mapearVistoriaOnline(row) {
     id: row.id, onlineId: row.id, legacyId: row.legacy_id, usuarioLocalId: row.usuario_id,
     dataAgendada: row.data_agendada, hora: row.hora || "", metragem: Number(row.metragem), tipo: row.tipo,
     mobilia: row.mobilia, qualidade: row.qualidade, valor: Number(row.valor),
+    agendamentoId: row.agendamento_id || "",
+    clienteNome: row.cliente_nome || "", clienteTelefone: row.cliente_telefone || "",
+    imovelTipo: row.imovel_tipo || "", imovelIdentificacao: row.imovel_identificacao || "",
+    cep: row.cep || "", rua: row.rua || "", numero: row.numero || "", complemento: row.complemento || "",
+    bairro: row.bairro || "", cidade: row.cidade || "", uf: row.uf || "",
+    enderecoCompleto: row.endereco_completo || "",
+    clienteAcompanhou: row.cliente_acompanhou || "Não",
+    nomeResponsavelAceite: row.nome_responsavel_aceite || "",
+    documentoResponsavel: row.documento_responsavel || "",
+    observacaoAceite: row.observacao_aceite || "",
+    aceiteTexto: row.aceite_texto || "Declaro que acompanhei a vistoria e estou ciente das informações registradas.",
+    aceiteConfirmado: Boolean(row.aceite_confirmado), rascunho: Boolean(row.rascunho),
+    criadoEm: row.criado_em || "",
     backend: "firebase", pendenteSync: false
   };
 }
@@ -69,7 +82,7 @@ async function carregarDadosOnline() {
 
 async function adicionarVistoria(vistoria) {
   if (onlineBackend.configured) {
-    const item = { id: proximoVistoriaId++, ...vistoria, usuarioLocalId: usuarioLocalAtual, backend: "firebase", pendenteSync: true };
+    const item = { id: proximoVistoriaId++, criadoEm: new Date().toISOString(), ...vistoria, usuarioLocalId: usuarioLocalAtual, backend: "firebase", pendenteSync: true };
     vistorias.push(item); persistirLocal();
     try {
       const row = await onlineBackend.saveInspection({ ...item, legacyId: item.id });
@@ -78,8 +91,25 @@ async function adicionarVistoria(vistoria) {
       throw new Error(`Vistoria salva neste aparelho, mas ainda não sincronizada. ${erro.message}`);
     }
   }
-  const item = { id: proximoVistoriaId++, ...vistoria, usuarioLocalId: usuarioLocalAtual, backend: "firebase" };
+  const item = { id: proximoVistoriaId++, criadoEm: new Date().toISOString(), ...vistoria, usuarioLocalId: usuarioLocalAtual, backend: "firebase" };
   vistorias.push(item); persistirLocal(); return item;
+}
+
+async function atualizarVistoria(id, alteracoes) {
+  const item = vistorias.find(v => String(v.id) === String(id));
+  if (!item) throw new Error("Vistoria não encontrada.");
+  const atualizado = { ...item, ...alteracoes, pendenteSync: true };
+  Object.assign(item, atualizado); persistirLocal();
+  if (onlineBackend.configured) {
+    try {
+      const row = await onlineBackend.saveInspection(atualizado);
+      Object.assign(item, mapearVistoriaOnline(row));
+    } catch (erro) {
+      Object.assign(item, atualizado);
+      throw new Error(`Alteração preservada neste aparelho, mas ainda não sincronizada. ${erro.message}`);
+    }
+  }
+  persistirLocal(); return item;
 }
 
 async function removerVistoria(id) {
@@ -184,13 +214,22 @@ function ehAgendamento(item) {
   return Boolean(item && item.data && item.hora && (item.responsavel || item.unidadeCliente || item.endereco));
 }
 function listarVistorias() {
+  return listarVistoriasComRascunhos().filter(item => !item.rascunho);
+}
+function listarVistoriasComRascunhos() {
   return vistorias.filter(item => item.usuarioLocalId === usuarioLocalAtual && ehVistoria(item));
+}
+function buscarVistoriaPorAgendamento(agendamento) {
+  const ids = [agendamento?.id, agendamento?.onlineId, agendamento?.legacyId]
+    .filter(id => id != null && id !== "").map(String);
+  return vistorias.find(item => item.usuarioLocalId === usuarioLocalAtual
+    && item.agendamentoId != null && ids.includes(String(item.agendamentoId))) || null;
 }
 function listarAgendamentos() {
   return agendamentos.filter(item => item.usuarioLocalId === usuarioLocalAtual && ehAgendamento(item));
 }
 function possuiDadosLocaisPendentes() {
-  return listarVistorias().some(v => !v.onlineId || v.pendenteSync) || listarAgendamentos().some(a => !a.onlineId || a.pendenteSync);
+  return listarVistoriasComRascunhos().some(v => !v.onlineId || v.pendenteSync) || listarAgendamentos().some(a => !a.onlineId || a.pendenteSync);
 }
 function calcularProximoId(lista) {
   return lista.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;

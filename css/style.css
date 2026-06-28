@@ -594,12 +594,57 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
   box-shadow: 0 0 0 3px rgba(37,99,235,.14);
   background: var(--surface);
 }
+.field input[readonly], .field textarea[readonly] {
+  color: var(--text-2);
+  background: var(--surface-2);
+  cursor: default;
+}
 
 .field-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
+
+.vistoria-origin-card, .acceptance-card {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.vistoria-origin-card.hidden { display: none; }
+.acceptance-card > legend {
+  padding: 0 6px;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 800;
+}
+.address-details summary {
+  padding: 8px 0;
+  color: var(--brand);
+  font-size: .86rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.address-details[open] { display: grid; gap: 12px; }
+.acceptance-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: .9rem;
+  line-height: 1.45;
+  cursor: pointer;
+}
+.acceptance-check:has(input:checked) { border-color: var(--brand); background: var(--brand-light); }
+.acceptance-check input { width: 22px; height: 22px; flex: 0 0 auto; accent-color: var(--brand); }
 
 /* Segmented control */
 .segmented {
@@ -1448,15 +1493,6 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
 }
 .public-card { justify-items: center; text-align: center; }
 .response-icon.error { background: var(--danger); }
-.public-response-screen { background: #f5f7fa; }
-.public-result-card { min-height: 180px; align-content: center; }
-.public-result-card > .public-response-message {
-  margin: 0; color: var(--text); font-size: 1.15rem; font-weight: 800; line-height: 1.5;
-}
-html.public-route-active,
-body.public-route-active { min-height: 100%; background: #f5f7fa; }
-body.public-route-active > :not(#public-response):not(script) { display: none !important; }
-body.public-route-active #public-response { display: grid !important; }
 .form-message.error, .config-warning { color: var(--danger); font-size: .86rem; }
 .config-warning { padding: 12px; border-radius: var(--radius-sm); background: var(--danger-bg); }
 

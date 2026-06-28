@@ -78,7 +78,19 @@
     return {
       id, usuario_id: data.userId, legacy_id: data.legacyId ?? null,
       data_agendada: data.dataAgendada, hora: data.hora || "", metragem: data.metragem, tipo: data.tipo,
-      mobilia: data.mobilia, qualidade: data.qualidade, valor: data.valor
+      mobilia: data.mobilia, qualidade: data.qualidade, valor: data.valor,
+      agendamento_id: data.agendamentoId || "",
+      cliente_nome: data.clienteNome || "", cliente_telefone: data.clienteTelefone || "",
+      imovel_tipo: data.imovelTipo || "", imovel_identificacao: data.imovelIdentificacao || "",
+      cep: data.cep || "", rua: data.rua || "", numero: data.numero || "",
+      complemento: data.complemento || "", bairro: data.bairro || "",
+      cidade: data.cidade || "", uf: data.uf || "", endereco_completo: data.enderecoCompleto || "",
+      cliente_acompanhou: data.clienteAcompanhou || "Não",
+      nome_responsavel_aceite: data.nomeResponsavelAceite || "",
+      documento_responsavel: data.documentoResponsavel || "",
+      observacao_aceite: data.observacaoAceite || "", aceite_texto: data.aceiteTexto || "",
+      aceite_confirmado: Boolean(data.aceiteConfirmado), rascunho: Boolean(data.rascunho),
+      criado_em: iso(data.criadoEm)
     };
   }
 
@@ -140,6 +152,17 @@
       userId: user.uid, dataAgendada: item.dataAgendada, hora: item.hora || "", metragem: Number(item.metragem),
       tipo: item.tipo, mobilia: Boolean(item.mobilia), qualidade: Boolean(item.qualidade),
       valor: Number(item.valor), legacyId: item.legacyId ?? null,
+      agendamentoId: item.agendamentoId || "",
+      clienteNome: item.clienteNome || "", clienteTelefone: item.clienteTelefone || "",
+      imovelTipo: item.imovelTipo || "", imovelIdentificacao: item.imovelIdentificacao || "",
+      cep: item.cep || "", rua: item.rua || "", numero: item.numero || "",
+      complemento: item.complemento || "", bairro: item.bairro || "",
+      cidade: item.cidade || "", uf: item.uf || "", enderecoCompleto: item.enderecoCompleto || "",
+      clienteAcompanhou: item.clienteAcompanhou || "Não",
+      nomeResponsavelAceite: item.nomeResponsavelAceite || "",
+      documentoResponsavel: item.documentoResponsavel || "",
+      observacaoAceite: item.observacaoAceite || "", aceiteTexto: item.aceiteTexto || "",
+      aceiteConfirmado: Boolean(item.aceiteConfirmado), rascunho: Boolean(item.rascunho),
       atualizadoEm: dbSdk.serverTimestamp()
     };
     let ref;
@@ -150,7 +173,7 @@
       ...data,
       criadoEm: timestamp(dbSdk, item.criadoEm || new Date().toISOString())
     }, { merge: true });
-    return inspectionRow(ref.id, data);
+    return inspectionRow(ref.id, { ...data, criadoEm: item.criadoEm });
   }
 
   async function deleteInspection(id) {
