@@ -1,4 +1,4 @@
-const CACHE = 'vistoria-v5-dados-imovel';
+const CACHE = 'vistoria-v7-resposta-publica';
 const ASSETS = [
   '/',
   '/index.html',

@@ -1422,6 +1422,10 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
   .switch-grid { grid-template-columns: 1fr; }
   .actions-grid { grid-template-columns: 1fr 1fr; }
 }
+.field-hint { min-height: 16px; font-size: .75rem; font-weight: 600; color: var(--text-2); }
+.field-hint.loading { color: var(--brand); }
+.field-hint.success { color: var(--success-text); }
+.field-hint.error { color: var(--danger); }
 
 /* ===================================================
    AUTENTICAÇÃO, SINCRONIZAÇÃO E AGENDA ONLINE
@@ -1444,6 +1448,11 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
 }
 .public-card { justify-items: center; text-align: center; }
 .response-icon.error { background: var(--danger); }
+.public-response-screen { background: #f5f7fa; }
+.public-result-card { min-height: 180px; align-content: center; }
+.public-result-card > .public-response-message {
+  margin: 0; color: var(--text); font-size: 1.15rem; font-weight: 800; line-height: 1.5;
+}
 .form-message.error, .config-warning { color: var(--danger); font-size: .86rem; }
 .config-warning { padding: 12px; border-radius: var(--radius-sm); background: var(--danger-bg); }
 

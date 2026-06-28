@@ -69,6 +69,7 @@ const agendaClienteTelefoneInput = document.querySelector("#agenda-cliente-telef
 const agendaImovelTipoInput = document.querySelector("#agenda-imovel-tipo");
 const agendaImovelIdentificacaoInput = document.querySelector("#agenda-imovel-identificacao");
 const agendaCepInput = document.querySelector("#agenda-cep");
+const agendaCepStatus = document.querySelector("#agenda-cep-status");
 const agendaRuaInput = document.querySelector("#agenda-rua");
 const agendaNumeroInput = document.querySelector("#agenda-numero");
 const agendaComplementoInput = document.querySelector("#agenda-complemento");
@@ -202,6 +203,47 @@ function atualizarEnderecoCompletoFormulario() {
     complemento: agendaComplementoInput.value, bairro: agendaBairroInput.value,
     cidade: agendaCidadeInput.value, uf: agendaUfInput.value.toUpperCase()
   });
+}
+
+let consultaCepController = null;
+let ultimoCepConsultado = "";
+
+async function consultarCep() {
+  const digitos = agendaCepInput.value.replace(/\D/g, "").slice(0, 8);
+  agendaCepInput.value = digitos.length > 5 ? digitos.slice(0, 5) + "-" + digitos.slice(5) : digitos;
+  if (digitos.length !== 8) {
+    ultimoCepConsultado = "";
+    agendaCepStatus.textContent = "";
+    if (consultaCepController) consultaCepController.abort();
+    return;
+  }
+  if (digitos === ultimoCepConsultado) return;
+  if (consultaCepController) consultaCepController.abort();
+  consultaCepController = new AbortController();
+  agendaCepStatus.className = "field-hint loading";
+  agendaCepStatus.textContent = "Buscando endereço...";
+
+  try {
+    const resposta = await fetch("https://viacep.com.br/ws/" + digitos + "/json/", {
+      signal: consultaCepController.signal
+    });
+    if (!resposta.ok) throw new Error("ViaCEP respondeu HTTP " + resposta.status);
+    const endereco = await resposta.json();
+    if (endereco.erro) throw new Error("CEP não encontrado.");
+    agendaRuaInput.value = endereco.logradouro || "";
+    agendaBairroInput.value = endereco.bairro || "";
+    agendaCidadeInput.value = endereco.localidade || "";
+    agendaUfInput.value = String(endereco.uf || "").toUpperCase();
+    atualizarEnderecoCompletoFormulario();
+    ultimoCepConsultado = digitos;
+    agendaCepStatus.className = "field-hint success";
+    agendaCepStatus.textContent = "Endereço encontrado. Preencha número e complemento.";
+  } catch (erro) {
+    if (erro.name === "AbortError") return;
+    ultimoCepConsultado = "";
+    agendaCepStatus.className = "field-hint error";
+    agendaCepStatus.textContent = erro.message || "Não foi possível consultar o CEP.";
+  }
 }
 
 function textoSeguro(valor) {
@@ -592,6 +634,8 @@ function renderizarAgenda() {
 
 function abrirFormularioAgenda(ag = null) {
   agendaForm.classList.remove("hidden");
+  ultimoCepConsultado = "";
+  if (consultaCepController) consultaCepController.abort();
   agendaIdInput.value = ag?.id || "";
   agendaDataInput.value = ag?.data || hojeISO(); agendaHoraInput.value = ag?.hora || "";
   agendaClienteNomeInput.value = ag?.clienteNome || ag?.responsavel || "";
@@ -602,6 +646,8 @@ function abrirFormularioAgenda(ag = null) {
   agendaNumeroInput.value = ag?.numero || ""; agendaComplementoInput.value = ag?.complemento || "";
   agendaBairroInput.value = ag?.bairro || ""; agendaCidadeInput.value = ag?.cidade || "";
   agendaUfInput.value = ag?.uf || ""; agendaEnderecoCompletoInput.value = enderecoDoAgendamento(ag);
+  agendaCepStatus.textContent = "";
+  agendaCepStatus.className = "field-hint";
   agendaObsInput.value = ag?.obs || ""; agendaStatusInput.value = ag?.statusConfirmacao || "Aguardando envio";
 }
 function fecharFormularioAgenda() { agendaForm.reset(); agendaIdInput.value = ""; agendaForm.classList.add("hidden"); }
@@ -1012,23 +1058,32 @@ function importarDados(arquivo) {
 // ============================================================
 
 async function tratarRotaPublica() {
-  const match = location.pathname.match(/^\/agendamento\/(confirmar|reagendar)\/([0-9a-f-]{36})\/?$/i);
+  const match = location.pathname.match(/^\/agendamento\/(confirmar|reagendar)\/([^/]+)\/?$/i);
   if (!match) return false;
+
   splashScreen.style.display = "none";
+  loginScreen.classList.add("hidden");
+  appShell.classList.add("hidden");
+  onboardingWelcome.classList.add("hidden");
+  onboardingName.classList.add("hidden");
   publicResponse.classList.remove("hidden");
-  const titulo = document.querySelector("#public-response-title");
+
   const mensagem = document.querySelector("#public-response-message");
-  const icone = document.querySelector("#public-response-icon");
+  const resposta = match[1] === "confirmar" ? "Confirmado" : "Reagendar";
+  document.title = resposta === "Confirmado" ? "Confirmação de vistoria" : "Reagendamento de vistoria";
+
   try {
     if (!onlineBackend.configured) throw new Error("Firebase ainda não configurado.");
-    const resposta = match[1] === "confirmar" ? "Confirmado" : "Reagendar";
-    const resultado = await onlineBackend.publicAction(match[2], resposta);
+    const token = decodeURIComponent(match[2]);
+    if (!/^[0-9a-f-]{36}$/i.test(token)) throw new Error("Token inválido.");
+    const resultado = await onlineBackend.publicAction(token, resposta);
     if (!resultado?.ok) throw new Error("Agendamento não encontrado ou indisponível.");
-    titulo.textContent = resposta === "Confirmado" ? "Vistoria confirmada!" : "Pedido de reagendamento recebido";
-    mensagem.textContent = resposta === "Confirmado" ? "Obrigado. Sua confirmação foi registrada." : "Entraremos em contato para combinar uma nova data.";
+    mensagem.textContent = resposta === "Confirmado"
+      ? "✅ Vistoria confirmada com sucesso."
+      : "🔁 Solicitação recebida. Aguarde contato do vistoriador.";
   } catch (erro) {
-    icone.textContent = "!"; icone.classList.add("error");
-    titulo.textContent = "Não foi possível registrar"; mensagem.textContent = erro.message;
+    console.error("Falha ao processar link público:", erro);
+    mensagem.textContent = "Link inválido ou expirado.";
   }
   return true;
 }
@@ -1096,6 +1151,7 @@ async function inicializar() {
     renderizarAgenda();
   });
   agendaFiltroStatus.addEventListener("change", renderizarAgenda);
+  agendaCepInput.addEventListener("input", consultarCep);
   [agendaRuaInput, agendaNumeroInput, agendaComplementoInput, agendaBairroInput, agendaCidadeInput, agendaUfInput]
     .forEach(input => input.addEventListener("input", atualizarEnderecoCompletoFormulario));
 

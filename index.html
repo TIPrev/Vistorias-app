@@ -29,11 +29,9 @@
     </form>
   </section>
 
-  <section id="public-response" class="auth-screen hidden" aria-live="polite">
-    <div class="auth-card public-card">
-      <div id="public-response-icon" class="response-icon">✓</div>
-      <h1 id="public-response-title">Processando...</h1>
-      <p id="public-response-message">Aguarde um instante.</p>
+  <section id="public-response" class="auth-screen public-response-screen hidden" aria-live="polite">
+    <div class="auth-card public-card public-result-card">
+      <p id="public-response-message" class="public-response-message">Processando...</p>
     </div>
   </section>
 
@@ -387,10 +385,8 @@
                 <label class="field"><span>Tipo do imóvel</span><input id="agenda-imovel-tipo" type="text" placeholder="Casa, apartamento, sala..."></label>
                 <label class="field"><span>Identificação</span><input id="agenda-imovel-identificacao" type="text" placeholder="Apartamento 302"></label>
               </div>
-              <div class="field-row">
-                <label class="field"><span>CEP</span><input id="agenda-cep" type="text" inputmode="numeric" placeholder="00000-000"></label>
-                <label class="field"><span>Rua</span><input id="agenda-rua" type="text"></label>
-              </div>
+              <label class="field"><span>CEP</span><input id="agenda-cep" type="text" inputmode="numeric" maxlength="9" autocomplete="postal-code" placeholder="00000-000"><small id="agenda-cep-status" class="field-hint" aria-live="polite"></small></label>
+              <label class="field"><span>Rua</span><input id="agenda-rua" type="text" autocomplete="address-line1"></label>
               <div class="field-row">
                 <label class="field"><span>Número</span><input id="agenda-numero" type="text"></label>
                 <label class="field"><span>Complemento</span><input id="agenda-complemento" type="text"></label>
