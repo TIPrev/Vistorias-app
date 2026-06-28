@@ -1,4 +1,4 @@
-const CACHE = 'vistoria-v2';
+const CACHE = 'vistoria-v3-firebase';
 const ASSETS = [
   '/',
   '/index.html',
@@ -6,6 +6,8 @@ const ASSETS = [
   '/css/js/calculadora.js',
   '/css/js/memoria.js',
   '/css/js/app.js',
+  '/config.js',
+  '/firebase.js',
   '/manifest.json',
   '/icons/icon.svg',
 ];

@@ -1,0 +1,72 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function ownsExisting() {
+      return signedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    function ownsIncoming() {
+      return signedIn() && request.resource.data.userId == request.auth.uid;
+    }
+
+    match /usuarios/{userId} {
+      allow read: if signedIn() && request.auth.uid == userId;
+      allow create, update: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.userId == request.auth.uid;
+      allow delete: if false;
+    }
+
+    match /vistorias/{vistoriaId} {
+      allow get, list, delete: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+    }
+
+    match /agendamentos/{agendamentoId} {
+      allow get, list, delete: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+    }
+
+    match /confirmacoesPublicas/{token} {
+      // Um UUID aleatório funciona como segredo de posse. Não há dados pessoais neste documento.
+      allow get: if true;
+      allow list: if signedIn() && resource.data.userId == request.auth.uid;
+      allow create: if ownsIncoming()
+        && request.resource.data.keys().hasOnly([
+          'userId', 'agendamentoId', 'status', 'confirmedAt',
+          'rescheduleRequestedAt', 'createdAt'
+        ]);
+      allow delete: if ownsExisting();
+      allow update: if (ownsExisting() && ownsIncoming()) || publicResponseIsValid();
+
+      function publicResponseIsValid() {
+        let changed = request.resource.data.diff(resource.data).affectedKeys();
+        return resource.data.status != 'Cancelado'
+          && resource.data.status != 'Finalizado'
+          && changed.hasOnly(['status', 'confirmedAt', 'rescheduleRequestedAt'])
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.agendamentoId == resource.data.agendamentoId
+          && (
+            (request.resource.data.status == 'Confirmado'
+              && request.resource.data.confirmedAt == request.time
+              && request.resource.data.rescheduleRequestedAt == resource.data.rescheduleRequestedAt)
+            ||
+            (request.resource.data.status == 'Reagendar'
+              && request.resource.data.rescheduleRequestedAt == request.time
+              && request.resource.data.confirmedAt == resource.data.confirmedAt)
+          );
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

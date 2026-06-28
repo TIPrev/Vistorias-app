@@ -14,6 +14,19 @@ const onboardingBackBtn  = document.querySelector("#onboarding-back-btn");
 const splashEnterBtn = document.querySelector("#splash-enter-btn");
 const splashScreen   = document.querySelector("#splash-screen");
 
+// Autenticação e sincronização
+const loginScreen    = document.querySelector("#login-screen");
+const loginForm      = document.querySelector("#login-form");
+const loginEmail     = document.querySelector("#login-email");
+const loginSenha     = document.querySelector("#login-senha");
+const loginErro      = document.querySelector("#login-erro");
+const loginSubmit    = document.querySelector("#login-submit");
+const logoutButton   = document.querySelector("#logout-button");
+const syncButton     = document.querySelector("#sync-button");
+const syncDataButton = document.querySelector("#sync-data-button");
+const syncStatus     = document.querySelector("#sync-status");
+const publicResponse = document.querySelector("#public-response");
+
 // App shell
 const appShell      = document.querySelector(".app-shell");
 const headerTitle   = document.querySelector("#header-title");
@@ -48,29 +61,19 @@ const vistoriaSalvarBtn     = document.querySelector("#vistoria-salvar-btn");
 
 // Tela: Agenda
 const agendaForm         = document.querySelector("#agenda-form");
+const agendaIdInput      = document.querySelector("#agenda-id");
 const agendaDataInput    = document.querySelector("#agenda-data");
 const agendaHoraInput    = document.querySelector("#agenda-hora");
+const agendaUnidadeInput = document.querySelector("#agenda-unidade");
+const agendaResponsavelInput = document.querySelector("#agenda-responsavel");
+const agendaTelefoneInput= document.querySelector("#agenda-telefone");
 const agendaEnderecoInput= document.querySelector("#agenda-endereco");
 const agendaObsInput     = document.querySelector("#agenda-obs");
-
-const agendaListas = {
-  hoje:   document.querySelector("#agenda-lista-hoje"),
-  amanha: document.querySelector("#agenda-lista-amanha"),
-  semana: document.querySelector("#agenda-lista-semana"),
-  futuras:document.querySelector("#agenda-lista-futuras"),
-};
-const agendaVazia = {
-  hoje:   document.querySelector("#agenda-vazia-hoje"),
-  amanha: document.querySelector("#agenda-vazia-amanha"),
-  semana: document.querySelector("#agenda-vazia-semana"),
-  futuras:document.querySelector("#agenda-vazia-futuras"),
-};
-const agendaBadges = {
-  hoje:   document.querySelector("#agenda-badge-hoje"),
-  amanha: document.querySelector("#agenda-badge-amanha"),
-  semana: document.querySelector("#agenda-badge-semana"),
-  futuras:document.querySelector("#agenda-badge-futuras"),
-};
+const agendaStatusInput  = document.querySelector("#agenda-status");
+const agendaLista        = document.querySelector("#agenda-lista");
+const agendaVazia        = document.querySelector("#agenda-vazia");
+const agendaFiltroStatus = document.querySelector("#agenda-filtro-status");
+let filtroPeriodo = "hoje";
 
 // Tela: Resumo
 const historicoLista      = document.querySelector("#historico-lista");
@@ -163,6 +166,17 @@ function getDataFormatada() {
   return `${DIAS_SEMANA[d.getDay()]}, ${d.getDate()} de ${MESES[d.getMonth()]}`;
 }
 
+function textoSeguro(valor) {
+  const div = document.createElement("div");
+  div.textContent = valor == null ? "" : String(valor);
+  return div.innerHTML;
+}
+
+function definirSync(estado, mensagem) {
+  syncStatus.className = `sync-status ${estado}`;
+  syncStatus.textContent = `● ${mensagem}`;
+}
+
 
 // ============================================================
 // TOAST
@@ -229,26 +243,89 @@ function trocarTela(nomeTela) {
 // ONBOARDING + PERFIL
 // ============================================================
 
-function startApp(nome) {
+async function startApp(session) {
   onboardingWelcome.classList.add("hidden");
   onboardingName.classList.add("hidden");
   splashScreen.style.display = "none";
+  loginScreen.classList.add("hidden");
   appShell.classList.remove("hidden");
-
+  definirUsuarioLocal(session.user.uid || session.user.id);
+  let nome = session.user.email.split("@")[0];
+  try {
+    const perfil = await onlineBackend.ensureProfile(session);
+    nome = perfil.nome || nome;
+    localStorage.setItem("vistoriaUserName", nome);
+    await carregarDadosOnline();
+    definirSync(possuiDadosLocaisPendentes() ? "local" : "synced", possuiDadosLocaisPendentes() ? "Dados locais pendentes" : "Sincronizado");
+  } catch (erro) {
+    definirSync("error", "Erro na sincronização");
+    console.error(erro);
+  }
   aplicarTema(appConfig.tema);
   trocarTela("home");
 }
 
-function handleOnboarding() {
-  const nome = localStorage.getItem("vistoriaUserName");
-
+async function handleOnboarding() {
   splashScreen.classList.add("fade-out");
-  setTimeout(() => { splashScreen.style.display = "none"; }, 500);
+  if (!onlineBackend.configured) {
+    setTimeout(() => {
+      splashScreen.style.display = "none";
+      loginScreen.classList.remove("hidden");
+      document.querySelector("#login-config-aviso").classList.remove("hidden");
+    }, 300);
+    return;
+  }
+  try {
+    const session = await onlineBackend.currentSession();
+    if (session) await startApp(session);
+    else {
+      splashScreen.style.display = "none";
+      loginScreen.classList.remove("hidden");
+      loginEmail.focus();
+    }
+  } catch (erro) {
+    splashScreen.style.display = "none";
+    loginScreen.classList.remove("hidden");
+    loginErro.textContent = erro.message;
+    loginErro.classList.remove("hidden");
+  }
+}
 
-  if (nome) {
-    startApp(nome);
-  } else {
-    onboardingWelcome.classList.remove("hidden");
+async function autenticar(event) {
+  event.preventDefault();
+  loginErro.classList.add("hidden");
+  loginSubmit.disabled = true;
+  loginSubmit.textContent = "Entrando...";
+  try {
+    const identificador = loginEmail.value.trim().toLowerCase();
+    const email = identificador.includes("@") ? identificador : `${identificador}@vistoria.local`;
+    const session = await onlineBackend.login(email, loginSenha.value);
+    loginSenha.value = "";
+    await startApp(session);
+  } catch (_) {
+    loginErro.textContent = "E-mail ou senha inválidos.";
+    loginErro.classList.remove("hidden");
+  } finally {
+    loginSubmit.disabled = false;
+    loginSubmit.textContent = "Entrar";
+  }
+}
+
+async function sincronizarAparelho() {
+  if (!onlineBackend.configured) return mostrarToast("Configure o Firebase em config.js.", "error");
+  if (!confirm("Enviar os dados locais deste aparelho para sua conta? Nada será apagado.")) return;
+  definirSync("local", "Sincronizando...");
+  syncDataButton.disabled = true;
+  try {
+    const total = await importarDadosLocais();
+    definirSync("synced", "Sincronizado");
+    renderizarHome(); renderizarAgenda(); renderizarResumo();
+    mostrarToast(`${total.vistorias} vistoria(s) e ${total.agendamentos} agendamento(s) sincronizados.`);
+  } catch (erro) {
+    definirSync("error", "Erro na sincronização");
+    mostrarToast("Nada foi apagado: " + erro.message, "error");
+  } finally {
+    syncDataButton.disabled = false;
   }
 }
 
@@ -311,10 +388,11 @@ function renderizarHome() {
   if (proxima) {
     nextCard.innerHTML = `
       <div class="next-card-content">
-        <span class="next-tipo ${proxima.tipo}">${proxima.tipo.charAt(0).toUpperCase() + proxima.tipo.slice(1)}</span>
+        <span class="next-tipo entrada">${textoSeguro(proxima.statusConfirmacao || "Agendado")}</span>
         <div class="next-time">${proxima.hora} &mdash; ${formatarDataCurta(proxima.data)}</div>
-        <div class="next-address">📍 ${proxima.endereco}</div>
-        ${proxima.obs ? `<div class="next-address">📝 ${proxima.obs}</div>` : ""}
+        <div class="next-address"><strong>${textoSeguro(proxima.unidadeCliente || proxima.responsavel)}</strong></div>
+        <div class="next-address">📍 ${textoSeguro(proxima.endereco)}</div>
+        ${proxima.obs ? `<div class="next-address">📝 ${textoSeguro(proxima.obs)}</div>` : ""}
       </div>
     `;
   } else {
@@ -374,7 +452,7 @@ function calcularEExibirValor() {
   }
 }
 
-function salvarVistoria() {
+async function salvarVistoria() {
   const data     = vistoriaDataInput.value;
   const hora     = vistoriaHoraInput.value;
   const metragem = Number(vistoriaMetragemInput.value);
@@ -388,14 +466,17 @@ function salvarVistoria() {
     const qualidade= vistoriaQualidadeInput.checked;
     const valor    = calcularVistoria(metragem, tipo, mobilia, qualidade);
 
-    adicionarVistoria({ dataAgendada: data, hora, metragem, tipo, mobilia, qualidade, valor });
+    await adicionarVistoria({ dataAgendada: data, hora, metragem, tipo, mobilia, qualidade, valor });
 
     mostrarToast("Vistoria salva com sucesso! ✓");
+    definirSync("synced", "Sincronizado");
     vistoriaForm.reset();
     vistoriaDataInput.value = hojeISO();
     vistoriaHoraInput.value = horaAtual();
     vistoriaValorPreview.textContent = formatarMoeda(0);
   } catch (err) {
+    definirSync("error", "Erro na sincronização");
+    renderizarHome();
     mostrarToast("Erro: " + err.message, "error");
   }
 }
@@ -406,80 +487,86 @@ function salvarVistoria() {
 // ============================================================
 
 function renderizarAgenda() {
-  const todos = listarAgendamentos();
-  const hoje  = hojeISO();
-  const amanha= amanhaISO();
-  const em7   = new Date(); em7.setDate(em7.getDate() + 7);
+  const status = agendaFiltroStatus.value;
+  const lista = listarAgendamentos().filter(ag => {
+    const periodoOk = filtroPeriodo === "todos"
+      || (filtroPeriodo === "hoje" && ag.data === hojeISO())
+      || (filtroPeriodo === "amanha" && ag.data === amanhaISO());
+    return periodoOk && (!status || ag.statusConfirmacao === status);
+  }).sort((a,b) => `${a.data}T${a.hora}`.localeCompare(`${b.data}T${b.hora}`));
 
-  const grupos = { hoje: [], amanha: [], semana: [], futuras: [] };
-
-  todos.forEach(ag => {
-    const dataAg = new Date(ag.data + "T00:00:00");
-    if      (ag.data === hoje)   grupos.hoje.push(ag);
-    else if (ag.data === amanha) grupos.amanha.push(ag);
-    else if (dataAg <= em7)      grupos.semana.push(ag);
-    else                         grupos.futuras.push(ag);
-  });
-
-  Object.keys(grupos).forEach(key => {
-    const lista = grupos[key].sort((a,b) =>
-      (a.data + a.hora).localeCompare(b.data + b.hora));
-    const listaEl  = agendaListas[key];
-    const vazioEl  = agendaVazia[key];
-    const badgeEl  = agendaBadges[key];
-
-    listaEl.innerHTML = "";
-    lista.forEach(ag => {
-      const li = document.createElement("li");
-      li.className = "agenda-card";
-      li.innerHTML = `
-        <button class="remove-btn" data-id="${ag.id}" aria-label="Excluir">&times;</button>
-        <span class="agenda-card-tipo ${ag.tipo}">${ag.tipo.charAt(0).toUpperCase() + ag.tipo.slice(1)}</span>
-        <div class="agenda-card-header">
-          <span class="agenda-card-time">${ag.hora}</span>
-          <span class="agenda-card-date">${formatarData(ag.data)}</span>
-        </div>
-        <div class="agenda-card-address">📍 ${ag.endereco}</div>
-        ${ag.obs ? `<div class="agenda-card-obs">📝 ${ag.obs}</div>` : ""}
-      `;
-      listaEl.appendChild(li);
-    });
-
-    const temItens = lista.length > 0;
-    listaEl.classList.toggle("hidden", !temItens);
-    vazioEl.classList.toggle("hidden", temItens);
-    badgeEl.textContent = lista.length;
-    badgeEl.classList.toggle("hidden", !temItens);
+  agendaLista.innerHTML = "";
+  agendaVazia.classList.toggle("hidden", lista.length > 0);
+  lista.forEach(ag => {
+    const li = document.createElement("li");
+    li.className = "agenda-card";
+    li.dataset.id = ag.id;
+    li.innerHTML = `
+      <div class="agenda-card-header">
+        <div><small>${textoSeguro(ag.unidadeCliente)}</small><strong>${textoSeguro(ag.responsavel)}</strong></div>
+        <span class="status-badge">${textoSeguro(ag.statusConfirmacao)}</span>
+      </div>
+      <div class="agenda-card-time">${textoSeguro(ag.hora)} · ${formatarData(ag.data)}</div>
+      <div class="agenda-card-address">📍 ${textoSeguro(ag.endereco)}</div>
+      <div class="agenda-card-address">WhatsApp: ${textoSeguro(ag.telefoneWhatsapp)}</div>
+      ${ag.obs ? `<div class="agenda-card-obs">📝 ${textoSeguro(ag.obs)}</div>` : ""}
+      <label class="inline-status">Status <select data-action="status">${["Aguardando envio","Mensagem enviada","Confirmado","Reagendar","Cancelado","Finalizado"].map(s => `<option${s === ag.statusConfirmacao ? " selected" : ""}>${s}</option>`).join("")}</select></label>
+      <div class="card-actions"><button type="button" data-action="whatsapp">Enviar WhatsApp</button><button type="button" data-action="enviado">Marcar enviado</button><button type="button" data-action="editar">Editar</button><button type="button" class="danger-link" data-action="excluir">Excluir</button></div>`;
+    agendaLista.appendChild(li);
   });
 }
 
-function adicionarAgendamentoPeloFormulario(event) {
+function abrirFormularioAgenda(ag = null) {
+  agendaForm.classList.remove("hidden");
+  agendaIdInput.value = ag?.id || "";
+  agendaDataInput.value = ag?.data || hojeISO(); agendaHoraInput.value = ag?.hora || "";
+  agendaUnidadeInput.value = ag?.unidadeCliente || ""; agendaResponsavelInput.value = ag?.responsavel || "";
+  agendaTelefoneInput.value = ag?.telefoneWhatsapp || ""; agendaEnderecoInput.value = ag?.endereco || "";
+  agendaObsInput.value = ag?.obs || ""; agendaStatusInput.value = ag?.statusConfirmacao || "Aguardando envio";
+}
+function fecharFormularioAgenda() { agendaForm.reset(); agendaIdInput.value = ""; agendaForm.classList.add("hidden"); }
+function normalizarTelefone(valor) { return String(valor || "").replace(/\D/g, ""); }
+function telefoneValido(valor) { return /^55\d{10,11}$/.test(normalizarTelefone(valor)); }
+function linkWhatsAppAgendamento(ag) {
+  if (!ag.publicToken) throw new Error("Sincronize este agendamento antes de enviar.");
+  if (!telefoneValido(ag.telefoneWhatsapp)) throw new Error("Use 55 + DDD + número.");
+  const base = onlineBackend.siteUrl();
+  const confirmar = `${base}/agendamento/confirmar/${ag.publicToken}`;
+  const reagendar = `${base}/agendamento/reagendar/${ag.publicToken}`;
+  const texto = `Olá, ${ag.responsavel}. Tudo bem?\nConfirmando sua vistoria em ${formatarData(ag.data)}, às ${ag.hora}.\nEndereço: ${ag.endereco}\n\nConfirmar: ${confirmar}\nReagendar: ${reagendar}`;
+  return `https://wa.me/${normalizarTelefone(ag.telefoneWhatsapp)}?text=${encodeURIComponent(texto)}`;
+}
+
+async function adicionarAgendamentoPeloFormulario(event) {
   event.preventDefault();
-  const data     = agendaDataInput.value;
-  const hora     = agendaHoraInput.value;
-  const endereco = agendaEnderecoInput.value.trim();
-  const obs      = agendaObsInput.value.trim();
-  const tipo     = document.querySelector('input[name="agenda-tipo"]:checked').value;
-
-  if (!data || !hora || !endereco) {
-    mostrarToast("Preencha data, hora e endereço.", "error");
-    return;
-  }
-  adicionarAgendamento({ data, hora, endereco, obs, tipo });
-  agendaForm.reset();
-  agendaDataInput.value = hojeISO();
-  mostrarToast("Agendamento criado! 📅");
-  renderizarAgenda();
+  const telefone = normalizarTelefone(agendaTelefoneInput.value);
+  if (!telefoneValido(telefone)) return mostrarToast("Telefone inválido. Use 55 + DDD + número.", "error");
+  const dados = { data: agendaDataInput.value, hora: agendaHoraInput.value,
+    unidadeCliente: agendaUnidadeInput.value.trim(), responsavel: agendaResponsavelInput.value.trim(),
+    telefoneWhatsapp: telefone, endereco: agendaEnderecoInput.value.trim(), obs: agendaObsInput.value.trim(),
+    statusConfirmacao: agendaStatusInput.value };
+  try {
+    if (agendaIdInput.value) await atualizarAgendamento(agendaIdInput.value, dados);
+    else await adicionarAgendamento(dados);
+    fecharFormularioAgenda(); definirSync("synced", "Sincronizado"); renderizarAgenda(); renderizarHome();
+    mostrarToast("Agendamento salvo! 📅");
+  } catch (erro) { definirSync("error", "Erro na sincronização"); renderizarAgenda(); mostrarToast(erro.message, "error"); }
 }
 
-function removerAgendamentoPelaLista(event) {
-  const btn = event.target.closest(".remove-btn");
-  if (!btn) return;
-  const id = Number(btn.dataset.id);
-  if (confirm("Excluir este agendamento?")) {
-    removerAgendamento(id);
-    renderizarAgenda();
-  }
+async function acaoAgenda(event) {
+  const alvo = event.target.closest("[data-action]"); if (!alvo) return;
+  if (alvo.dataset.action === "status" && event.type !== "change") return;
+  const card = alvo.closest(".agenda-card");
+  const ag = listarAgendamentos().find(a => String(a.id) === String(card.dataset.id));
+  if (!ag) return;
+  try {
+    if (alvo.dataset.action === "whatsapp") window.open(linkWhatsAppAgendamento(ag), "_blank", "noopener");
+    if (alvo.dataset.action === "enviado") await atualizarAgendamento(ag.id, { statusConfirmacao: "Mensagem enviada", enviadoEm: new Date().toISOString() });
+    if (alvo.dataset.action === "editar") abrirFormularioAgenda(ag);
+    if (alvo.dataset.action === "status") await atualizarAgendamento(ag.id, { statusConfirmacao: alvo.value });
+    if (alvo.dataset.action === "excluir" && confirm("Excluir este agendamento?")) await removerAgendamento(ag.id);
+    renderizarAgenda(); renderizarHome();
+  } catch (erro) { definirSync("error", "Erro na sincronização"); renderizarAgenda(); mostrarToast(erro.message, "error"); }
 }
 
 
@@ -597,13 +684,13 @@ function renderizarResumo() {
   melhorDiaValor.textContent = formatarMoeda(diaVal > 0 ? diaVal : 0);
 }
 
-function removerVistoriaDoHistorico(event) {
+async function removerVistoriaDoHistorico(event) {
   const btn = event.target.closest(".remove-btn");
   if (!btn) return;
-  const id = Number(btn.dataset.id);
+  const id = btn.dataset.id;
   if (confirm("Excluir esta vistoria?")) {
-    removerVistoria(id);
-    renderizarResumo();
+    try { await removerVistoria(id); renderizarResumo(); renderizarHome(); }
+    catch (erro) { mostrarToast(erro.message, "error"); }
   }
 }
 
@@ -797,37 +884,45 @@ function importarDados(arquivo) {
 // INICIALIZAÇÃO
 // ============================================================
 
-function inicializar() {
+async function tratarRotaPublica() {
+  const match = location.pathname.match(/^\/agendamento\/(confirmar|reagendar)\/([0-9a-f-]{36})\/?$/i);
+  if (!match) return false;
+  splashScreen.style.display = "none";
+  publicResponse.classList.remove("hidden");
+  const titulo = document.querySelector("#public-response-title");
+  const mensagem = document.querySelector("#public-response-message");
+  const icone = document.querySelector("#public-response-icon");
+  try {
+    if (!onlineBackend.configured) throw new Error("Firebase ainda não configurado.");
+    const resposta = match[1] === "confirmar" ? "Confirmado" : "Reagendar";
+    const resultado = await onlineBackend.publicAction(match[2], resposta);
+    if (!resultado?.ok) throw new Error("Agendamento não encontrado ou indisponível.");
+    titulo.textContent = resposta === "Confirmado" ? "Vistoria confirmada!" : "Pedido de reagendamento recebido";
+    mensagem.textContent = resposta === "Confirmado" ? "Obrigado. Sua confirmação foi registrada." : "Entraremos em contato para combinar uma nova data.";
+  } catch (erro) {
+    icone.textContent = "!"; icone.classList.add("error");
+    titulo.textContent = "Não foi possível registrar"; mensagem.textContent = erro.message;
+  }
+  return true;
+}
+
+async function inicializar() {
   // PWA service worker
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js").catch(() => {});
   }
 
-  // Splash → Onboarding → App
+  if (await tratarRotaPublica()) return;
+
+  // Splash → Login → App
   splashEnterBtn.addEventListener("click", handleOnboarding);
-
-  startBtn.addEventListener("click", () => {
-    onboardingWelcome.classList.add("hidden");
-    onboardingName.classList.remove("hidden");
-    nameInput.focus();
+  loginForm.addEventListener("submit", autenticar);
+  logoutButton.addEventListener("click", async () => {
+    try { await onlineBackend.logout(); appShell.classList.add("hidden"); loginScreen.classList.remove("hidden"); }
+    catch (erro) { mostrarToast(erro.message, "error"); }
   });
-
-  continueBtn.addEventListener("click", () => {
-    const nome = nameInput.value.trim();
-    if (!nome) { mostrarToast("Digite seu nome para continuar.", "error"); return; }
-    localStorage.setItem("vistoriaUserName", nome);
-    Object.assign(appConfig, salvarConfigDados({ nome }));
-    startApp(nome);
-  });
-
-  nameInput.addEventListener("keydown", e => {
-    if (e.key === "Enter") continueBtn.click();
-  });
-
-  onboardingBackBtn.addEventListener("click", () => {
-    onboardingName.classList.add("hidden");
-    onboardingWelcome.classList.remove("hidden");
-  });
+  syncButton.addEventListener("click", sincronizarAparelho);
+  syncDataButton.addEventListener("click", sincronizarAparelho);
 
   // Perfil
   profileButton.addEventListener("click", changeUserName);
@@ -863,7 +958,17 @@ function inicializar() {
   // Agenda
   agendaDataInput.value = hojeISO();
   agendaForm.addEventListener("submit", adicionarAgendamentoPeloFormulario);
-  document.querySelector("#agenda-grupos").addEventListener("click", removerAgendamentoPelaLista);
+  document.querySelector("#novo-agendamento-btn").addEventListener("click", () => abrirFormularioAgenda());
+  document.querySelector("#cancelar-agendamento-btn").addEventListener("click", fecharFormularioAgenda);
+  agendaLista.addEventListener("click", acaoAgenda);
+  agendaLista.addEventListener("change", acaoAgenda);
+  document.querySelector(".filter-bar").addEventListener("click", e => {
+    const btn = e.target.closest("[data-periodo]"); if (!btn) return;
+    filtroPeriodo = btn.dataset.periodo;
+    document.querySelectorAll("[data-periodo]").forEach(el => el.classList.toggle("active", el === btn));
+    renderizarAgenda();
+  });
+  agendaFiltroStatus.addEventListener("change", renderizarAgenda);
 
   // Resumo
   historicoLista.addEventListener("click", removerVistoriaDoHistorico);
