@@ -166,6 +166,12 @@ function getDataFormatada() {
   return `${DIAS_SEMANA[d.getDay()]}, ${d.getDate()} de ${MESES[d.getMonth()]}`;
 }
 
+function primeiroNomeUsuario(nome, email = "") {
+  const base = String(nome || "").trim() || String(email).split("@")[0];
+  const primeiro = base.split(/[\s._-]+/).find(Boolean) || "Usuário";
+  return primeiro.charAt(0).toUpperCase() + primeiro.slice(1).toLowerCase();
+}
+
 function textoSeguro(valor) {
   const div = document.createElement("div");
   div.textContent = valor == null ? "" : String(valor);
@@ -253,7 +259,7 @@ async function startApp(session) {
   let nome = session.user.email.split("@")[0];
   try {
     const perfil = await onlineBackend.ensureProfile(session);
-    nome = perfil.nome || nome;
+    nome = primeiroNomeUsuario(perfil.nome, session.user.email);
     localStorage.setItem("vistoriaUserName", nome);
     await carregarDadosOnline();
     definirSync(possuiDadosLocaisPendentes() ? "local" : "synced", possuiDadosLocaisPendentes() ? "Dados locais pendentes" : "Sincronizado");
@@ -392,11 +398,11 @@ function getProximaVistoria() {
 
 function renderizarHome() {
   const nome = localStorage.getItem("vistoriaUserName") || "";
-  const primeiroNome = nome.split(" ")[0];
+  const primeiroNome = primeiroNomeUsuario(nome);
 
   // Saudação
   document.querySelector("#greeting-period").textContent = getGreeting();
-  document.querySelector("#greeting-name").textContent = primeiroNome ? `${primeiroNome}! 👋` : "Bem-vindo! 👋";
+  document.querySelector("#greeting-name").textContent = `Olá, ${primeiroNome}`;
   document.querySelector("#greeting-date").innerHTML = getDataFormatada().replace(", ", ",<br>");
 
   // Card hoje
@@ -562,7 +568,10 @@ function abrirFormularioAgenda(ag = null) {
   agendaObsInput.value = ag?.obs || ""; agendaStatusInput.value = ag?.statusConfirmacao || "Aguardando envio";
 }
 function fecharFormularioAgenda() { agendaForm.reset(); agendaIdInput.value = ""; agendaForm.classList.add("hidden"); }
-function normalizarTelefone(valor) { return String(valor || "").replace(/\D/g, ""); }
+function normalizarTelefone(valor) {
+  const digitos = String(valor || "").replace(/\D/g, "");
+  return digitos.startsWith("55") ? digitos : `55${digitos}`;
+}
 function telefoneValido(valor) { return /^55\d{10,11}$/.test(normalizarTelefone(valor)); }
 function linkWhatsAppAgendamento(ag) {
   if (!ag.publicToken) throw new Error("Sincronize este agendamento antes de enviar.");
@@ -594,16 +603,31 @@ async function acaoAgenda(event) {
   const alvo = event.target.closest("[data-action]"); if (!alvo) return;
   if (alvo.dataset.action === "status" && event.type !== "change") return;
   const card = alvo.closest(".agenda-card");
-  const ag = listarAgendamentos().find(a => String(a.id) === String(card.dataset.id));
+  let ag = listarAgendamentos().find(a => String(a.id) === String(card.dataset.id));
   if (!ag) return;
+  let popupWhatsapp = null;
   try {
-    if (alvo.dataset.action === "whatsapp") window.open(linkWhatsAppAgendamento(ag), "_blank", "noopener");
+    if (alvo.dataset.action === "whatsapp") {
+      popupWhatsapp = window.open("about:blank", "_blank");
+      if (!ag.publicToken) ag = await atualizarAgendamento(ag.id, {});
+      const url = linkWhatsAppAgendamento(ag);
+      if (popupWhatsapp) popupWhatsapp.location.href = url;
+      else window.location.href = url;
+      ag = await atualizarAgendamento(ag.id, {
+        statusConfirmacao: "Mensagem enviada",
+        enviadoEm: new Date().toISOString()
+      });
+      definirSync("synced", "Sincronizado");
+    }
     if (alvo.dataset.action === "enviado") await atualizarAgendamento(ag.id, { statusConfirmacao: "Mensagem enviada", enviadoEm: new Date().toISOString() });
     if (alvo.dataset.action === "editar") abrirFormularioAgenda(ag);
     if (alvo.dataset.action === "status") await atualizarAgendamento(ag.id, { statusConfirmacao: alvo.value });
     if (alvo.dataset.action === "excluir" && confirm("Excluir este agendamento?")) await removerAgendamento(ag.id);
     renderizarAgenda(); renderizarHome();
-  } catch (erro) { definirSync("error", "Erro na sincronização"); renderizarAgenda(); mostrarToast(erro.message, "error"); }
+  } catch (erro) {
+    if (popupWhatsapp && !popupWhatsapp.closed) popupWhatsapp.close();
+    definirSync("error", "Erro na sincronização"); renderizarAgenda(); mostrarToast(erro.message, "error");
+  }
 }
 
 
@@ -1015,7 +1039,6 @@ async function inicializar() {
   configTema.addEventListener("change", () => aplicarTema(configTema.checked ? "dark" : "light"));
 
   // WhatsApp
-  document.querySelector("#home-whatsapp-btn").addEventListener("click",   () => enviarWhatsApp(gerarRelatorioHoje()));
   document.querySelector("#resumo-whatsapp-btn").addEventListener("click", () => enviarWhatsApp(gerarRelatorioCompleto()));
 
   // Backup

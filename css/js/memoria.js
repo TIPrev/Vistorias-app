@@ -126,8 +126,8 @@ async function removerAgendamento(id) {
 
 async function importarDadosLocais() {
   if (!onlineBackend.configured) throw new Error("Configure o Firebase antes de importar.");
-  const locaisV = lerListaLocal(CHAVE_VISTORIAS).filter(v => (!v.onlineId || v.pendenteSync) && v.usuarioLocalId === usuarioLocalAtual);
-  const locaisA = lerListaLocal(CHAVE_AGENDA).filter(a => (!a.onlineId || a.pendenteSync) && a.usuarioLocalId === usuarioLocalAtual);
+  const locaisV = lerListaLocal(CHAVE_VISTORIAS).filter(v => (!v.onlineId || v.pendenteSync) && v.usuarioLocalId === usuarioLocalAtual && ehVistoria(v));
+  const locaisA = lerListaLocal(CHAVE_AGENDA).filter(a => (!a.onlineId || a.pendenteSync) && a.usuarioLocalId === usuarioLocalAtual && ehAgendamento(a));
   for (const v of locaisV) {
     const row = await onlineBackend.saveInspection({ ...v, legacyId: v.legacyId || (v.onlineId ? null : v.id) });
     const original = vistorias.find(item => String(item.id) === String(v.id));
@@ -171,8 +171,18 @@ function definirUsuarioLocal(usuarioId) {
   });
   persistirLocal();
 }
-function listarVistorias() { return vistorias.filter(item => item.usuarioLocalId === usuarioLocalAtual); }
-function listarAgendamentos() { return agendamentos.filter(item => item.usuarioLocalId === usuarioLocalAtual); }
+function ehVistoria(item) {
+  return Boolean(item && item.dataAgendada && item.metragem != null && item.tipo && item.valor != null);
+}
+function ehAgendamento(item) {
+  return Boolean(item && item.data && item.hora && (item.responsavel || item.unidadeCliente || item.endereco));
+}
+function listarVistorias() {
+  return vistorias.filter(item => item.usuarioLocalId === usuarioLocalAtual && ehVistoria(item));
+}
+function listarAgendamentos() {
+  return agendamentos.filter(item => item.usuarioLocalId === usuarioLocalAtual && ehAgendamento(item));
+}
 function possuiDadosLocaisPendentes() {
   return listarVistorias().some(v => !v.onlineId || v.pendenteSync) || listarAgendamentos().some(a => !a.onlineId || a.pendenteSync);
 }

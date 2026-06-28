@@ -1,4 +1,4 @@
-const CACHE = 'vistoria-v3-firebase';
+const CACHE = 'vistoria-v4-separacao-agenda';
 const ASSETS = [
   '/',
   '/index.html',
