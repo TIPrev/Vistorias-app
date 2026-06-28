@@ -297,13 +297,50 @@ async function autenticar(event) {
   loginSubmit.disabled = true;
   loginSubmit.textContent = "Entrando...";
   try {
+    const firebaseConfig = window.APP_CONFIG?.firebase;
+    if (!firebaseConfig) {
+      throw Object.assign(new Error("window.APP_CONFIG.firebase não foi encontrado. Verifique se config.js foi carregado antes de firebase.js."), {
+        code: "app/config-ausente"
+      });
+    }
+    if (firebaseConfig.projectId !== "vistorias-app-a73c9") {
+      throw Object.assign(new Error(`projectId inesperado: ${firebaseConfig.projectId || "vazio"}`), {
+        code: "app/project-id-incorreto"
+      });
+    }
+    if (firebaseConfig.authDomain !== "vistorias-app-a73c9.firebaseapp.com") {
+      throw Object.assign(new Error(`authDomain inesperado: ${firebaseConfig.authDomain || "vazio"}`), {
+        code: "app/auth-domain-incorreto"
+      });
+    }
+
+    console.info("[Firebase Auth] Configuração carregada", {
+      projectId: firebaseConfig.projectId,
+      authDomain: firebaseConfig.authDomain,
+      configured: onlineBackend.configured
+    });
+
     const identificador = loginEmail.value.trim().toLowerCase();
     const email = identificador.includes("@") ? identificador : `${identificador}@vistoria.local`;
     const session = await onlineBackend.login(email, loginSenha.value);
     loginSenha.value = "";
     await startApp(session);
-  } catch (_) {
-    loginErro.textContent = "E-mail ou senha inválidos.";
+  } catch (error) {
+    console.error(error);
+    const firebaseConfig = window.APP_CONFIG?.firebase;
+    const code = error?.code || "sem-codigo";
+    const message = error?.message || String(error);
+    const diagnosticos = {
+      "auth/invalid-credential": "A credencial não foi aceita pelo Firebase.",
+      "auth/unauthorized-domain": "Este domínio não está autorizado no Firebase Authentication.",
+      "auth/network-request-failed": "Falha de rede ao acessar o Firebase.",
+      "auth/too-many-requests": "Muitas tentativas; o Firebase bloqueou temporariamente o acesso.",
+      "app/config-ausente": "O arquivo config.js não foi carregado corretamente.",
+      "app/project-id-incorreto": "O app está apontando para outro projeto Firebase.",
+      "app/auth-domain-incorreto": "O authDomain configurado não corresponde ao projeto esperado."
+    };
+    loginErro.style.whiteSpace = "pre-line";
+    loginErro.textContent = `${diagnosticos[code] || "O Firebase retornou um erro de autenticação."}\nCódigo: ${code}\nMensagem: ${message}\nprojectId: ${firebaseConfig?.projectId || "ausente"}\nauthDomain: ${firebaseConfig?.authDomain || "ausente"}`;
     loginErro.classList.remove("hidden");
   } finally {
     loginSubmit.disabled = false;
