@@ -2,7 +2,7 @@
 // A proteção dos dados é feita pelas regras em firestore.rules.
 window.APP_CONFIG = {
   firebase: {
-    apiKey: "AIzaSyCfmPDcch09boJ_BugdLwqBKoNfaC1aeCw",
+    apiKey: "AIzaSyCfmPDcch09boJ_BugdIwqBKoNfaCiaeCw",
     authDomain: "vistorias-app-a73c9.firebaseapp.com",
     projectId: "vistorias-app-a73c9",
     storageBucket: "vistorias-app-a73c9.firebasestorage.app",
