@@ -52,6 +52,7 @@ function mapearAgendaOnline(row) {
     clienteNome: row.cliente_nome || row.responsavel || "",
     clienteTelefone: row.cliente_telefone || row.telefone_whatsapp || "",
     imovelTipo: row.imovel_tipo || "", imovelIdentificacao: row.imovel_identificacao || row.unidade_cliente || "",
+    imovelCodigo: row.imovel_codigo || "",
     cep: row.cep || "", rua: row.rua || "", numero: row.numero || "", complemento: row.complemento || "",
     bairro: row.bairro || "", cidade: row.cidade || "", uf: row.uf || "",
     enderecoCompleto: row.endereco_completo || row.endereco || "",

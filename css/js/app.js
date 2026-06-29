@@ -82,6 +82,7 @@ const agendaForm         = document.querySelector("#agenda-form");
 const agendaIdInput      = document.querySelector("#agenda-id");
 const agendaDataInput    = document.querySelector("#agenda-data");
 const agendaHoraInput    = document.querySelector("#agenda-hora");
+const agendaImovelCodigoInput = document.querySelector("#agenda-imovel-codigo");
 const agendaClienteNomeInput = document.querySelector("#agenda-cliente-nome");
 const agendaClienteTelefoneInput = document.querySelector("#agenda-cliente-telefone");
 const agendaImovelTipoInput = document.querySelector("#agenda-imovel-tipo");
@@ -765,9 +766,10 @@ function renderizarAgenda() {
     const li = document.createElement("li");
     li.className = "agenda-card";
     li.dataset.id = ag.id;
+    const codBadge = ag.imovelCodigo ? ` · Cód: ${textoSeguro(ag.imovelCodigo)}` : "";
     li.innerHTML = `
       <div class="agenda-card-header">
-        <div><small>${textoSeguro(imovelDoAgendamento(ag))}</small><strong>${textoSeguro(clienteDoAgendamento(ag))}</strong></div>
+        <div><small>${textoSeguro(imovelDoAgendamento(ag))}${codBadge}</small><strong>${textoSeguro(clienteDoAgendamento(ag))}</strong></div>
         <span class="status-badge">${textoSeguro(ag.statusConfirmacao)}</span>
       </div>
       <div class="agenda-card-time">${textoSeguro(ag.hora)} · ${formatarData(ag.data)}</div>
@@ -786,6 +788,7 @@ function abrirFormularioAgenda(ag = null) {
   if (consultaCepController) consultaCepController.abort();
   agendaIdInput.value = ag?.id || "";
   agendaDataInput.value = ag?.data || hojeISO(); agendaHoraInput.value = ag?.hora || horaAtual();
+  agendaImovelCodigoInput.value = ag?.imovelCodigo || "";
   agendaClienteNomeInput.value = ag?.clienteNome || ag?.responsavel || "";
   agendaClienteTelefoneInput.value = ag?.clienteTelefone || ag?.telefoneWhatsapp || "";
   agendaImovelTipoInput.value = ag?.imovelTipo || "";
@@ -831,21 +834,24 @@ function linkWhatsAppAgendamento(ag) {
   const telefone = ag.clienteTelefone || ag.telefoneWhatsapp || "";
   if (!telefoneValido(telefone)) throw new Error("Use 55 + DDD + número.");
   
-  const nome_vistoriadora = (obterNomeUsuarioLocal() || appConfig.nome || "").trim() || "Marcela Lima";
+  const nome_vistoriadora = (obterNomeUsuarioLocal() || appConfig.nome || "").trim() || "Marcela";
   const nome_cliente = (ag.clienteNome || ag.responsavel || "").trim();
   const endereco_completo = obterEnderecoCompleto(ag);
   const data_vistoria = limparTextoCampo(ag.data ? formatarData(ag.data) : "");
   const hora_vistoria = limparTextoCampo(ag.hora);
   
+  const codIntro = ag.imovelCodigo ? ` (cód: ${ag.imovelCodigo})` : "";
+  const codDetail = ag.imovelCodigo ? `\nCódigo do Imóvel: ${ag.imovelCodigo}` : "";
+  
   const saudacao = nome_cliente ? `Olá, ${nome_cliente}! Sou ${nome_vistoriadora}` : `Olá, sou ${nome_vistoriadora}`;
-  const mensagem = `${saudacao}, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria no seu imóvel.
+  const mensagem = `${saudacao}, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria no seu imóvel${codIntro}.
 
 Gostaria de fazer algumas confirmações antes de comparecer até o imóvel localizado em:
 
 ${endereco_completo}
 
 Data da vistoria: ${data_vistoria}
-Horário: ${hora_vistoria}
+Horário: ${hora_vistoria}${codDetail}
 
 Por gentileza, poderia me confirmar as informações abaixo?
 
@@ -872,6 +878,7 @@ async function adicionarAgendamentoPeloFormulario(event) {
     bairro: agendaBairroInput.value, cidade: agendaCidadeInput.value, uf: agendaUfInput.value.toUpperCase()
   });
   const dados = { data: agendaDataInput.value, hora: agendaHoraInput.value,
+    imovelCodigo: agendaImovelCodigoInput.value.trim(),
     clienteNome: agendaClienteNomeInput.value.trim(), clienteTelefone: telefone,
     imovelTipo: agendaImovelTipoInput.value.trim(), imovelIdentificacao: agendaImovelIdentificacaoInput.value.trim(),
     cep: agendaCepInput.value.trim(), rua: agendaRuaInput.value.trim(), numero: agendaNumeroInput.value.trim(),
