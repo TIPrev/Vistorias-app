@@ -820,6 +820,16 @@ function normalizarTelefone(valor) {
   return digitos.startsWith("55") ? digitos : `55${digitos}`;
 }
 function telefoneValido(valor) { return /^55\d{10,11}$/.test(normalizarTelefone(valor)); }
+function abrirLinkWhatsApp(url) {
+  if (/Android/i.test(navigator.userAgent)) {
+    window.location.href = url;
+    return null;
+  }
+
+  const popupWhatsapp = window.open(url, "_blank");
+  if (!popupWhatsapp) window.location.href = url;
+  return popupWhatsapp;
+}
 function limparTextoCampo(val) {
   if (val === null || val === undefined) return "";
   const s = String(val).trim();
@@ -879,7 +889,9 @@ Fico no aguardo das confirmações para darmos início aos próximos passos.
 
 Muito obrigada.`;
 
-  return `whatsapp://send?phone=${normalizarTelefone(telefone)}&text=${encodeURIComponent(mensagem)}`;
+  const telefoneNormalizado = normalizarTelefone(telefone);
+  const textoEncoded = encodeURIComponent(mensagem);
+  return `https://wa.me/${telefoneNormalizado}?text=${textoEncoded}`;
 }
 
 async function adicionarAgendamentoPeloFormulario(event) {
@@ -920,10 +932,8 @@ async function acaoAgenda(event) {
   try {
     if (alvo.dataset.action === "iniciar") await iniciarVistoriaDoAgendamento(ag);
     if (alvo.dataset.action === "whatsapp") {
-      popupWhatsapp = window.open("about:blank", "_blank");
       const url = linkWhatsAppAgendamento(ag);
-      if (popupWhatsapp) popupWhatsapp.location.href = url;
-      else window.location.href = url;
+      popupWhatsapp = abrirLinkWhatsApp(url);
       ag = await atualizarAgendamento(ag.id, {
         statusConfirmacao: "Mensagem enviada",
         enviadoEm: new Date().toISOString()
@@ -1200,16 +1210,7 @@ function enviarWhatsApp(mensagem) {
   const telefone = numero.startsWith("55") ? numero : `55${numero}`;
   const textoEncoded = encodeURIComponent(mensagem);
   const url = `https://wa.me/${telefone}?text=${textoEncoded}`;
-  const androidStandalone = /Android/i.test(navigator.userAgent)
-    && window.matchMedia("(display-mode: standalone)").matches;
-
-  if (androidStandalone) {
-    window.location.href = url;
-    return;
-  }
-
-  const popupWhatsapp = window.open(url, "_blank");
-  if (!popupWhatsapp) window.location.href = url;
+  abrirLinkWhatsApp(url);
 }
 
 
@@ -1346,7 +1347,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=20").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=21").catch(() => {});
 }
 
 inicializar();
