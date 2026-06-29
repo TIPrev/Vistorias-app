@@ -854,16 +854,15 @@ function linkWhatsAppAgendamento(ag) {
   const data_vistoria = limparTextoCampo(ag.data ? formatarData(ag.data) : "");
   const hora_vistoria = limparTextoCampo(ag.hora);
   
-  const codDetail = ag.imovelCodigo ? `\nCódigo do Imóvel: ${ag.imovelCodigo}` : "";
+  const codDetail = ag.imovelCodigo ? `\nCódigo do imóvel: ${ag.imovelCodigo}` : "";
   const tipoVistoria = ag.tipo === "saida" ? "saída" : "entrada";
   
-  const saudacao = nome_cliente ? `Olá, ${nome_cliente}! Sou ${nome_vistoriadora}` : `Olá, sou ${nome_vistoriadora}`;
-  const mensagem = `${saudacao}, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria de ${tipoVistoria} no seu imóvel.
+  const saudacao = nome_cliente ? `Olá, ${nome_cliente}! Sou ${nome_vistoriadora}, tudo bem?` : `Olá, sou ${nome_vistoriadora}! Tudo bem?`;
+  const mensagem = `${saudacao}
 
-Gostaria de fazer algumas confirmações antes de comparecer até o imóvel localizado em:
+Segue agendamento de vistoria de ${tipoVistoria} no seu imóvel:
 
-${endereco_completo}
-
+Local: ${endereco_completo}
 Data da vistoria: ${data_vistoria}
 Horário: ${hora_vistoria}${codDetail}
 
@@ -1336,7 +1335,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=16").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=17").catch(() => {});
 }
 
 inicializar();
