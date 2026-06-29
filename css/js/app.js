@@ -857,9 +857,8 @@ function linkWhatsAppAgendamento(ag) {
   const telefone = ag.clienteTelefone || ag.telefoneWhatsapp || "";
   if (!telefoneValido(telefone)) throw new Error("Use 55 + DDD + número.");
   
-  const nomeVistoriadora = (obterNomeUsuarioLocal() || appConfig.nome || "").trim() || "Marcela";
-  const primeiroNomeVistoriadora = (nomeVistoriadora || '').trim().split(/\s+/)[0];
-  const nome_cliente = (ag.clienteNome || ag.responsavel || "").trim();
+  const nomeCliente = (ag.clienteNome || ag.responsavel || "").trim();
+  const primeiroNomeCliente = nomeCliente.split(/\s+/)[0];
   const endereco_completo = obterEnderecoCompleto(ag);
   const data_vistoria = limparTextoCampo(ag.data ? formatarData(ag.data) : "");
   const hora_vistoria = limparTextoCampo(ag.hora);
@@ -867,7 +866,9 @@ function linkWhatsAppAgendamento(ag) {
   const codDetail = ag.imovelCodigo ? `\nCódigo do imóvel: ${ag.imovelCodigo}` : "";
   const tipoVistoria = ag.tipo === "saida" ? "saída" : "entrada";
   
-  const saudacao = `Olá, ${primeiroNomeVistoriadora}! Tudo bem?`;
+  const saudacao = primeiroNomeCliente
+    ? `Olá, ${primeiroNomeCliente}! Tudo bem?`
+    : "Olá! Tudo bem?";
   const mensagem = `${saudacao}
 
 Segue agendamento de vistoria de ${tipoVistoria} no seu imóvel:
@@ -1347,7 +1348,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=21").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=22").catch(() => {});
 }
 
 inicializar();
