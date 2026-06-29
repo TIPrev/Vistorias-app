@@ -1311,7 +1311,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=11").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=12").catch(() => {});
 }
 
 inicializar();
