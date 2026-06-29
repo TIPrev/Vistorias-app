@@ -795,7 +795,16 @@ function abrirFormularioAgenda(ag = null) {
   });
   agendaClienteNomeInput.value = ag?.clienteNome || ag?.responsavel || "";
   agendaClienteTelefoneInput.value = ag?.clienteTelefone || ag?.telefoneWhatsapp || "";
-  agendaImovelTipoInput.value = ag?.imovelTipo || "";
+  const valTipo = ag?.imovelTipo || "";
+  if (valTipo) {
+    const exists = Array.from(agendaImovelTipoInput.options).some(o => o.value === valTipo);
+    if (!exists) {
+      const opt = document.createElement("option");
+      opt.value = valTipo; opt.textContent = valTipo;
+      agendaImovelTipoInput.appendChild(opt);
+    }
+  }
+  agendaImovelTipoInput.value = valTipo;
   agendaImovelIdentificacaoInput.value = ag?.imovelIdentificacao || ag?.unidadeCliente || "";
   agendaCepInput.value = ag?.cep || ""; agendaRuaInput.value = ag?.rua || "";
   agendaNumeroInput.value = ag?.numero || ""; agendaComplementoInput.value = ag?.complemento || "";
@@ -1327,7 +1336,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=13").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=14").catch(() => {});
 }
 
 inicializar();

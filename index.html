@@ -12,7 +12,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon.svg">
-  <link rel="stylesheet" href="css/style.css?v=13">
+  <link rel="stylesheet" href="css/style.css?v=14">
 </head>
 <body>
 
@@ -451,7 +451,16 @@
                 </div>
               </fieldset>
               <div class="field-row">
-                <label class="field"><span>Tipo do imóvel</span><input id="agenda-imovel-tipo" type="text" placeholder="Casa, apartamento, sala..."></label>
+                <label class="field">
+                  <span>Tipo do imóvel</span>
+                  <select id="agenda-imovel-tipo">
+                    <option value="">Selecione...</option>
+                    <option value="Casa">Casa</option>
+                    <option value="Apartamento">Apartamento</option>
+                    <option value="Sala Comercial">Sala Comercial</option>
+                    <option value="Outro">Outro</option>
+                  </select>
+                </label>
                 <label class="field"><span>Identificação</span><input id="agenda-imovel-identificacao" type="text" placeholder="Apartamento 302"></label>
               </div>
               <label class="field"><span>CEP</span><input id="agenda-cep" type="text" inputmode="numeric" maxlength="9" autocomplete="postal-code" placeholder="00000-000"><small id="agenda-cep-status" class="field-hint" aria-live="polite"></small></label>
@@ -703,10 +712,10 @@
     </div><!-- /phone -->
   </div><!-- /app-shell -->
 
-  <script src="config.js?v=13"></script>
-  <script src="firebase.js?v=13"></script>
-  <script src="css/js/calculadora.js?v=13"></script>
-  <script src="css/js/memoria.js?v=13"></script>
-  <script src="css/js/app.js?v=13"></script>
+  <script src="config.js?v=14"></script>
+  <script src="firebase.js?v=14"></script>
+  <script src="css/js/calculadora.js?v=14"></script>
+  <script src="css/js/memoria.js?v=14"></script>
+  <script src="css/js/app.js?v=14"></script>
 </body>
 </html>
