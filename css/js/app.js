@@ -192,6 +192,25 @@ function primeiroNomeUsuario(nome, email = "") {
   return primeiro.charAt(0).toUpperCase() + primeiro.slice(1).toLowerCase();
 }
 
+function formatarNomePerfil(nome) {
+  const nomeOriginal = String(nome || "").trim();
+  const identificador = nomeOriginal.toLowerCase().replace(/[^a-zà-ÿ0-9]/g, "");
+  if (/^marcelalima\d*$/.test(identificador)) return "Marcela Lima";
+
+  const nomeComEspacos = nomeOriginal
+    .trim()
+    .replace(/([a-zà-ÿ])([A-ZÀ-Ý])/g, "$1 $2")
+    .replace(/[._-]+/g, " ")
+    .replace(/\s+\d+$/, "")
+    .replace(/\s+/g, " ");
+
+  return nomeComEspacos
+    .split(" ")
+    .filter(Boolean)
+    .map(parte => parte.charAt(0).toUpperCase() + parte.slice(1).toLowerCase())
+    .join(" ");
+}
+
 function clienteDoAgendamento(ag) {
   return String(ag?.clienteNome || ag?.responsavel || "").trim();
 }
@@ -350,11 +369,15 @@ async function startApp(session) {
   loginScreen.classList.add("hidden");
   appShell.classList.remove("hidden");
   definirUsuarioLocal(session.user.uid || session.user.id);
-  let nome = session.user.email.split("@")[0];
+  const nomeLocal = formatarNomePerfil(obterNomeUsuarioLocal());
+  let nome = nomeLocal || session.user.email.split("@")[0];
   try {
     const perfil = await onlineBackend.ensureProfile(session);
-    nome = primeiroNomeUsuario(perfil.nome, session.user.email);
+    nome = nomeLocal || formatarNomePerfil(perfil.nome) || primeiroNomeUsuario("", session.user.email);
     salvarNomeUsuarioLocal(nome);
+    if (nome !== String(perfil.nome || "").trim()) {
+      await onlineBackend.updateProfileName(nome);
+    }
     await carregarDadosOnline();
     definirSync(possuiDadosLocaisPendentes() ? "local" : "synced", possuiDadosLocaisPendentes() ? "Dados locais pendentes" : "Sincronizado");
   } catch (erro) {
@@ -466,14 +489,20 @@ async function sincronizarAparelho() {
   }
 }
 
-function changeUserName() {
+async function changeUserName() {
   const atual = obterNomeUsuarioLocal();
   const novo = prompt("Qual é o seu nome?", atual);
   if (novo && novo.trim()) {
-    salvarNomeUsuarioLocal(novo.trim());
+    const nomeLimpo = formatarNomePerfil(novo);
+    salvarNomeUsuarioLocal(nomeLimpo);
     Object.assign(appConfig, carregarConfig());
-    mostrarToast("Nome atualizado!");
     if (telaAtiva === "home") renderizarHome();
+    try {
+      if (onlineBackend.configured) await onlineBackend.updateProfileName(nomeLimpo);
+      mostrarToast("Nome atualizado!");
+    } catch (erro) {
+      mostrarToast("Nome salvo neste aparelho, mas não foi sincronizado.", "error");
+    }
   }
 }
 
@@ -491,14 +520,13 @@ function getProximaVistoria() {
 }
 
 function renderizarHome() {
-  const nome = obterNomeUsuarioLocal();
-  const primeiroNome = primeiroNomeUsuario(nome);
+  const nome = formatarNomePerfil(obterNomeUsuarioLocal()) || "Usuário";
   const hora = new Date().getHours();
   const periodo = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
 
   // Saudação
   document.querySelector("#greeting-period").textContent = periodo;
-  document.querySelector("#greeting-name").textContent = `Olá, ${primeiroNome}`;
+  document.querySelector("#greeting-name").textContent = `Olá, ${nome}`;
   document.querySelector("#greeting-date").innerHTML = getDataFormatada().replace(", ", ",<br>");
 
   // Card hoje
@@ -1130,8 +1158,9 @@ function renderizarConfig() {
   configTema.checked      = appConfig.tema === "dark";
 }
 
-function salvarConfig() {
-  const novoNome = configNome.value.trim();
+async function salvarConfig() {
+  const novoNome = formatarNomePerfil(configNome.value);
+  configNome.value = novoNome;
   const novaConfig = {
     metaDiaria:  Number(configMetaDiaria.value)  || 200,
     metaMensal:  Number(configMetaMensal.value)  || 4000,
@@ -1144,6 +1173,15 @@ function salvarConfig() {
   Object.assign(appConfig, salvarConfigDados(novaConfig));
   if (novoNome) salvarNomeUsuarioLocal(novoNome);
   aplicarTema(appConfig.tema);
+  renderizarHome();
+  if (novoNome) {
+    try {
+      if (onlineBackend.configured) await onlineBackend.updateProfileName(novoNome);
+    } catch (erro) {
+      mostrarToast("Configurações salvas, mas o nome não foi sincronizado.", "error");
+      return;
+    }
+  }
   mostrarToast("Configurações salvas! ✓");
 }
 
@@ -1352,7 +1390,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=24").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=27").catch(() => {});
 }
 
 inicializar();

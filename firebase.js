@@ -63,6 +63,22 @@
     return { nome, email: user.email };
   }
 
+  async function updateProfileName(nome) {
+    const nomeLimpo = String(nome || "").trim();
+    if (!nomeLimpo) throw new Error("Informe um nome válido.");
+    const { db, dbSdk } = await requireSdk();
+    const user = await getUser();
+    if (!user) throw new Error("Usuário não autenticado.");
+    const ref = dbSdk.doc(db, "usuarios", user.uid);
+    await dbSdk.setDoc(ref, {
+      userId: user.uid,
+      email: user.email,
+      nome: nomeLimpo,
+      atualizadoEm: dbSdk.serverTimestamp()
+    }, { merge: true });
+    return nomeLimpo;
+  }
+
   function iso(value) {
     return value && typeof value.toDate === "function" ? value.toDate().toISOString() : (value || null);
   }
@@ -272,7 +288,7 @@
   }
 
   window.onlineBackend = {
-    configured, ready, currentSession, login, logout, ensureProfile, loadAll,
+    configured, ready, currentSession, login, logout, ensureProfile, updateProfileName, loadAll,
     saveInspection, deleteInspection, saveAppointment, deleteAppointment,
     publicAction, siteUrl
   };

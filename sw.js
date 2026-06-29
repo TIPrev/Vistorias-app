@@ -1,13 +1,13 @@
-const CACHE = 'vistoria-v24-whatsapp-cliente';
+const CACHE = 'vistoria-v27-nome-perfil';
 const ASSETS = [
   '/',
   '/index.html',
   '/css/style.css?v=18',
   '/css/js/calculadora.js?v=18',
   '/css/js/memoria.js?v=18',
-  '/css/js/app.js?v=24',
+  '/css/js/app.js?v=27',
   '/config.js?v=18',
-  '/firebase.js?v=18',
+  '/firebase.js?v=27',
   '/manifest.json',
   '/icons/icon.svg',
 ];
