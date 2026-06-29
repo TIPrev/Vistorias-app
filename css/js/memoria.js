@@ -186,6 +186,7 @@ async function importarDadosLocais() {
 
 function definirUsuarioLocal(usuarioId) {
   usuarioLocalAtual = usuarioId;
+  Object.assign(appConfig, carregarConfig(usuarioId));
   const chaveMigracaoFirebase = "vistorias.firebase.migracao.v1";
   if (!localStorage.getItem(chaveMigracaoFirebase)) {
     // Cache produzido antes do Firebase (local puro ou backend anterior) é preservado e
@@ -252,19 +253,47 @@ const CONFIG_PADRAO = {
   whatsapp: "",
 };
 
-function carregarConfig() {
+function carregarConfig(usuarioId = usuarioLocalAtual) {
   try {
-    const dados = localStorage.getItem(CHAVE_CONFIG);
+    const chave = usuarioId ? `${CHAVE_CONFIG}.${usuarioId}` : CHAVE_CONFIG;
+    let dados = localStorage.getItem(chave);
+    if (!dados && usuarioId) {
+      const dadosLegados = localStorage.getItem(CHAVE_CONFIG);
+      if (dadosLegados) {
+        localStorage.setItem(chave, dadosLegados);
+        dados = dadosLegados;
+      }
+    }
     return dados ? { ...CONFIG_PADRAO, ...JSON.parse(dados) } : { ...CONFIG_PADRAO };
   } catch {
     return { ...CONFIG_PADRAO };
   }
 }
 
-function salvarConfigDados(novaConfig) {
-  const configFinal = { ...carregarConfig(), ...novaConfig };
-  localStorage.setItem(CHAVE_CONFIG, JSON.stringify(configFinal));
+function salvarConfigDados(novaConfig, usuarioId = usuarioLocalAtual) {
+  const configFinal = { ...carregarConfig(usuarioId), ...novaConfig };
+  const chave = usuarioId ? `${CHAVE_CONFIG}.${usuarioId}` : CHAVE_CONFIG;
+  localStorage.setItem(chave, JSON.stringify(configFinal));
   return configFinal;
+}
+
+function obterNomeUsuarioLocal(usuarioId = usuarioLocalAtual) {
+  const chave = usuarioId ? `vistoriaUserName.${usuarioId}` : "vistoriaUserName";
+  let nome = localStorage.getItem(chave);
+  if (!nome && usuarioId) {
+    const nomeLegado = localStorage.getItem("vistoriaUserName");
+    if (nomeLegado) {
+      localStorage.setItem(chave, nomeLegado);
+      nome = nomeLegado;
+    }
+  }
+  return nome || "";
+}
+
+function salvarNomeUsuarioLocal(nome, usuarioId = usuarioLocalAtual) {
+  const chave = usuarioId ? `vistoriaUserName.${usuarioId}` : "vistoriaUserName";
+  localStorage.setItem(chave, nome);
+  salvarConfigDados({ nome }, usuarioId);
 }
 
 const appConfig = carregarConfig();

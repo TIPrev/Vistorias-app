@@ -353,7 +353,7 @@ async function startApp(session) {
   try {
     const perfil = await onlineBackend.ensureProfile(session);
     nome = primeiroNomeUsuario(perfil.nome, session.user.email);
-    localStorage.setItem("vistoriaUserName", nome);
+    salvarNomeUsuarioLocal(nome);
     await carregarDadosOnline();
     definirSync(possuiDadosLocaisPendentes() ? "local" : "synced", possuiDadosLocaisPendentes() ? "Dados locais pendentes" : "Sincronizado");
   } catch (erro) {
@@ -466,11 +466,11 @@ async function sincronizarAparelho() {
 }
 
 function changeUserName() {
-  const atual = localStorage.getItem("vistoriaUserName") || "";
+  const atual = obterNomeUsuarioLocal();
   const novo = prompt("Qual é o seu nome?", atual);
   if (novo && novo.trim()) {
-    localStorage.setItem("vistoriaUserName", novo.trim());
-    Object.assign(appConfig, salvarConfigDados({ nome: novo.trim() }));
+    salvarNomeUsuarioLocal(novo.trim());
+    Object.assign(appConfig, carregarConfig());
     mostrarToast("Nome atualizado!");
     if (telaAtiva === "home") renderizarHome();
   }
@@ -490,7 +490,7 @@ function getProximaVistoria() {
 }
 
 function renderizarHome() {
-  const nome = localStorage.getItem("vistoriaUserName") || "";
+  const nome = obterNomeUsuarioLocal();
   const primeiroNome = primeiroNomeUsuario(nome);
   const hora = new Date().getHours();
   const periodo = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
@@ -831,12 +831,14 @@ function linkWhatsAppAgendamento(ag) {
   const telefone = ag.clienteTelefone || ag.telefoneWhatsapp || "";
   if (!telefoneValido(telefone)) throw new Error("Use 55 + DDD + número.");
   
-  const nome_vistoriadora = (localStorage.getItem("vistoriaUserName") || appConfig.nome || "").trim() || "Marcela Lima";
+  const nome_vistoriadora = (obterNomeUsuarioLocal() || appConfig.nome || "").trim() || "Marcela Lima";
+  const nome_cliente = (ag.clienteNome || ag.responsavel || "").trim();
   const endereco_completo = obterEnderecoCompleto(ag);
   const data_vistoria = limparTextoCampo(ag.data ? formatarData(ag.data) : "");
   const hora_vistoria = limparTextoCampo(ag.hora);
   
-  const mensagem = `Olá, sou ${nome_vistoriadora}, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria no seu imóvel.
+  const saudacao = nome_cliente ? `Olá, ${nome_cliente}! Sou ${nome_vistoriadora}` : `Olá, sou ${nome_vistoriadora}`;
+  const mensagem = `${saudacao}, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria no seu imóvel.
 
 Gostaria de fazer algumas confirmações antes de comparecer até o imóvel localizado em:
 
@@ -1086,7 +1088,7 @@ function renderizarConfig() {
   configMetaMensal.value  = appConfig.metaMensal  ?? 4000;
   configCombustivel.value = appConfig.combustivel ?? 0;
   configPedagio.value     = appConfig.pedagio     ?? 0;
-  configNome.value        = localStorage.getItem("vistoriaUserName") || appConfig.nome || "";
+  configNome.value        = obterNomeUsuarioLocal() || appConfig.nome || "";
   configWhatsapp.value    = appConfig.whatsapp    || "";
   configTema.checked      = appConfig.tema === "dark";
 }
@@ -1103,7 +1105,7 @@ function salvarConfig() {
     tema:        configTema.checked ? "dark" : "light",
   };
   Object.assign(appConfig, salvarConfigDados(novaConfig));
-  if (novoNome) localStorage.setItem("vistoriaUserName", novoNome);
+  if (novoNome) salvarNomeUsuarioLocal(novoNome);
   aplicarTema(appConfig.tema);
   mostrarToast("Configurações salvas! ✓");
 }
@@ -1117,7 +1119,7 @@ function gerarRelatorioHoje() {
   const hoje      = hojeISO();
   const vistorias = listarVistorias().filter(v => v.dataAgendada === hoje);
   const total     = vistorias.reduce((s, v) => s + v.valor, 0);
-  const nome      = localStorage.getItem("vistoriaUserName") || "";
+  const nome      = obterNomeUsuarioLocal();
   const meta      = appConfig.metaDiaria || 200;
   const pct       = Math.round((total / meta) * 100);
 
@@ -1147,7 +1149,7 @@ function gerarRelatorioHoje() {
 function gerarRelatorioCompleto() {
   const vistorias = listarVistorias();
   const hoje      = hojeISO();
-  const nome      = localStorage.getItem("vistoriaUserName") || "";
+  const nome      = obterNomeUsuarioLocal();
 
   const deHoje  = calcularMetricas(vistorias, ehHojeFiltro);
   const doMes   = calcularMetricas(vistorias, ehNesteMes);
@@ -1189,7 +1191,7 @@ function exportarDados() {
     vistorias:    listarVistoriasComRascunhos(),
     agendamentos: listarAgendamentos(),
     config:       { ...appConfig },
-    userName:     localStorage.getItem("vistoriaUserName") || "",
+    userName:     obterNomeUsuarioLocal(),
   };
   const json  = JSON.stringify(dados, null, 2);
   const blob  = new Blob([json], { type: "application/json" });
@@ -1215,7 +1217,7 @@ function importarDados(arquivo) {
 
       localStorage.setItem(CHAVE_VISTORIAS, JSON.stringify(dados.vistorias));
       localStorage.setItem(CHAVE_AGENDA,    JSON.stringify(dados.agendamentos || []));
-      if (dados.userName) localStorage.setItem("vistoriaUserName", dados.userName);
+      if (dados.userName) salvarNomeUsuarioLocal(dados.userName);
       if (dados.config)   localStorage.setItem(CHAVE_CONFIG, JSON.stringify(dados.config));
 
       mostrarToast("Backup importado com sucesso! Recarregando...");
