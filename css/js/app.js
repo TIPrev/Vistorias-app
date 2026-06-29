@@ -857,34 +857,31 @@ function linkWhatsAppAgendamento(ag) {
   const telefone = ag.clienteTelefone || ag.telefoneWhatsapp || "";
   if (!telefoneValido(telefone)) throw new Error("Use 55 + DDD + número.");
   
-  const nomeCliente = (ag.clienteNome || ag.responsavel || "").trim();
-  const primeiroNomeCliente = nomeCliente.split(/\s+/)[0];
   const endereco_completo = obterEnderecoCompleto(ag);
   const data_vistoria = limparTextoCampo(ag.data ? formatarData(ag.data) : "");
   const hora_vistoria = limparTextoCampo(ag.hora);
-  
-  const codDetail = ag.imovelCodigo ? `\nCódigo do imóvel: ${ag.imovelCodigo}` : "";
   const tipoVistoria = ag.tipo === "saida" ? "saída" : "entrada";
-  
-  const saudacao = primeiroNomeCliente
-    ? `Olá, ${primeiroNomeCliente}! Tudo bem?`
-    : "Olá! Tudo bem?";
-  const mensagem = `${saudacao}
+  const identificacaoImovel = imovelDoAgendamento(ag);
+  const codigoImovel = limparTextoCampo(ag.imovelCodigo);
+  const referenciaImovel = [
+    identificacaoImovel,
+    codigoImovel ? `(Código do imóvel: ${codigoImovel})` : "",
+  ].filter(Boolean).join(" ");
+  const detalheImovel = referenciaImovel ? ` ${referenciaImovel}` : "";
 
-Segue agendamento de vistoria de ${tipoVistoria} no seu imóvel:
+  const mensagem = `Sou a Marcela Lima, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria de ${tipoVistoria} no seu imóvel${detalheImovel} e gostaria de fazer algumas confirmações antes de comparecer até o imóvel localizado na:
 
-Local: ${endereco_completo}
+${endereco_completo}
+
 Data da vistoria: ${data_vistoria}
-Horário: ${hora_vistoria}${codDetail}
+Horário: ${hora_vistoria}
 
-Por gentileza, poderia me confirmar as informações abaixo?
+* O imóvel já está desocupado? (sem moradores)
+* O imóvel está em reforma?
+* Poderia confirmar o local das chaves conforme o que está no app?
+* O imóvel possui abastecimento de água, luz e/ou gás para realizar o teste dos itens?
 
-• O imóvel já está desocupado, sem moradores?
-• O imóvel está em reforma?
-• Poderia confirmar o local das chaves conforme consta no app?
-• O imóvel possui abastecimento de água, luz e/ou gás para realizar o teste dos itens?
-
-Peço gentilmente que, ao concordar com a vistoria, notifique o condomínio sobre a visita nesta data para que não haja impedimento na entrada.
+Peço gentilmente que ao concordar com a vistoria, notifique o condomínio sobre a visita nesta data ${data_vistoria} para que não haja nenhum impedimento para entrada ao condomínio.
 
 Fico no aguardo das confirmações para darmos início aos próximos passos.
 
@@ -1348,7 +1345,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=22").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=23").catch(() => {});
 }
 
 inicializar();
