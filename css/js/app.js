@@ -880,7 +880,7 @@ Fico no aguardo das confirmações para darmos início aos próximos passos.
 
 Muito obrigada.`;
 
-  return `https://wa.me/${normalizarTelefone(telefone)}?text=${encodeURIComponent(mensagem)}`;
+  return `whatsapp://send?phone=${normalizarTelefone(telefone)}&text=${encodeURIComponent(mensagem)}`;
 }
 
 async function adicionarAgendamentoPeloFormulario(event) {
@@ -1198,7 +1198,7 @@ function enviarWhatsApp(texto) {
     trocarTela("config");
     return;
   }
-  const url = `https://wa.me/55${numero}?text=${encodeURIComponent(texto)}`;
+  const url = `whatsapp://send?phone=55${numero}&text=${encodeURIComponent(texto)}`;
   window.open(url, "_blank");
 }
 
@@ -1336,7 +1336,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=14").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=15").catch(() => {});
 }
 
 inicializar();
