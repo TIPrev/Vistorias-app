@@ -1200,7 +1200,16 @@ function enviarWhatsApp(mensagem) {
   const telefone = numero.startsWith("55") ? numero : `55${numero}`;
   const textoEncoded = encodeURIComponent(mensagem);
   const url = `https://wa.me/${telefone}?text=${textoEncoded}`;
-  window.open(url, "_blank");
+  const androidStandalone = /Android/i.test(navigator.userAgent)
+    && window.matchMedia("(display-mode: standalone)").matches;
+
+  if (androidStandalone) {
+    window.location.href = url;
+    return;
+  }
+
+  const popupWhatsapp = window.open(url, "_blank");
+  if (!popupWhatsapp) window.location.href = url;
 }
 
 
@@ -1337,7 +1346,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=18").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=20").catch(() => {});
 }
 
 inicializar();
