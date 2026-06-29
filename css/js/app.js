@@ -639,7 +639,7 @@ function dadosVistoriaDoAgendamento(agendamento) {
     complemento: agendamento.complemento || "", bairro: agendamento.bairro || "",
     cidade: agendamento.cidade || "", uf: agendamento.uf || "",
     enderecoCompleto: agendamento.enderecoCompleto || agendamento.endereco || "",
-    metragem: 0, tipo: "entrada", mobilia: false, qualidade: false, valor: 0,
+    metragem: 0, tipo: agendamento.tipo || "entrada", mobilia: false, qualidade: false, valor: 0,
     clienteAcompanhou: "Não", nomeResponsavelAceite: agendamento.clienteNome || agendamento.responsavel || "",
     documentoResponsavel: "", observacaoAceite: "", aceiteTexto: ACEITE_TEXTO_PADRAO,
     aceiteConfirmado: false, rascunho: true
@@ -767,9 +767,10 @@ function renderizarAgenda() {
     li.className = "agenda-card";
     li.dataset.id = ag.id;
     const codBadge = ag.imovelCodigo ? ` · Cód: ${textoSeguro(ag.imovelCodigo)}` : "";
+    const tipoLabel = ag.tipo === "saida" ? "Saída" : "Entrada";
     li.innerHTML = `
       <div class="agenda-card-header">
-        <div><small>${textoSeguro(imovelDoAgendamento(ag))}${codBadge}</small><strong>${textoSeguro(clienteDoAgendamento(ag))}</strong></div>
+        <div><small>${textoSeguro(imovelDoAgendamento(ag))}${codBadge} · Vistoria de ${tipoLabel}</small><strong>${textoSeguro(clienteDoAgendamento(ag))}</strong></div>
         <span class="status-badge">${textoSeguro(ag.statusConfirmacao)}</span>
       </div>
       <div class="agenda-card-time">${textoSeguro(ag.hora)} · ${formatarData(ag.data)}</div>
@@ -789,6 +790,9 @@ function abrirFormularioAgenda(ag = null) {
   agendaIdInput.value = ag?.id || "";
   agendaDataInput.value = ag?.data || hojeISO(); agendaHoraInput.value = ag?.hora || horaAtual();
   agendaImovelCodigoInput.value = ag?.imovelCodigo || "";
+  document.querySelectorAll("input[name='agenda-tipo']").forEach(input => {
+    input.checked = input.value === (ag?.tipo || "entrada");
+  });
   agendaClienteNomeInput.value = ag?.clienteNome || ag?.responsavel || "";
   agendaClienteTelefoneInput.value = ag?.clienteTelefone || ag?.telefoneWhatsapp || "";
   agendaImovelTipoInput.value = ag?.imovelTipo || "";
@@ -842,9 +846,10 @@ function linkWhatsAppAgendamento(ag) {
   
   const codIntro = ag.imovelCodigo ? ` (cód: ${ag.imovelCodigo})` : "";
   const codDetail = ag.imovelCodigo ? `\nCódigo do Imóvel: ${ag.imovelCodigo}` : "";
+  const tipoVistoria = ag.tipo === "saida" ? "saída" : "entrada";
   
   const saudacao = nome_cliente ? `Olá, ${nome_cliente}! Sou ${nome_vistoriadora}` : `Olá, sou ${nome_vistoriadora}`;
-  const mensagem = `${saudacao}, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria no seu imóvel${codIntro}.
+  const mensagem = `${saudacao}, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria de ${tipoVistoria} no seu imóvel${codIntro}.
 
 Gostaria de fazer algumas confirmações antes de comparecer até o imóvel localizado em:
 
@@ -877,8 +882,10 @@ async function adicionarAgendamentoPeloFormulario(event) {
     rua: agendaRuaInput.value, numero: agendaNumeroInput.value, complemento: agendaComplementoInput.value,
     bairro: agendaBairroInput.value, cidade: agendaCidadeInput.value, uf: agendaUfInput.value.toUpperCase()
   });
+  const agendaTipo = document.querySelector("input[name='agenda-tipo']:checked")?.value || "entrada";
   const dados = { data: agendaDataInput.value, hora: agendaHoraInput.value,
     imovelCodigo: agendaImovelCodigoInput.value.trim(),
+    tipo: agendaTipo,
     clienteNome: agendaClienteNomeInput.value.trim(), clienteTelefone: telefone,
     imovelTipo: agendaImovelTipoInput.value.trim(), imovelIdentificacao: agendaImovelIdentificacaoInput.value.trim(),
     cep: agendaCepInput.value.trim(), rua: agendaRuaInput.value.trim(), numero: agendaNumeroInput.value.trim(),
@@ -1320,7 +1327,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=12").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=13").catch(() => {});
 }
 
 inicializar();
