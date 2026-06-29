@@ -1190,14 +1190,16 @@ function gerarRelatorioCompleto() {
   return txt;
 }
 
-function enviarWhatsApp(texto) {
+function enviarWhatsApp(mensagem) {
   const numero = (appConfig.whatsapp || "").replace(/\D/g, "");
   if (!numero) {
     mostrarToast("Cadastre um número de WhatsApp nas configurações.", "error");
     trocarTela("config");
     return;
   }
-  const url = `whatsapp://send?phone=55${numero}&text=${encodeURIComponent(texto)}`;
+  const telefone = numero.startsWith("55") ? numero : `55${numero}`;
+  const textoEncoded = encodeURIComponent(mensagem);
+  const url = `https://wa.me/${telefone}?text=${textoEncoded}`;
   window.open(url, "_blank");
 }
 
