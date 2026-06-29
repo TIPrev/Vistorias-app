@@ -847,18 +847,18 @@ function linkWhatsAppAgendamento(ag) {
   const telefone = ag.clienteTelefone || ag.telefoneWhatsapp || "";
   if (!telefoneValido(telefone)) throw new Error("Use 55 + DDD + número.");
   
-  const nome_vistoriadora = (obterNomeUsuarioLocal() || appConfig.nome || "").trim() || "Marcela";
+  const nome_completo_vistoriadora = (obterNomeUsuarioLocal() || appConfig.nome || "").trim() || "Marcela";
+  const nome_vistoriadora = primeiroNomeUsuario(nome_completo_vistoriadora);
   const nome_cliente = (ag.clienteNome || ag.responsavel || "").trim();
   const endereco_completo = obterEnderecoCompleto(ag);
   const data_vistoria = limparTextoCampo(ag.data ? formatarData(ag.data) : "");
   const hora_vistoria = limparTextoCampo(ag.hora);
   
-  const codIntro = ag.imovelCodigo ? ` (cód: ${ag.imovelCodigo})` : "";
   const codDetail = ag.imovelCodigo ? `\nCódigo do Imóvel: ${ag.imovelCodigo}` : "";
   const tipoVistoria = ag.tipo === "saida" ? "saída" : "entrada";
   
   const saudacao = nome_cliente ? `Olá, ${nome_cliente}! Sou ${nome_vistoriadora}` : `Olá, sou ${nome_vistoriadora}`;
-  const mensagem = `${saudacao}, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria de ${tipoVistoria} no seu imóvel${codIntro}.
+  const mensagem = `${saudacao}, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria de ${tipoVistoria} no seu imóvel.
 
 Gostaria de fazer algumas confirmações antes de comparecer até o imóvel localizado em:
 
@@ -1336,7 +1336,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=15").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=16").catch(() => {});
 }
 
 inicializar();
