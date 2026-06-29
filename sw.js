@@ -1,13 +1,13 @@
-const CACHE = 'vistoria-v11-whatsapp-resposta';
+const CACHE = 'vistoria-v12-whatsapp-resposta';
 const ASSETS = [
   '/',
   '/index.html',
-  '/css/style.css?v=11',
-  '/css/js/calculadora.js?v=11',
-  '/css/js/memoria.js?v=11',
-  '/css/js/app.js?v=11',
-  '/config.js?v=11',
-  '/firebase.js?v=11',
+  '/css/style.css?v=12',
+  '/css/js/calculadora.js?v=12',
+  '/css/js/memoria.js?v=12',
+  '/css/js/app.js?v=12',
+  '/config.js?v=12',
+  '/firebase.js?v=12',
   '/manifest.json',
   '/icons/icon.svg',
 ];

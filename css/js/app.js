@@ -804,50 +804,61 @@ function normalizarTelefone(valor) {
   return digitos.startsWith("55") ? digitos : `55${digitos}`;
 }
 function telefoneValido(valor) { return /^55\d{10,11}$/.test(normalizarTelefone(valor)); }
-function mensagemRespostaAgendamento(ag, acao) {
-  const cliente = clienteDoAgendamento(ag);
-  const imovel = imovelDoAgendamento(ag);
-  const endereco = enderecoDoAgendamento(ag);
-  return [
-    acao,
-    "",
-    cliente && `Cliente: ${cliente}`,
-    imovel && `Imóvel: ${imovel}`,
-    endereco && `Endereço: ${endereco}`,
-    ag.data && `Data: ${formatarData(ag.data)}`,
-    ag.hora && `Hora: ${ag.hora}`
-  ].filter(Boolean).join("\n");
+function limparTextoCampo(val) {
+  if (val === null || val === undefined) return "";
+  const s = String(val).trim();
+  if (s === "null" || s === "undefined") return "";
+  return s;
 }
+
+function obterEnderecoCompleto(ag) {
+  let endCompleto = limparTextoCampo(ag?.enderecoCompleto || ag?.endereco);
+  if (endCompleto) return endCompleto;
+  
+  const rua = limparTextoCampo(ag?.rua);
+  const numero = limparTextoCampo(ag?.numero);
+  const complemento = limparTextoCampo(ag?.complemento);
+  const bairro = limparTextoCampo(ag?.bairro);
+  const cidade = limparTextoCampo(ag?.cidade);
+  const uf = limparTextoCampo(ag?.uf);
+  
+  const ruaNumero = [rua, numero].filter(Boolean).join(", ");
+  const cidadeUf = [cidade, uf].filter(Boolean).join(" - ");
+  return [ruaNumero, complemento, bairro, cidadeUf].filter(Boolean).join(", ");
+}
+
 function linkWhatsAppAgendamento(ag) {
   const telefone = ag.clienteTelefone || ag.telefoneWhatsapp || "";
   if (!telefoneValido(telefone)) throw new Error("Use 55 + DDD + número.");
-  const telefoneVistoriador = normalizarTelefone(appConfig.whatsapp);
-  if (!telefoneValido(telefoneVistoriador)) {
-    throw new Error("Cadastre o WhatsApp do vistoriador nas configurações.");
-  }
-  const confirmar = `https://wa.me/${telefoneVistoriador}?text=${encodeURIComponent(mensagemRespostaAgendamento(ag, "Confirmo minha vistoria"))}`;
-  const reagendar = `https://wa.me/${telefoneVistoriador}?text=${encodeURIComponent(mensagemRespostaAgendamento(ag, "Preciso reagendar minha vistoria"))}`;
-  const cliente = clienteDoAgendamento(ag);
-  const imovel = imovelDoAgendamento(ag);
-  const endereco = enderecoDoAgendamento(ag);
-  const linhas = [
-    `Olá, ${primeiroNomeUsuario(cliente)}. Tudo bem?`,
-    "",
-    "Passando para confirmar sua vistoria agendada.",
-    "",
-    cliente && `Cliente: ${cliente}`,
-    imovel && `Imóvel: ${imovel}`,
-    ag.data && `Data: ${formatarData(ag.data)}`,
-    ag.hora && `Horário: ${ag.hora}`,
-    endereco && `Endereço: ${endereco}`,
-    "",
-    "Para confirmar pelo WhatsApp:",
-    confirmar,
-    "",
-    "Para pedir reagendamento pelo WhatsApp:",
-    reagendar
-  ].filter(linha => linha !== false && linha != null);
-  return `https://wa.me/${normalizarTelefone(telefone)}?text=${encodeURIComponent(linhas.join("\n"))}`;
+  
+  const nome_vistoriadora = (localStorage.getItem("vistoriaUserName") || appConfig.nome || "").trim() || "Marcela Lima";
+  const endereco_completo = obterEnderecoCompleto(ag);
+  const data_vistoria = limparTextoCampo(ag.data ? formatarData(ag.data) : "");
+  const hora_vistoria = limparTextoCampo(ag.hora);
+  
+  const mensagem = `Olá, sou ${nome_vistoriadora}, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria no seu imóvel.
+
+Gostaria de fazer algumas confirmações antes de comparecer até o imóvel localizado em:
+
+${endereco_completo}
+
+Data da vistoria: ${data_vistoria}
+Horário: ${hora_vistoria}
+
+Por gentileza, poderia me confirmar as informações abaixo?
+
+• O imóvel já está desocupado, sem moradores?
+• O imóvel está em reforma?
+• Poderia confirmar o local das chaves conforme consta no app?
+• O imóvel possui abastecimento de água, luz e/ou gás para realizar o teste dos itens?
+
+Peço gentilmente que, ao concordar com a vistoria, notifique o condomínio sobre a visita nesta data para que não haja impedimento na entrada.
+
+Fico no aguardo das confirmações para darmos início aos próximos passos.
+
+Muito obrigada.`;
+
+  return `https://wa.me/${normalizarTelefone(telefone)}?text=${encodeURIComponent(mensagem)}`;
 }
 
 async function adicionarAgendamentoPeloFormulario(event) {

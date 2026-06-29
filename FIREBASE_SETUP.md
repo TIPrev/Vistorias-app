@@ -35,10 +35,7 @@ No painel do Render, abra **Static Site > Redirects/Rewrites** e adicione:
 - **Destination:** `/index.html`
 - **Action:** `Rewrite`
 
-Use **Publish Directory** igual a `.`. Essa regra mantém funcionando:
-
-- `/agendamento/confirmar/{token}`
-- `/agendamento/reagendar/{token}`
+Use **Publish Directory** igual a `.`.
 
 ## 5. Migrar os dados do aparelho
 
