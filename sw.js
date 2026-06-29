@@ -1,11 +1,11 @@
-const CACHE = 'vistoria-v23-whatsapp-mensagem';
+const CACHE = 'vistoria-v24-whatsapp-cliente';
 const ASSETS = [
   '/',
   '/index.html',
   '/css/style.css?v=18',
   '/css/js/calculadora.js?v=18',
   '/css/js/memoria.js?v=18',
-  '/css/js/app.js?v=23',
+  '/css/js/app.js?v=24',
   '/config.js?v=18',
   '/firebase.js?v=18',
   '/manifest.json',

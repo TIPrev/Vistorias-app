@@ -857,6 +857,11 @@ function linkWhatsAppAgendamento(ag) {
   const telefone = ag.clienteTelefone || ag.telefoneWhatsapp || "";
   if (!telefoneValido(telefone)) throw new Error("Use 55 + DDD + número.");
   
+  const nomeCliente = (ag.clienteNome || ag.responsavel || "").trim();
+  const primeiroNomeCliente = nomeCliente.split(/\s+/)[0];
+  const saudacao = primeiroNomeCliente
+    ? `Olá, ${primeiroNomeCliente}! Tudo bem?`
+    : "Olá! Tudo bem?";
   const endereco_completo = obterEnderecoCompleto(ag);
   const data_vistoria = limparTextoCampo(ag.data ? formatarData(ag.data) : "");
   const hora_vistoria = limparTextoCampo(ag.hora);
@@ -869,7 +874,9 @@ function linkWhatsAppAgendamento(ag) {
   ].filter(Boolean).join(" ");
   const detalheImovel = referenciaImovel ? ` ${referenciaImovel}` : "";
 
-  const mensagem = `Sou a Marcela Lima, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria de ${tipoVistoria} no seu imóvel${detalheImovel} e gostaria de fazer algumas confirmações antes de comparecer até o imóvel localizado na:
+  const mensagem = `${saudacao}
+
+Sou a Marcela Lima, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria de ${tipoVistoria} no seu imóvel${detalheImovel} e gostaria de fazer algumas confirmações antes de comparecer até o imóvel localizado na:
 
 ${endereco_completo}
 
@@ -1345,7 +1352,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=23").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=24").catch(() => {});
 }
 
 inicializar();
