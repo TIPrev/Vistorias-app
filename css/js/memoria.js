@@ -174,7 +174,7 @@ async function importarDadosLocais() {
   for (const a of locaisA) {
     const row = await onlineBackend.saveAppointment({
       ...a, legacyId: a.legacyId || (a.onlineId ? null : a.id), unidadeCliente: a.unidadeCliente || "Importado do aparelho",
-      responsavel: a.responsavel || "Não informado", telefoneWhatsapp: a.telefoneWhatsapp || "5511000000000",
+      responsavel: a.responsavel || "Não informado", telefoneWhatsapp: a.telefoneWhatsapp || "",
       obs: ["Importado do formato antigo; revise responsável e WhatsApp.", a.obs].filter(Boolean).join(" "),
       statusConfirmacao: a.statusConfirmacao || "Aguardando envio"
     });
