@@ -2170,3 +2170,20 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
   .card-actions { grid-template-columns: 1fr; }
   .sync-strip { align-items: flex-start; flex-direction: column; }
 }
+
+/* Garantia final: o atalho do assistente nunca ocupa a largura da tela. */
+@media (max-width: 640px) {
+  #assistant-btn {
+    box-sizing: border-box !important;
+    width: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    padding: 0 !important;
+    flex: 0 0 48px !important;
+    right: 14px !important;
+    left: auto !important;
+  }
+}
