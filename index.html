@@ -12,7 +12,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon.svg">
-  <link rel="stylesheet" href="css/style.css?v=22">
+  <link rel="stylesheet" href="css/style.css?v=23">
 </head>
 <body>
 
@@ -494,7 +494,13 @@
         <section id="tela-resumo" class="view-section hidden">
           <div class="page-content">
 
-            <h3 class="section-label">Dashboard</h3>
+            <div class="section-row resumo-periodo-row">
+              <h3 class="section-label">Dashboard</h3>
+              <label class="resumo-mes-label" for="resumo-mes">
+                <span>Mês do saldo</span>
+                <input id="resumo-mes" type="month" aria-label="Selecionar mês do resumo">
+              </label>
+            </div>
             <div class="dashboard-grid">
               <div class="dashboard-card dashboard-card--today">
                 <small>Hoje</small>
@@ -507,12 +513,12 @@
                 <span id="dashboard-semana-qtd">0 vistorias</span>
               </div>
               <div class="dashboard-card">
-                <small>Mês</small>
+                <small>Mês selecionado</small>
                 <strong id="dashboard-mes-valor">R$ 0,00</strong>
                 <span id="dashboard-mes-qtd">0 vistorias</span>
               </div>
               <div class="dashboard-card">
-                <small>Ano</small>
+                <small>Ano selecionado</small>
                 <strong id="dashboard-ano-valor">R$ 0,00</strong>
                 <span id="dashboard-ano-qtd">0 vistorias</span>
               </div>
@@ -548,7 +554,7 @@
               </div>
             </div>
 
-            <h3 class="section-label">Métricas gerais</h3>
+            <h3 class="section-label">Métricas do mês</h3>
             <div class="metrics-grid">
               <div class="metric-card">
                 <small>Entradas</small>
@@ -579,7 +585,7 @@
               </div>
             </div>
 
-            <h3 class="section-label">Histórico</h3>
+            <h3 class="section-label">Histórico do mês</h3>
             <ul id="historico-lista" class="historic-list"></ul>
             <p id="historico-vazio" class="empty-state">Nenhuma vistoria salva.</p>
 
@@ -798,6 +804,6 @@
   <script src="css/js/calculadora.js?v=18"></script>
   <script src="css/js/memoria.js?v=18"></script>
   <script src="css/js/assistant.js?v=2"></script>
-  <script src="css/js/app.js?v=27"></script>
+  <script src="css/js/app.js?v=29"></script>
 </body>
 </html>

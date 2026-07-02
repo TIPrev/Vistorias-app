@@ -106,6 +106,7 @@ let filtroPeriodo = "hoje";
 // Tela: Resumo
 const historicoLista      = document.querySelector("#historico-lista");
 const historicoVazio      = document.querySelector("#historico-vazio");
+const resumoMesInput      = document.querySelector("#resumo-mes");
 const dashboardHojeValor  = document.querySelector("#dashboard-hoje-valor");
 const dashboardHojeQtd    = document.querySelector("#dashboard-hoje-qtd");
 const dashboardSemanaValor= document.querySelector("#dashboard-semana-valor");
@@ -867,7 +868,9 @@ function normalizarTelefone(valor) {
 function telefoneValido(valor) { return /^55\d{10,11}$/.test(normalizarTelefone(valor)); }
 function abrirLinkWhatsApp(url) {
   if (/Android/i.test(navigator.userAgent)) {
-    window.location.href = url;
+    // O endpoint /send recebe o telefone em cada envio e evita reaproveitar
+    // a conversa aberta anteriormente pelo aplicativo do WhatsApp.
+    window.location.assign(url);
     return null;
   }
 
@@ -899,7 +902,7 @@ function obterEnderecoCompleto(ag) {
 }
 
 function linkWhatsAppAgendamento(ag) {
-  const telefone = ag.clienteTelefone || ag.telefoneWhatsapp || "";
+  const telefone = String(ag.clienteTelefone || ag.telefoneWhatsapp || "").trim();
   if (!telefoneValido(telefone)) throw new Error("Use 55 + DDD + número.");
   
   const nomeCliente = (ag.clienteNome || ag.responsavel || "").trim();
@@ -941,7 +944,7 @@ Muito obrigada.`;
 
   const telefoneNormalizado = normalizarTelefone(telefone);
   const textoEncoded = encodeURIComponent(mensagem);
-  return `https://wa.me/${telefoneNormalizado}?text=${textoEncoded}`;
+  return `https://api.whatsapp.com/send?phone=${telefoneNormalizado}&text=${textoEncoded}`;
 }
 
 async function adicionarAgendamentoPeloFormulario(event) {
@@ -1011,6 +1014,7 @@ const getStartOfWeek   = d => { const dt = new Date(d); const day = dt.getDay();
 const ehNestaSemana    = d => new Date(d) >= getStartOfWeek(new Date());
 const ehNesteMes       = d => new Date().getMonth() === new Date(d).getMonth() && new Date().getFullYear() === new Date(d).getFullYear();
 const ehNesteAno       = d => new Date().getFullYear() === new Date(d).getFullYear();
+const pertenceAoMes = (data, mesAno) => Boolean(data && mesAno && String(data).slice(0, 7) === mesAno);
 
 function calcularMetricas(lista, filtro) {
   const filtradas = lista.filter(v => v.dataAgendada && filtro(v.dataAgendada + "T00:00:00"));
@@ -1025,10 +1029,16 @@ function setProgressBar(fillId, pctId, valor, meta) {
 
 function renderizarResumo() {
   const vistorias = listarVistorias();
+  const mesSelecionado = resumoMesInput.value || hojeISO().slice(0, 7);
+  if (!resumoMesInput.value) resumoMesInput.value = mesSelecionado;
+  const anoSelecionado = mesSelecionado.slice(0, 4);
+  const vistoriasMes = vistorias.filter(v => pertenceAoMes(v.dataAgendada, mesSelecionado));
+  const vistoriasAno = vistorias.filter(v => String(v.dataAgendada || "").startsWith(`${anoSelecionado}-`));
   const metaDiaria = appConfig.metaDiaria || 200;
   const metaMensal = appConfig.metaMensal || 4000;
 
-  historicoVazio.classList.toggle("hidden", vistorias.length > 0);
+  historicoVazio.classList.toggle("hidden", vistoriasMes.length > 0);
+  historicoVazio.textContent = "Nenhuma vistoria registrada neste mês.";
   historicoLista.innerHTML = "";
 
   if (vistorias.length === 0) {
@@ -1050,7 +1060,7 @@ function renderizarResumo() {
   }
 
   // Histórico
-  [...vistorias].sort((a,b) => b.dataAgendada.localeCompare(a.dataAgendada)).forEach(v => {
+  [...vistoriasMes].sort((a,b) => b.dataAgendada.localeCompare(a.dataAgendada)).forEach(v => {
     const li = document.createElement("li");
     li.className = "historic-card";
     const mobLabel = v.mobilia ? " · Mobília" : "";
@@ -1072,8 +1082,8 @@ function renderizarResumo() {
   // Dashboard
   const hoje   = calcularMetricas(vistorias, ehHojeFiltro);
   const semana = calcularMetricas(vistorias, ehNestaSemana);
-  const mes    = calcularMetricas(vistorias, ehNesteMes);
-  const ano    = calcularMetricas(vistorias, ehNesteAno);
+  const mes    = { valor: vistoriasMes.reduce((s, v) => s + Number(v.valor || 0), 0), qtd: vistoriasMes.length };
+  const ano    = { valor: vistoriasAno.reduce((s, v) => s + Number(v.valor || 0), 0), qtd: vistoriasAno.length };
 
   dashboardHojeValor.textContent   = formatarMoeda(hoje.valor);
   dashboardHojeQtd.textContent     = `${hoje.qtd} vistoria${hoje.qtd !== 1 ? "s" : ""}`;
@@ -1093,19 +1103,19 @@ function renderizarResumo() {
   document.querySelector("#meta-mensal-total").textContent = `Meta: ${formatarMoeda(metaMensal)}`;
 
   // Métricas
-  const entradas = vistorias.filter(v => v.tipo === "entrada");
-  const saidas   = vistorias.filter(v => v.tipo === "saida");
+  const entradas = vistoriasMes.filter(v => v.tipo === "entrada");
+  const saidas   = vistoriasMes.filter(v => v.tipo === "saida");
   ganhoEntradasValor.textContent = formatarMoeda(entradas.reduce((s,v) => s+v.valor, 0));
   ganhoEntradasQtd.textContent   = `${entradas.length} vistorias`;
   ganhoSaidasValor.textContent   = formatarMoeda(saidas.reduce((s,v) => s+v.valor, 0));
   ganhoSaidasQtd.textContent     = `${saidas.length} vistorias`;
 
-  const valores = vistorias.map(v => v.valor);
-  rankingMaiorValor.textContent  = formatarMoeda(Math.max(...valores));
-  rankingMenorValor.textContent  = formatarMoeda(Math.min(...valores));
-  rankingMediaValor.textContent  = formatarMoeda(valores.reduce((s,v) => s+v, 0) / valores.length);
+  const valores = vistoriasMes.map(v => Number(v.valor || 0));
+  rankingMaiorValor.textContent  = formatarMoeda(valores.length ? Math.max(...valores) : 0);
+  rankingMenorValor.textContent  = formatarMoeda(valores.length ? Math.min(...valores) : 0);
+  rankingMediaValor.textContent  = formatarMoeda(valores.length ? valores.reduce((s,v) => s+v, 0) / valores.length : 0);
 
-  const ganhosPorDia = vistorias.reduce((acc, v) => {
+  const ganhosPorDia = vistoriasMes.reduce((acc, v) => {
     const dia = new Date(v.dataAgendada + "T00:00:00").getDay();
     acc[dia] = (acc[dia] || 0) + v.valor;
     return acc;
@@ -1240,19 +1250,24 @@ function gerarRelatorioHoje() {
 
 function gerarRelatorioCompleto() {
   const vistorias = listarVistorias();
-  const hoje      = hojeISO();
   const nome      = obterNomeUsuarioLocal();
+  const mesSelecionado = resumoMesInput.value || hojeISO().slice(0, 7);
+  const [anoNumero, mesNumero] = mesSelecionado.split("-").map(Number);
+  const nomeMes = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" })
+    .format(new Date(anoNumero, mesNumero - 1, 1));
 
   const deHoje  = calcularMetricas(vistorias, ehHojeFiltro);
-  const doMes   = calcularMetricas(vistorias, ehNesteMes);
-  const doAno   = calcularMetricas(vistorias, ehNesteAno);
+  const listaMes = vistorias.filter(v => pertenceAoMes(v.dataAgendada, mesSelecionado));
+  const listaAno = vistorias.filter(v => String(v.dataAgendada || "").startsWith(`${anoNumero}-`));
+  const doMes = { valor: listaMes.reduce((s, v) => s + Number(v.valor || 0), 0), qtd: listaMes.length };
+  const doAno = { valor: listaAno.reduce((s, v) => s + Number(v.valor || 0), 0), qtd: listaAno.length };
 
   let txt = `📊 *Resumo — Vistoria App*\n`;
   if (nome) txt += `👤 ${nome}\n\n`;
 
   txt += `*Hoje:* ${formatarMoeda(deHoje.valor)} (${deHoje.qtd} vistorias)\n`;
-  txt += `*Mês:* ${formatarMoeda(doMes.valor)} (${doMes.qtd} vistorias)\n`;
-  txt += `*Ano:* ${formatarMoeda(doAno.valor)} (${doAno.qtd} vistorias)\n`;
+  txt += `*${nomeMes}:* ${formatarMoeda(doMes.valor)} (${doMes.qtd} vistorias)\n`;
+  txt += `*Ano ${anoNumero}:* ${formatarMoeda(doAno.valor)} (${doAno.qtd} vistorias)\n`;
 
   const meta = appConfig.metaMensal || 4000;
   const pct  = Math.round((doMes.valor / meta) * 100);
@@ -1390,6 +1405,8 @@ async function inicializar() {
 
   // Resumo
   historicoLista.addEventListener("click", removerVistoriaDoHistorico);
+  resumoMesInput.value = hojeISO().slice(0, 7);
+  resumoMesInput.addEventListener("change", renderizarResumo);
 
   // Config
   configSaveBtn.addEventListener("click", salvarConfig);
