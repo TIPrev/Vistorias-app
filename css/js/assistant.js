@@ -17,120 +17,84 @@
     const responses = {
       "nova-vistoria": {
         title: "📝 Nova Vistoria",
-        text: `<strong>Como preencher uma nova vistoria:</strong>
-        <br><br>
-        <strong>Passo 1: Dados do cliente</strong>
-        • Digite o nome completo do cliente
-        • Confirme o telefone para contato
-        <br><br>
-        <strong>Passo 2: Endereço</strong>
-        • Digite ou confirme o CEP
-        • Complete a rua, número e complemento
-        • Adicione bairro, cidade e UF
-        <br><br>
-        <strong>Passo 3: Informações da vistoria</strong>
-        • Data e hora da vistoria
-        • Metragem do imóvel em m²
-        • Tipo (Entrada ou Saída)
-        • Marque se há mobília e qualidade
-        <br><br>
-        <strong>Passo 4: Aceite do cliente</strong>
-        • Nome do responsável pelo aceite
-        • Documento (opcional)
-        • Observações (opcional)
-        • Marque que acompanhou a vistoria
-        <br><br>
-        <strong>✓ Clique em "Finalizar vistoria" para salvar</strong>`
+        text: `<p><strong>Para criar uma vistoria, siga os passos:</strong></p>
+        <ul>
+          <li>Preencha <strong>cliente/unidade do imóvel</strong> corretamente</li>
+          <li>Confirme o <strong>endereço completo</strong> (rua, número, bairro, cidade, UF)</li>
+          <li>Adicione <strong>responsável</strong> e <strong>telefone</strong> de contato</li>
+          <li>Defina <strong>data e horário</strong> da vistoria</li>
+          <li>Tire <strong>fotos</strong> e adicione observações</li>
+          <li>Antes de salvar, confira se <strong>todos os dados pertencem ao imóvel correto</strong></li>
+        </ul>
+        <p><strong>⚠️ Dica importante:</strong> Evite copiar dados da vistoria anterior. Sempre confirme manualmente que os dados são do cliente atual.</p>`
       },
       "agendamentos": {
         title: "📅 Agendamentos",
-        text: `<strong>Como gerenciar agendamentos:</strong>
-        <br><br>
-        <strong>Conferir antes de enviar:</strong>
-        • Cliente: nome correto e atualizado
-        • Endereço: completo e verificado
-        • Data e horário: confirmados com o cliente
-        • Telefone: com DDD para contato
-        • Código do imóvel: preenchido corretamente
-        <br><br>
-        <strong>Dicas importantes:</strong>
-        • Verifique o CEP antes de salvar
-        • Confirme data e hora com o cliente
-        • Adicione observações se houver detalhes importantes
-        • Envie a mensagem no WhatsApp apenas quando confirmar
-        <br><br>
-        <strong>Status disponíveis:</strong>
-        • Aguardando envio
-        • Mensagem enviada
-        • Confirmado
-        • Vistoria iniciada
-        • Reagendar
-        • Cancelado
-        • Finalizado
-        <br><br>
-        <strong>Dica:</strong> Use a aba "Filtros" para acompanhar os status`
+        text: `<p><strong>Antes de confirmar um agendamento:</strong></p>
+        <ul>
+          <li>Confira <strong>data e horário</strong> com o cliente</li>
+          <li>Valide o <strong>nome e telefone</strong> do responsável</li>
+          <li>Confirme o <strong>endereço completo</strong></li>
+          <li>Verifique o <strong>código do imóvel</strong> e tipo</li>
+          <li>Defina o <strong>status</strong> corretamente</li>
+        </ul>
+        <p><strong>⚠️ Ao enviar pelo WhatsApp:</strong> Confira se o <strong>número é do cliente atual</strong>. Nunca reutilize contatos de agendamentos anteriores sem confirmar.</p>`
       },
       "campos-obrigatorios": {
-        title: "✓ Campos Obrigatórios",
-        text: `<strong>Campos que SEMPRE devem ser preenchidos:</strong>
-        <br><br>
-        <strong>Em Nova Vistoria:</strong>
-        ✓ Cliente ou unidade do imóvel
-        ✓ Endereço completo (rua, número, bairro, cidade, UF)
-        ✓ Nome do responsável pelo aceite
-        ✓ Telefone para contato
-        ✓ Data da vistoria
-        ✓ Hora da vistoria
-        ✓ Tipo (Entrada ou Saída)
-        ✓ Metragem do imóvel
-        <br><br>
-        <strong>Recomendados:</strong>
-        • Fotos do imóvel (observações)
-        • Observações detalhadas
-        • Documento do responsável
-        <br><br>
-        <strong>Em Agendamentos:</strong>
-        ✓ Data e hora
-        ✓ Código do imóvel
-        ✓ Nome do cliente
-        ✓ Telefone do cliente
-        ✓ Tipo do imóvel
-        ✓ CEP (para validar endereço)
-        ✓ Rua, número, bairro, cidade, UF
-        <br><br>
-        <strong>⚠ Sem preencher estes campos não é possível salvar!</strong>`
+        title: "✅ Campos Obrigatórios",
+        text: `<p><strong>Em Nova Vistoria - TODOS são obrigatórios:</strong></p>
+        <ul>
+          <li>Cliente ou unidade do imóvel</li>
+          <li>Endereço completo</li>
+          <li>Nome do responsável</li>
+          <li>Telefone para contato</li>
+          <li>Data da vistoria</li>
+          <li>Horário da vistoria</li>
+          <li>Status e observações</li>
+          <li>Fotos ou evidências</li>
+        </ul>
+        <p><strong>Em Agendamentos - TODOS são obrigatórios:</strong></p>
+        <ul>
+          <li>Data e hora</li>
+          <li>Código do imóvel</li>
+          <li>Nome do cliente</li>
+          <li>Telefone do cliente</li>
+          <li>Tipo de imóvel</li>
+          <li>Endereço completo</li>
+        </ul>
+        <p><strong>⚠️ Sem telefone:</strong> O envio pelo WhatsApp deve ser bloqueado.</p>`
       },
       "conferir": {
-        title: "🔍 Conferir Antes de Salvar",
-        text: `<strong>Checklist para revisar antes de finalizar:</strong>
-        <br><br>
-        <strong>1. Dados do cliente:</strong>
-        ☐ Nome está correto e completo
-        ☐ Telefone tem DDD correto
-        ☐ Email ou referência anotados
-        <br><br>
-        <strong>2. Endereço:</strong>
-        ☐ Rua e número confirmados
-        ☐ Complemento (apto, sala, etc) correto
-        ☐ CEP validado
-        ☐ Bairro e cidade corretos
-        <br><br>
-        <strong>3. Responsável:</strong>
-        ☐ Nome do responsável está correto
-        ☐ Documento anotado (se disponível)
-        ☐ Assinatura/aceite confirmado
-        <br><br>
-        <strong>4. Observações:</strong>
-        ☐ Problemas ou pontos importantes anotados
-        ☐ Referências de fotos ou anexos
-        ☐ Descrição clara e legível
-        <br><br>
-        <strong>5. Status e finalização:</strong>
-        ☐ Revisou todas as informações
-        ☐ Conferiu datas e horários
-        ☐ Tudo correto e legível
-        <br><br>
-        <strong>✅ Agora sim, clique "Finalizar vistoria"!</strong>`
+        title: "🔍 Revisar Antes de Salvar",
+        text: `<p><strong>Checklist final - Revise tudo:</strong></p>
+        <ul>
+          <li>☐ <strong>Fotos anexadas</strong> corretamente</li>
+          <li>☐ <strong>Observações claras</strong> e legíveis</li>
+          <li>☐ <strong>Endereço correto</strong> e completo</li>
+          <li>☐ <strong>Responsável correto</strong> e nomes sem erro</li>
+          <li>☐ <strong>Telefone atualizado</strong> do cliente</li>
+          <li>☐ <strong>Status definido</strong> corretamente</li>
+          <li>☐ <strong>Dados do cliente atual</strong> - não anterior</li>
+        </ul>
+        <p><strong>⚠️ Cuidado:</strong> Evite salvar usando dados do atendimento anterior. Sempre confirme que as informações estão atualizadas.</p>`
+      },
+      "whatsapp": {
+        title: "📲 Mensagem WhatsApp",
+        text: `<p><strong>Antes de enviar pelo WhatsApp:</strong></p>
+        <ul>
+          <li>Confira se o <strong>nome do cliente</strong> é o ATUAL</li>
+          <li>Confirme o <strong>telefone</strong> do cliente (DDD + número)</li>
+          <li>Valide <strong>data, horário e endereço</strong></li>
+          <li>Sempre use o <strong>número no link</strong>, nunca no corpo da mensagem</li>
+        </ul>
+        <p><strong>Boas práticas:</strong></p>
+        <ul>
+          <li>Use um template claro e profissional</li>
+          <li>Confirme que o telefone é do responsável atual</li>
+          <li>Nunca reutilize números de clientes antigos</li>
+          <li>Registre o envio no status do agendamento</li>
+        </ul>
+        <p><strong>⚠️ Importante:</strong> O telefone nunca deve aparecer no corpo da mensagem, apenas no link do WhatsApp.</p>`
       }
     };
 

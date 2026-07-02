@@ -670,19 +670,23 @@
       </button>
 
       <!-- ASSISTENTE FLUTUANTE -->
-      <button id="assistant-btn" class="assistant-btn" title="Assistente de Vistoria" aria-label="Assistente de Vistoria">💬</button>
+      <button id="assistant-btn" class="assistant-btn" title="Assistente de Vistoria" aria-label="Assistente de Vistoria">
+        <span class="assistant-icon">💬</span>
+        <span class="assistant-text">Ajuda</span>
+      </button>
       
       <!-- MODAL DO ASSISTENTE -->
       <div id="assistant-modal" class="assistant-modal hidden">
         <div class="assistant-panel">
           <div class="assistant-header">
-            <h3 class="assistant-title">💬 Assistente de Vistoria</h3>
+            <div class="assistant-header-content">
+              <h3 class="assistant-title">Assistente de Vistoria</h3>
+              <p class="assistant-subtitle">Ajuda rápida para preencher, agendar e revisar vistorias.</p>
+            </div>
             <button id="assistant-close-btn" class="assistant-close-btn" type="button" aria-label="Fechar">×</button>
           </div>
           
           <div id="assistant-content" class="assistant-content">
-            <p class="assistant-intro">Posso te ajudar a preencher, revisar e organizar suas vistorias.</p>
-            
             <div class="assistant-quick-buttons">
               <button class="assistant-quick-btn" data-action="nova-vistoria">
                 <span class="quick-btn-icon">📝</span>
@@ -693,12 +697,16 @@
                 <span class="quick-btn-label">Agendamentos</span>
               </button>
               <button class="assistant-quick-btn" data-action="campos-obrigatorios">
-                <span class="quick-btn-icon">✓</span>
+                <span class="quick-btn-icon">✅</span>
                 <span class="quick-btn-label">Campos obrigatórios</span>
               </button>
               <button class="assistant-quick-btn" data-action="conferir">
                 <span class="quick-btn-icon">🔍</span>
-                <span class="quick-btn-label">Conferir antes de salvar</span>
+                <span class="quick-btn-label">Revisar antes de salvar</span>
+              </button>
+              <button class="assistant-quick-btn" data-action="whatsapp">
+                <span class="quick-btn-icon">📲</span>
+                <span class="quick-btn-label">Mensagem WhatsApp</span>
               </button>
             </div>
           </div>
