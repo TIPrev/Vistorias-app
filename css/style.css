@@ -2184,8 +2184,8 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
     max-height: 48px !important;
     padding: 0 !important;
     flex: 0 0 48px !important;
-    right: 16px !important;
-    left: auto !important;
+    right: auto !important;
+    left: 16px !important;
     bottom: calc(var(--nav-h) + 24px + env(safe-area-inset-bottom)) !important;
     z-index: 30 !important;
   }
