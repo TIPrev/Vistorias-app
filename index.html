@@ -669,6 +669,47 @@
         </svg>
       </button>
 
+      <!-- ASSISTENTE FLUTUANTE -->
+      <button id="assistant-btn" class="assistant-btn" title="Assistente de Vistoria" aria-label="Assistente de Vistoria">💬</button>
+      
+      <!-- MODAL DO ASSISTENTE -->
+      <div id="assistant-modal" class="assistant-modal hidden">
+        <div class="assistant-panel">
+          <div class="assistant-header">
+            <h3 class="assistant-title">💬 Assistente de Vistoria</h3>
+            <button id="assistant-close-btn" class="assistant-close-btn" type="button" aria-label="Fechar">×</button>
+          </div>
+          
+          <div id="assistant-content" class="assistant-content">
+            <p class="assistant-intro">Posso te ajudar a preencher, revisar e organizar suas vistorias.</p>
+            
+            <div class="assistant-quick-buttons">
+              <button class="assistant-quick-btn" data-action="nova-vistoria">
+                <span class="quick-btn-icon">📝</span>
+                <span class="quick-btn-label">Nova vistoria</span>
+              </button>
+              <button class="assistant-quick-btn" data-action="agendamentos">
+                <span class="quick-btn-icon">📅</span>
+                <span class="quick-btn-label">Agendamentos</span>
+              </button>
+              <button class="assistant-quick-btn" data-action="campos-obrigatorios">
+                <span class="quick-btn-icon">✓</span>
+                <span class="quick-btn-label">Campos obrigatórios</span>
+              </button>
+              <button class="assistant-quick-btn" data-action="conferir">
+                <span class="quick-btn-icon">🔍</span>
+                <span class="quick-btn-label">Conferir antes de salvar</span>
+              </button>
+            </div>
+          </div>
+          
+          <div id="assistant-response" class="assistant-response hidden">
+            <button id="assistant-back-btn" class="assistant-back-btn" type="button">← Voltar</button>
+            <div id="assistant-response-text" class="assistant-response-text"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- BOTTOM NAV -->
       <nav class="bottom-nav" aria-label="Navegação principal">
         <button class="nav-btn active" data-tela="home">
@@ -716,6 +757,7 @@
   <script src="firebase.js?v=27"></script>
   <script src="css/js/calculadora.js?v=18"></script>
   <script src="css/js/memoria.js?v=18"></script>
+  <script src="css/js/assistant.js?v=1"></script>
   <script src="css/js/app.js?v=27"></script>
 </body>
 </html>

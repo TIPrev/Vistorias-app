@@ -257,6 +257,234 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
 .fab-btn.hidden { display: none; }
 
 /* ===================================================
+   ASSISTENTE FLUTUANTE
+   =================================================== */
+
+.assistant-btn {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #10B981;
+  color: #fff;
+  border: none;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(16,185,129,.35);
+  z-index: 14;
+  transition: transform .2s, box-shadow .2s;
+  cursor: pointer;
+}
+.assistant-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(16,185,129,.45);
+}
+.assistant-btn:active { transform: scale(.95); }
+
+.assistant-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  animation: slideUpIn .3s ease-out;
+}
+.assistant-modal.hidden { display: none; }
+
+@keyframes slideUpIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.assistant-panel {
+  width: 100%;
+  max-width: 500px;
+  background: var(--surface);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-lg);
+  max-height: 75vh;
+  overflow-y: auto;
+  animation: slideUp .3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.assistant-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 51;
+}
+
+.assistant-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.assistant-close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 24px;
+  cursor: pointer;
+  transition: color .2s;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.assistant-close-btn:hover { color: var(--text); }
+
+.assistant-content {
+  padding: 20px;
+}
+
+.assistant-intro {
+  margin: 0 0 20px 0;
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.assistant-quick-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.assistant-quick-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all .2s;
+  text-align: center;
+}
+.assistant-quick-btn:hover {
+  background: var(--brand-light);
+  border-color: var(--brand);
+}
+.assistant-quick-btn:active {
+  transform: scale(.96);
+}
+
+.quick-btn-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.quick-btn-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.assistant-response {
+  padding: 20px;
+}
+.assistant-response.hidden { display: none; }
+
+.assistant-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  border: none;
+  background: var(--surface-2);
+  color: var(--brand);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .2s;
+}
+.assistant-back-btn:hover {
+  background: var(--brand-light);
+}
+
+.assistant-response-text {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.assistant-response-text h4 {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.assistant-response-text strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.assistant-response-text br {
+  content: '';
+}
+
+/* Responsivo */
+@media (max-width: 640px) {
+  .assistant-btn {
+    bottom: 80px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  .assistant-quick-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .assistant-panel {
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+}
+
+/* Tema escuro */
+[data-theme="dark"] .assistant-btn {
+  background: #059669;
+  box-shadow: 0 4px 12px rgba(5,150,105,.35);
+}
+[data-theme="dark"] .assistant-btn:hover {
+  box-shadow: 0 6px 20px rgba(5,150,105,.45);
+}
+
+/* ===================================================
    TOAST NOTIFICATION
    =================================================== */
 
