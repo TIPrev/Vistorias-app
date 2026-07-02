@@ -792,7 +792,8 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
 
 /* Assistente: painel de conversa compacto e profissional */
 .assistant-btn {
-  right: max(18px, calc((100vw - 460px) / 2 + 18px));
+  right: auto;
+  left: max(18px, calc((100vw - 460px) / 2 + 18px));
   bottom: calc(var(--nav-h) + 18px);
   width: auto;
   height: 48px;
@@ -876,7 +877,7 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
 .assistant-response { padding: 20px; overflow-y: auto; }
 
 @media (max-width: 640px) {
-  .assistant-btn { right: 14px; bottom: calc(var(--nav-h) + 12px); width: 48px; height: 48px; padding: 0; border-radius: 15px; }
+  .assistant-btn { right: auto; left: 14px; bottom: calc(var(--nav-h) + 12px); width: 48px; height: 48px; padding: 0; border-radius: 15px; }
   .assistant-btn .assistant-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   .assistant-modal { align-items: flex-end; padding: 0; }
   .assistant-panel { width: 100%; max-height: min(82dvh, 680px); border-radius: 22px 22px 0 0; border-bottom: 0; }
