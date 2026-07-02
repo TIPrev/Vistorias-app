@@ -790,6 +790,107 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
   background: rgba(16,185,129,.15);
 }
 
+/* Assistente: painel de conversa compacto e profissional */
+.assistant-btn {
+  right: max(18px, calc((100vw - 460px) / 2 + 18px));
+  bottom: calc(var(--nav-h) + 18px);
+  width: auto;
+  height: 48px;
+  padding: 0 17px;
+  flex-direction: row;
+  gap: 9px;
+  border-radius: 16px;
+  background: var(--brand);
+  box-shadow: 0 8px 24px rgba(37,99,235,.28);
+  animation: none;
+}
+.assistant-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(37,99,235,.34); }
+.assistant-icon { width: 21px; height: 21px; font-size: 0; }
+.assistant-icon svg, .assistant-avatar svg, .assistant-send-btn svg { width: 100%; height: 100%; }
+.assistant-text { font-size: 13px; font-weight: 750; letter-spacing: 0; opacity: 1; }
+
+.assistant-modal {
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15,23,42,.5);
+  backdrop-filter: blur(5px);
+}
+.assistant-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 430px);
+  max-height: min(720px, calc(100dvh - 48px));
+  overflow: hidden;
+  border: 1px solid rgba(148,163,184,.28);
+  border-radius: 22px;
+  box-shadow: 0 24px 70px rgba(15,23,42,.28);
+}
+.assistant-header {
+  position: relative;
+  align-items: center;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.assistant-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  padding: 10px;
+  border-radius: 13px;
+  color: #fff;
+  background: var(--brand);
+  box-shadow: 0 6px 14px rgba(37,99,235,.22);
+}
+.assistant-title { font-size: 16px; margin-bottom: 3px; }
+.assistant-subtitle { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.assistant-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.13); }
+.assistant-close-btn { width: 34px; height: 34px; font-size: 24px; background: var(--surface-2); }
+.assistant-content { padding: 18px 20px 20px; overflow-y: auto; }
+.assistant-welcome { display: grid; gap: 5px; margin-bottom: 18px; }
+.assistant-welcome strong { color: var(--text); font-size: 16px; }
+.assistant-welcome span { color: var(--text-2); font-size: 13px; line-height: 1.45; }
+.assistant-section-label { margin: 0 0 9px; color: var(--text-2); font-size: 11px; font-weight: 750; letter-spacing: .07em; text-transform: uppercase; }
+.assistant-chat-history:empty { display: none; }
+.assistant-chat-history { padding: 4px 2px 12px; margin-bottom: 14px; border-bottom: 0; }
+.assistant-quick-buttons { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.assistant-quick-btn {
+  min-height: 66px;
+  padding: 11px;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 9px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-align: left;
+}
+.assistant-quick-btn:last-child { grid-column: 1 / -1; }
+.quick-btn-icon { font-size: 20px; }
+.quick-btn-label { font-size: 11.5px; line-height: 1.25; }
+.assistant-input-area { margin-top: 16px; padding: 12px 0 0; }
+.assistant-input { min-width: 0; height: 44px; padding: 0 14px; border-radius: 12px; font-size: 13px; }
+.assistant-send-btn { width: 44px; height: 44px; padding: 12px; border-radius: 12px; background: var(--brand); }
+.assistant-response { padding: 20px; overflow-y: auto; }
+
+@media (max-width: 640px) {
+  .assistant-btn { right: 14px; bottom: calc(var(--nav-h) + 12px); width: 48px; height: 48px; padding: 0; border-radius: 15px; }
+  .assistant-btn .assistant-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .assistant-modal { align-items: flex-end; padding: 0; }
+  .assistant-panel { width: 100%; max-height: min(82dvh, 680px); border-radius: 22px 22px 0 0; border-bottom: 0; }
+  .assistant-header { padding: 16px 18px; }
+  .assistant-content { padding: 16px 18px calc(18px + env(safe-area-inset-bottom)); }
+  .assistant-quick-buttons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .assistant-quick-btn { min-height: 60px; padding: 9px; }
+}
+
+@media (max-width: 360px) {
+  .assistant-quick-buttons { grid-template-columns: 1fr; }
+  .assistant-quick-btn:last-child { grid-column: auto; }
+}
+
 /* ===================================================
    TOAST NOTIFICATION
    =================================================== */

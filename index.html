@@ -670,27 +670,40 @@
       </button>
 
       <!-- ASSISTENTE FLUTUANTE -->
-      <button id="assistant-btn" class="assistant-btn" title="Assistente de Vistoria" aria-label="Assistente de Vistoria">
-        <span class="assistant-icon">💬</span>
-        <span class="assistant-text">Ajuda</span>
+      <button id="assistant-btn" class="assistant-btn" title="Abrir assistente" aria-label="Abrir assistente de vistoria" aria-haspopup="dialog" aria-controls="assistant-modal" aria-expanded="false">
+        <span class="assistant-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+            <path d="M8 9h8M8 13h5"/>
+          </svg>
+        </span>
+        <span class="assistant-text">Assistente</span>
       </button>
       
       <!-- MODAL DO ASSISTENTE -->
-      <div id="assistant-modal" class="assistant-modal hidden">
-        <div class="assistant-panel">
+      <div id="assistant-modal" class="assistant-modal hidden" role="dialog" aria-modal="true" aria-labelledby="assistant-title">
+        <div class="assistant-panel" tabindex="-1">
           <div class="assistant-header">
+            <div class="assistant-avatar" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/><path d="M8 9h8M8 13h5"/></svg>
+            </div>
             <div class="assistant-header-content">
-              <h3 class="assistant-title">Assistente de Vistoria</h3>
-              <p class="assistant-subtitle">Ajuda rápida para preencher, agendar e revisar vistorias.</p>
+              <h3 id="assistant-title" class="assistant-title">Assistente de Vistoria</h3>
+              <p class="assistant-subtitle"><span class="assistant-status-dot"></span> Online · pronto para ajudar</p>
             </div>
             <button id="assistant-close-btn" class="assistant-close-btn" type="button" aria-label="Fechar">×</button>
           </div>
           
           <div id="assistant-content" class="assistant-content">
+            <div class="assistant-welcome">
+              <strong>Olá! Como posso ajudar?</strong>
+              <span>Escolha um atalho ou escreva sua dúvida abaixo.</span>
+            </div>
             <!-- Chat History -->
             <div id="assistant-chat-history" class="assistant-chat-history"></div>
             
             <!-- Quick buttons -->
+            <p class="assistant-section-label">Atalhos rápidos</p>
             <div class="assistant-quick-buttons">
               <button class="assistant-quick-btn" data-action="nova-vistoria">
                 <span class="quick-btn-icon">📝</span>
@@ -723,8 +736,8 @@
                 placeholder="Digite sua dúvida..."
                 autocomplete="off"
               >
-              <button id="assistant-send-btn" class="assistant-send-btn" type="button" title="Enviar">
-                ➤
+              <button id="assistant-send-btn" class="assistant-send-btn" type="button" title="Enviar" aria-label="Enviar mensagem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
               </button>
             </div>
           </div>

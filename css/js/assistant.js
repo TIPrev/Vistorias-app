@@ -224,14 +224,17 @@
 
     function openModal() {
       assistantModal.classList.remove("hidden");
+      assistantBtn.setAttribute("aria-expanded", "true");
       document.body.style.overflow = "hidden";
       assistantInput.focus();
     }
 
     function closeModal() {
       assistantModal.classList.add("hidden");
+      assistantBtn.setAttribute("aria-expanded", "false");
       document.body.style.overflow = "";
       resetContent();
+      assistantBtn.focus();
     }
 
     function resetContent() {
