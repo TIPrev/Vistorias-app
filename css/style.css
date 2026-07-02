@@ -2174,6 +2174,7 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
 /* Garantia final: o atalho do assistente nunca ocupa a largura da tela. */
 @media (max-width: 640px) {
   #assistant-btn {
+    position: absolute !important;
     box-sizing: border-box !important;
     width: 48px !important;
     min-width: 48px !important;
@@ -2183,7 +2184,9 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
     max-height: 48px !important;
     padding: 0 !important;
     flex: 0 0 48px !important;
-    right: 14px !important;
+    right: 16px !important;
     left: auto !important;
+    bottom: calc(var(--nav-h) + 24px + env(safe-area-inset-bottom)) !important;
+    z-index: 30 !important;
   }
 }
