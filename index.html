@@ -687,6 +687,10 @@
           </div>
           
           <div id="assistant-content" class="assistant-content">
+            <!-- Chat History -->
+            <div id="assistant-chat-history" class="assistant-chat-history"></div>
+            
+            <!-- Quick buttons -->
             <div class="assistant-quick-buttons">
               <button class="assistant-quick-btn" data-action="nova-vistoria">
                 <span class="quick-btn-icon">📝</span>
@@ -707,6 +711,20 @@
               <button class="assistant-quick-btn" data-action="whatsapp">
                 <span class="quick-btn-icon">📲</span>
                 <span class="quick-btn-label">Mensagem WhatsApp</span>
+              </button>
+            </div>
+            
+            <!-- Input area -->
+            <div class="assistant-input-area">
+              <input 
+                id="assistant-input" 
+                type="text" 
+                class="assistant-input" 
+                placeholder="Digite sua dúvida..."
+                autocomplete="off"
+              >
+              <button id="assistant-send-btn" class="assistant-send-btn" type="button" title="Enviar">
+                ➤
               </button>
             </div>
           </div>
@@ -762,6 +780,7 @@
   </div><!-- /app-shell -->
 
   <script src="config.js?v=18"></script>
+  <script src="config.js.env?v=1"></script>
   <script src="firebase.js?v=27"></script>
   <script src="css/js/calculadora.js?v=18"></script>
   <script src="css/js/memoria.js?v=18"></script>
