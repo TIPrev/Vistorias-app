@@ -27,16 +27,34 @@
   async function getUser() {
     const { auth, authSdk } = await requireSdk();
     if (auth.currentUser) return auth.currentUser;
-    return new Promise(resolve => {
-      const unsubscribe = authSdk.onAuthStateChanged(auth, user => {
-        unsubscribe(); resolve(user);
-      });
+    return new Promise((resolve, reject) => {
+      const unsubscribe = authSdk.onAuthStateChanged(
+        auth,
+        user => {
+          unsubscribe();
+          resolve(user);
+        },
+        error => {
+          unsubscribe();
+          reject(error);
+        }
+      );
     });
   }
 
   async function currentSession() {
-    const user = await getUser();
-    return user ? { user } : null;
+    try {
+      const user = await getUser();
+      return user ? { user } : null;
+    } catch (error) {
+      const { auth, authSdk } = await requireSdk();
+      if (error?.code === 'auth/user-token-expired' || 
+          error?.message?.includes('refresh token was revoked') ||
+          error?.code === 'auth/network-request-failed') {
+        await authSdk.signOut(auth);
+      }
+      return null;
+    }
   }
 
   async function login(email, password) {

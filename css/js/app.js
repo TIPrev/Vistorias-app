@@ -381,8 +381,16 @@ async function startApp(session) {
     await carregarDadosOnline();
     definirSync(possuiDadosLocaisPendentes() ? "local" : "synced", possuiDadosLocaisPendentes() ? "Dados locais pendentes" : "Sincronizado");
   } catch (erro) {
-    definirSync("error", "Erro na sincronização");
-    console.error(erro);
+    console.error("Erro ao sincronizar dados online:", erro);
+    if (erro?.message?.includes('refresh token') || 
+        erro?.message?.includes('Sessão expirada') ||
+        erro?.code === 'auth/user-token-expired') {
+      definirSync("error", "Sessão expirada - faça login novamente");
+      await new Promise(r => setTimeout(r, 2000));
+      window.location.reload();
+    } else {
+      definirSync("error", "Erro na sincronização");
+    }
   }
   aplicarTema(appConfig.tema);
   trocarTela("home");
@@ -404,6 +412,8 @@ async function handleOnboarding() {
     else {
       splashScreen.style.display = "none";
       loginScreen.classList.remove("hidden");
+      loginErro.textContent = "Sua sessão expirou. Faça login novamente.";
+      loginErro.classList.remove("hidden");
       loginEmail.focus();
     }
   } catch (erro) {
@@ -458,12 +468,19 @@ async function autenticar(event) {
       "auth/unauthorized-domain": "Este domínio não está autorizado no Firebase Authentication.",
       "auth/network-request-failed": "Falha de rede ao acessar o Firebase.",
       "auth/too-many-requests": "Muitas tentativas; o Firebase bloqueou temporariamente o acesso.",
+      "auth/user-token-expired": "Sua sessão expirou. Faça login novamente.",
       "app/config-ausente": "O arquivo config.js não foi carregado corretamente.",
       "app/project-id-incorreto": "O app está apontando para outro projeto Firebase.",
       "app/auth-domain-incorreto": "O authDomain configurado não corresponde ao projeto esperado."
     };
+    let userMessage = diagnosticos[code];
+    if (!userMessage && message?.includes('refresh token')) {
+      userMessage = "Sua sessão foi revogada por questões de segurança. Faça login novamente.";
+    } else if (!userMessage) {
+      userMessage = "O Firebase retornou um erro de autenticação.";
+    }
     loginErro.style.whiteSpace = "pre-line";
-    loginErro.textContent = `${diagnosticos[code] || "O Firebase retornou um erro de autenticação."}\nCódigo: ${code}\nMensagem: ${message}\nprojectId: ${firebaseConfig?.projectId || "ausente"}\nauthDomain: ${firebaseConfig?.authDomain || "ausente"}`;
+    loginErro.textContent = `${userMessage}\nCódigo: ${code}\nMensagem: ${message}\nprojectId: ${firebaseConfig?.projectId || "ausente"}\nauthDomain: ${firebaseConfig?.authDomain || "ausente"}`;
     loginErro.classList.remove("hidden");
   } finally {
     loginSubmit.disabled = false;
