@@ -101,7 +101,9 @@ const agendaStatusInput  = document.querySelector("#agenda-status");
 const agendaLista        = document.querySelector("#agenda-lista");
 const agendaVazia        = document.querySelector("#agenda-vazia");
 const agendaFiltroStatus = document.querySelector("#agenda-filtro-status");
-let filtroPeriodo = "hoje";
+// Exibe toda a agenda por padrão; "Hoje" e "Amanhã" são apenas filtros
+// opcionais e nunca limitam a quantidade de agendamentos salvos.
+let filtroPeriodo = "todos";
 
 // Tela: Resumo
 const historicoLista      = document.querySelector("#historico-lista");

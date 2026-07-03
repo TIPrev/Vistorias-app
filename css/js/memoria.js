@@ -83,8 +83,10 @@ async function carregarDadosOnline() {
 }
 
 async function adicionarVistoria(vistoria) {
+  const novoId = Math.max(proximoVistoriaId, calcularProximoId(vistorias));
+  proximoVistoriaId = novoId + 1;
   if (onlineBackend.configured) {
-    const item = { id: proximoVistoriaId++, criadoEm: new Date().toISOString(), ...vistoria, usuarioLocalId: usuarioLocalAtual, backend: "firebase", pendenteSync: true };
+    const item = { id: novoId, criadoEm: new Date().toISOString(), ...vistoria, usuarioLocalId: usuarioLocalAtual, backend: "firebase", pendenteSync: true };
     vistorias.push(item); persistirLocal();
     try {
       const row = await onlineBackend.saveInspection({ ...item, legacyId: item.id });
@@ -93,7 +95,7 @@ async function adicionarVistoria(vistoria) {
       throw new Error(`Vistoria salva neste aparelho, mas ainda não sincronizada. ${erro.message}`);
     }
   }
-  const item = { id: proximoVistoriaId++, criadoEm: new Date().toISOString(), ...vistoria, usuarioLocalId: usuarioLocalAtual, backend: "firebase" };
+  const item = { id: novoId, criadoEm: new Date().toISOString(), ...vistoria, usuarioLocalId: usuarioLocalAtual, backend: "firebase" };
   vistorias.push(item); persistirLocal(); return item;
 }
 
@@ -123,8 +125,12 @@ async function removerVistoria(id) {
 }
 
 async function adicionarAgendamento(agendamento) {
+  // Recalcula sobre a lista atual porque o Firebase pode ter sido carregado
+  // depois da inicialização e seus IDs principais são textos.
+  const novoId = Math.max(proximoAgendaId, calcularProximoId(agendamentos));
+  proximoAgendaId = novoId + 1;
   if (onlineBackend.configured) {
-    const item = { id: proximoAgendaId++, criadoEm: new Date().toISOString(), ...agendamento, usuarioLocalId: usuarioLocalAtual, backend: "firebase", pendenteSync: true };
+    const item = { id: novoId, criadoEm: new Date().toISOString(), ...agendamento, usuarioLocalId: usuarioLocalAtual, backend: "firebase", pendenteSync: true };
     agendamentos.push(item); persistirLocal();
     try {
       const row = await onlineBackend.saveAppointment({ ...item, legacyId: item.id });
@@ -133,7 +139,7 @@ async function adicionarAgendamento(agendamento) {
       throw new Error(`Agendamento salvo neste aparelho, mas ainda não sincronizado. ${erro.message}`);
     }
   }
-  const item = { id: proximoAgendaId++, criadoEm: new Date().toISOString(), ...agendamento, usuarioLocalId: usuarioLocalAtual, backend: "firebase" };
+  const item = { id: novoId, criadoEm: new Date().toISOString(), ...agendamento, usuarioLocalId: usuarioLocalAtual, backend: "firebase" };
   agendamentos.push(item); persistirLocal(); return item;
 }
 
@@ -235,7 +241,10 @@ function possuiDadosLocaisPendentes() {
   return listarVistoriasComRascunhos().some(v => !v.onlineId || v.pendenteSync) || listarAgendamentos().some(a => !a.onlineId || a.pendenteSync);
 }
 function calcularProximoId(lista) {
-  return lista.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
+  return lista.reduce((max, item) => {
+    const idLocal = Number(item.legacyId ?? item.id);
+    return Math.max(max, Number.isFinite(idLocal) ? idLocal : 0);
+  }, 0) + 1;
 }
 function calcularTotalAcumulado() {
   return vistorias.reduce((total, vistoria) => total + Number(vistoria.valor || 0), 0);
