@@ -478,6 +478,13 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
   word-wrap: break-word;
 }
 
+.assistant-answer { width: 100%; }
+.assistant-answer h4 { margin: 0 0 8px; color: var(--brand); font-size: 14px; }
+.assistant-answer p { margin: 0 0 8px; line-height: 1.5; }
+.assistant-answer p:last-child { margin-bottom: 0; }
+.assistant-answer ul { margin: 6px 0 10px; padding-left: 18px; }
+.assistant-answer li { margin: 4px 0; }
+
 .assistant-input-area {
   display: flex;
   gap: 8px;

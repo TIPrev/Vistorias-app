@@ -261,6 +261,19 @@
       assistantChatHistory.scrollTop = assistantChatHistory.scrollHeight;
     }
 
+    // Renderiza somente o HTML confiável da base interna. Mensagens digitadas
+    // pelo usuário continuam passando por escape em adicionarMensagem().
+    function adicionarRespostaAssistente(resposta) {
+      const mensagem = document.createElement("div");
+      mensagem.className = "assistant-message assistant";
+      const corpo = document.createElement("div");
+      corpo.className = "message-text assistant-answer";
+      corpo.innerHTML = `<h4>${escapeHtml(resposta.titulo || "Assistente")}</h4>${resposta.conteudo || ""}`;
+      mensagem.appendChild(corpo);
+      assistantChatHistory.appendChild(mensagem);
+      assistantChatHistory.scrollTop = assistantChatHistory.scrollHeight;
+    }
+
     function mostrarLoading() {
       const loading = document.createElement("div");
       loading.className = "assistant-message assistant assistant-loading-msg";
@@ -304,13 +317,13 @@
       for (const [categoria, palavras] of Object.entries(palavrasChave)) {
         for (const palavra of palavras) {
           if (msgLower.includes(palavra)) {
-            return baseConhecimento[categoria] || this.respostaGenericaNaoEntendeu();
+            return baseConhecimento[categoria] || respostaGenericaNaoEntendeu();
           }
         }
       }
 
       // Se não encontrou nada, retornar ajuda geral
-      return this.respostaGenericaNaoEntendeu();
+      return respostaGenericaNaoEntendeu();
     }
 
     function respostaGenericaNaoEntendeu() {
@@ -355,11 +368,8 @@
         loadingEl.remove();
 
         // Adicionar resposta do assistente
-        if (resposta.conteudo) {
-          adicionarMensagem(`${resposta.titulo}\n\n${resposta.conteudo}`, "assistant");
-        } else {
-          adicionarMensagem(resposta.titulo, "assistant");
-        }
+        if (resposta.conteudo) adicionarRespostaAssistente(resposta);
+        else adicionarMensagem(resposta.titulo, "assistant");
 
       } catch (erro) {
         console.error("[Assistente] Erro:", erro);
@@ -398,7 +408,7 @@
         const resposta = baseConhecimento[action];
         if (resposta) {
           adicionarMensagem(btn.querySelector(".quick-btn-label").textContent, "user");
-          adicionarMensagem(`${resposta.titulo}\n\n${resposta.conteudo}`, "assistant");
+          adicionarRespostaAssistente(resposta);
         }
       });
     });
