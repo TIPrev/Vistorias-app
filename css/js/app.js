@@ -910,37 +910,37 @@ function linkWhatsAppAgendamento(ag) {
   const saudacao = primeiroNomeCliente
     ? `Olá, ${primeiroNomeCliente}! Tudo bem?`
     : "Olá! Tudo bem?";
-  const endereco_completo = obterEnderecoCompleto(ag);
-  const data_vistoria = limparTextoCampo(ag.data ? formatarData(ag.data) : "");
-  const hora_vistoria = limparTextoCampo(ag.hora);
-  const tipoVistoria = ag.tipo === "saida" ? "saída" : "entrada";
-  const identificacaoImovel = imovelDoAgendamento(ag);
+  const enderecoCompleto = obterEnderecoCompleto(ag);
+  const dataAgendadaISO = limparTextoCampo(ag.data).slice(0, 10);
+  const dataVistoria = dataAgendadaISO ? formatarData(dataAgendadaISO) : "";
+  const horaVistoria = limparTextoCampo(ag.hora).slice(0, 5);
+  if (!dataVistoria || dataVistoria === "—") throw new Error("O agendamento está sem uma data válida.");
+  if (!horaVistoria) throw new Error("O agendamento está sem horário.");
+  const tipoVistoria = ag.tipo === "saida" ? "Saída" : "Entrada";
+  const identificacaoImovel = limparTextoCampo(imovelDoAgendamento(ag));
   const codigoImovel = limparTextoCampo(ag.imovelCodigo);
-  const referenciaImovel = [
-    identificacaoImovel,
-    codigoImovel ? `(Código do imóvel: ${codigoImovel})` : "",
-  ].filter(Boolean).join(" ");
-  const detalheImovel = referenciaImovel ? ` ${referenciaImovel}` : "";
 
   const mensagem = `${saudacao}
 
-Sou a Marcela Lima, vistoriadora credenciada do QuintoAndar e serei responsável pela vistoria de ${tipoVistoria} no seu imóvel${detalheImovel} e gostaria de fazer algumas confirmações antes de comparecer até o imóvel localizado na:
+Sou Marcela Lima, vistoriadora credenciada do QuintoAndar, e serei a responsável pela realização da vistoria do imóvel.
 
-${endereco_completo}
+Gostaria de confirmar algumas informações antes de comparecer ao local, para garantir que a vistoria possa ser realizada conforme agendado e evitar qualquer imprevisto.
 
-Data da vistoria: ${data_vistoria}
-Horário: ${hora_vistoria}
+*Dados do agendamento:*
+📅 Data: *${dataVistoria}*
+🕐 Horário: *${horaVistoria}*
+📋 Tipo: *${tipoVistoria}*${identificacaoImovel ? `\n🏠 Imóvel: *${identificacaoImovel}*` : ""}${codigoImovel ? `\n🔢 Código: *${codigoImovel}*` : ""}${enderecoCompleto ? `\n📍 Endereço: *${enderecoCompleto}*` : ""}
 
-* O imóvel já está desocupado? (sem moradores)
-* O imóvel está em reforma?
-* Poderia confirmar o local das chaves conforme o que está no app?
-* O imóvel possui abastecimento de água, luz e/ou gás para realizar o teste dos itens?
+Também peço, por gentileza, que a portaria ou administração do condomínio seja informada sobre a vistoria do dia *${dataVistoria}*, caso necessário, para que não haja impedimentos ao meu acesso.
 
-Peço gentilmente que ao concordar com a vistoria, notifique o condomínio sobre a visita nesta data ${data_vistoria} para que não haja nenhum impedimento para entrada ao condomínio.
+Como somos uma empresa parceira do QuintoAndar e não há suporte para custos de deslocamento, a confirmação prévia das informações é muito importante.
 
-Fico no aguardo das confirmações para darmos início aos próximos passos.
+Agradeço desde já pela atenção e fico no aguardo da sua confirmação.
 
-Muito obrigada.`;
+Atenciosamente,
+
+Marcela Lima
+Vistoriadora Credenciada do QuintoAndar`;
 
   const telefoneNormalizado = normalizarTelefone(telefone);
   const textoEncoded = encodeURIComponent(mensagem);
