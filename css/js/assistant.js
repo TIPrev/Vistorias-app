@@ -141,16 +141,8 @@
       },
       "endereco": {
         titulo: "🏠 Endereço Completo",
-        conteudo: `<p><strong>Campo de endereço deve incluir:</strong></p>
-        <ul>
-          <li><strong>Rua/Avenida:</strong> Nome completo (ex: Rua das Flores)</li>
-          <li><strong>Número:</strong> Número do imóvel (ex: 123)</li>
-          <li><strong>Complemento:</strong> Apto, sala, loja (ex: Apto 405)</li>
-          <li><strong>Bairro:</strong> Nome do bairro</li>
-          <li><strong>Cidade:</strong> Nome da cidade</li>
-          <li><strong>Estado (UF):</strong> Sigla do estado (ex: SP)</li>
-          <li><strong>CEP (opcional):</strong> Se disponível</li>
-        </ul>
+        conteudo: `<p>Preencha o endereço completo em um único campo.</p>
+        <p>Inclua rua ou avenida, número, complemento quando houver, bairro, cidade e UF.</p>
         <p><strong>Exemplo correto:</strong><br/>
         Rua das Flores, 123, Apto 405 - Centro - São Paulo - SP</p>
         <p><strong>⚠️ Importante:</strong> Um endereço incompleto pode gerar confusão. Sempre confirme com o cliente!</p>`

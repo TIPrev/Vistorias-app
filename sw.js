@@ -1,11 +1,12 @@
-const CACHE = 'vistoria-v29-home-material';
+const CACHE = 'vistoria-v31-banner-azul';
 const ASSETS = [
   '/',
   '/index.html',
-  '/css/style.css?v=25',
+  '/css/style.css?v=26',
   '/css/js/calculadora.js?v=18',
   '/css/js/memoria.js?v=18',
-  '/css/js/app.js?v=33',
+  '/css/js/assistant.js?v=4',
+  '/css/js/app.js?v=34',
   '/config.js?v=18',
   '/firebase.js?v=27',
   '/manifest.json',

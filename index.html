@@ -12,7 +12,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon.svg">
-  <link rel="stylesheet" href="css/style.css?v=25">
+  <link rel="stylesheet" href="css/style.css?v=26">
 </head>
 <body>
 
@@ -330,23 +330,7 @@
                   <label class="field"><span>Tipo do imóvel</span><input id="vistoria-imovel-tipo" type="text" readonly></label>
                   <label class="field"><span>Identificação</span><input id="vistoria-imovel-identificacao" type="text" readonly></label>
                 </div>
-                <label class="field"><span>Endereço</span><textarea id="vistoria-endereco-completo" rows="2" readonly></textarea></label>
-                <details class="address-details">
-                  <summary>Ver endereço detalhado</summary>
-                  <div class="field-row">
-                    <label class="field"><span>CEP</span><input id="vistoria-cep" type="text" readonly></label>
-                    <label class="field"><span>Rua</span><input id="vistoria-rua" type="text" readonly></label>
-                  </div>
-                  <div class="field-row">
-                    <label class="field"><span>Número</span><input id="vistoria-numero" type="text" readonly></label>
-                    <label class="field"><span>Complemento</span><input id="vistoria-complemento" type="text" readonly></label>
-                  </div>
-                  <div class="field-row">
-                    <label class="field"><span>Bairro</span><input id="vistoria-bairro" type="text" readonly></label>
-                    <label class="field"><span>Cidade</span><input id="vistoria-cidade" type="text" readonly></label>
-                  </div>
-                  <label class="field"><span>UF</span><input id="vistoria-uf" type="text" readonly></label>
-                </details>
+                <label class="field"><span>Endereço completo</span><textarea id="vistoria-endereco-completo" rows="2" readonly></textarea></label>
               </section>
               <label class="field">
                 <span>Data da vistoria</span>
@@ -451,18 +435,7 @@
                 </label>
                 <label class="field"><span>Identificação</span><input id="agenda-imovel-identificacao" type="text" placeholder="Apartamento 302"></label>
               </div>
-              <label class="field"><span>CEP</span><input id="agenda-cep" type="text" inputmode="numeric" maxlength="9" autocomplete="postal-code" placeholder="00000-000"><small id="agenda-cep-status" class="field-hint" aria-live="polite"></small></label>
-              <label class="field"><span>Rua</span><input id="agenda-rua" type="text" autocomplete="address-line1"></label>
-              <div class="field-row">
-                <label class="field"><span>Número</span><input id="agenda-numero" type="text"></label>
-                <label class="field"><span>Complemento</span><input id="agenda-complemento" type="text"></label>
-              </div>
-              <label class="field"><span>Bairro</span><input id="agenda-bairro" type="text"></label>
-              <div class="field-row">
-                <label class="field"><span>Cidade</span><input id="agenda-cidade" type="text"></label>
-                <label class="field"><span>UF</span><input id="agenda-uf" type="text" maxlength="2" autocapitalize="characters"></label>
-              </div>
-              <label class="field"><span>Endereço completo</span><input id="agenda-endereco-completo" type="text" placeholder="Preenchido automaticamente ou manualmente"></label>
+              <label class="field"><span>Endereço completo</span><input id="agenda-endereco-completo" type="text" autocomplete="street-address" placeholder="Rua, número, complemento, bairro, cidade e UF"></label>
               <label class="field"><span>Observação</span><textarea id="agenda-obs" placeholder="Detalhes opcionais"></textarea></label>
               <label class="field"><span>Status</span><select id="agenda-status">
                 <option>Aguardando envio</option><option>Mensagem enviada</option><option>Confirmado</option><option>Vistoria iniciada</option>
@@ -791,7 +764,7 @@
   <script src="firebase.js?v=27"></script>
   <script src="css/js/calculadora.js?v=18"></script>
   <script src="css/js/memoria.js?v=19"></script>
-  <script src="css/js/assistant.js?v=3"></script>
-  <script src="css/js/app.js?v=33"></script>
+  <script src="css/js/assistant.js?v=4"></script>
+  <script src="css/js/app.js?v=34"></script>
 </body>
 </html>

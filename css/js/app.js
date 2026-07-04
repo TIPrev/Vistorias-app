@@ -64,13 +64,6 @@ const vistoriaClienteNomeInput = document.querySelector("#vistoria-cliente-nome"
 const vistoriaClienteTelefoneInput = document.querySelector("#vistoria-cliente-telefone");
 const vistoriaImovelTipoInput = document.querySelector("#vistoria-imovel-tipo");
 const vistoriaImovelIdentificacaoInput = document.querySelector("#vistoria-imovel-identificacao");
-const vistoriaCepInput = document.querySelector("#vistoria-cep");
-const vistoriaRuaInput = document.querySelector("#vistoria-rua");
-const vistoriaNumeroInput = document.querySelector("#vistoria-numero");
-const vistoriaComplementoInput = document.querySelector("#vistoria-complemento");
-const vistoriaBairroInput = document.querySelector("#vistoria-bairro");
-const vistoriaCidadeInput = document.querySelector("#vistoria-cidade");
-const vistoriaUfInput = document.querySelector("#vistoria-uf");
 const vistoriaEnderecoCompletoInput = document.querySelector("#vistoria-endereco-completo");
 
 // Tela: Agenda
@@ -83,14 +76,6 @@ const agendaClienteNomeInput = document.querySelector("#agenda-cliente-nome");
 const agendaClienteTelefoneInput = document.querySelector("#agenda-cliente-telefone");
 const agendaImovelTipoInput = document.querySelector("#agenda-imovel-tipo");
 const agendaImovelIdentificacaoInput = document.querySelector("#agenda-imovel-identificacao");
-const agendaCepInput = document.querySelector("#agenda-cep");
-const agendaCepStatus = document.querySelector("#agenda-cep-status");
-const agendaRuaInput = document.querySelector("#agenda-rua");
-const agendaNumeroInput = document.querySelector("#agenda-numero");
-const agendaComplementoInput = document.querySelector("#agenda-complemento");
-const agendaBairroInput = document.querySelector("#agenda-bairro");
-const agendaCidadeInput = document.querySelector("#agenda-cidade");
-const agendaUfInput = document.querySelector("#agenda-uf");
 const agendaEnderecoCompletoInput = document.querySelector("#agenda-endereco-completo");
 const agendaObsInput     = document.querySelector("#agenda-obs");
 const agendaStatusInput  = document.querySelector("#agenda-status");
@@ -231,55 +216,6 @@ function enderecoDoAgendamento(ag) {
 function enderecoResumidoDoAgendamento(ag) {
   const ruaNumero = [ag?.rua, ag?.numero].filter(Boolean).join(", ");
   return [ruaNumero, ag?.bairro].filter(Boolean).join(" · ") || enderecoDoAgendamento(ag);
-}
-
-function atualizarEnderecoCompletoFormulario() {
-  agendaEnderecoCompletoInput.value = montarEnderecoCompleto({
-    rua: agendaRuaInput.value, numero: agendaNumeroInput.value,
-    complemento: agendaComplementoInput.value, bairro: agendaBairroInput.value,
-    cidade: agendaCidadeInput.value, uf: agendaUfInput.value.toUpperCase()
-  });
-}
-
-let consultaCepController = null;
-let ultimoCepConsultado = "";
-
-async function consultarCep() {
-  const digitos = agendaCepInput.value.replace(/\D/g, "").slice(0, 8);
-  agendaCepInput.value = digitos.length > 5 ? digitos.slice(0, 5) + "-" + digitos.slice(5) : digitos;
-  if (digitos.length !== 8) {
-    ultimoCepConsultado = "";
-    agendaCepStatus.textContent = "";
-    if (consultaCepController) consultaCepController.abort();
-    return;
-  }
-  if (digitos === ultimoCepConsultado) return;
-  if (consultaCepController) consultaCepController.abort();
-  consultaCepController = new AbortController();
-  agendaCepStatus.className = "field-hint loading";
-  agendaCepStatus.textContent = "Buscando endereço...";
-
-  try {
-    const resposta = await fetch("https://viacep.com.br/ws/" + digitos + "/json/", {
-      signal: consultaCepController.signal
-    });
-    if (!resposta.ok) throw new Error("ViaCEP respondeu HTTP " + resposta.status);
-    const endereco = await resposta.json();
-    if (endereco.erro) throw new Error("CEP não encontrado.");
-    agendaRuaInput.value = endereco.logradouro || "";
-    agendaBairroInput.value = endereco.bairro || "";
-    agendaCidadeInput.value = endereco.localidade || "";
-    agendaUfInput.value = String(endereco.uf || "").toUpperCase();
-    atualizarEnderecoCompletoFormulario();
-    ultimoCepConsultado = digitos;
-    agendaCepStatus.className = "field-hint success";
-    agendaCepStatus.textContent = "Endereço encontrado. Preencha número e complemento.";
-  } catch (erro) {
-    if (erro.name === "AbortError") return;
-    ultimoCepConsultado = "";
-    agendaCepStatus.className = "field-hint error";
-    agendaCepStatus.textContent = erro.message || "Não foi possível consultar o CEP.";
-  }
 }
 
 function textoSeguro(valor) {
@@ -662,10 +598,7 @@ function abrirVistoriaNoFormulario(vistoria) {
   const camposOrigem = [
     [vistoriaClienteNomeInput, vistoria.clienteNome], [vistoriaClienteTelefoneInput, vistoria.clienteTelefone],
     [vistoriaImovelTipoInput, vistoria.imovelTipo], [vistoriaImovelIdentificacaoInput, vistoria.imovelIdentificacao],
-    [vistoriaCepInput, vistoria.cep], [vistoriaRuaInput, vistoria.rua], [vistoriaNumeroInput, vistoria.numero],
-    [vistoriaComplementoInput, vistoria.complemento], [vistoriaBairroInput, vistoria.bairro],
-    [vistoriaCidadeInput, vistoria.cidade], [vistoriaUfInput, vistoria.uf],
-    [vistoriaEnderecoCompletoInput, vistoria.enderecoCompleto]
+    [vistoriaEnderecoCompletoInput, enderecoDoAgendamento(vistoria)]
   ];
   camposOrigem.forEach(([input, valor]) => { input.value = valor || ""; });
   vistoriaOrigem.classList.toggle("hidden", !vistoria.agendamentoId);
@@ -683,10 +616,7 @@ function dadosVistoriaDoAgendamento(agendamento) {
     clienteTelefone: agendamento.clienteTelefone || agendamento.telefoneWhatsapp || "",
     imovelTipo: agendamento.imovelTipo || "",
     imovelIdentificacao: agendamento.imovelIdentificacao || agendamento.unidadeCliente || "",
-    cep: agendamento.cep || "", rua: agendamento.rua || "", numero: agendamento.numero || "",
-    complemento: agendamento.complemento || "", bairro: agendamento.bairro || "",
-    cidade: agendamento.cidade || "", uf: agendamento.uf || "",
-    enderecoCompleto: agendamento.enderecoCompleto || agendamento.endereco || "",
+    enderecoCompleto: enderecoDoAgendamento(agendamento),
     metragem: 0, tipo: agendamento.tipo || "entrada", mobilia: false, qualidade: false, valor: 0,
     rascunho: true
   };
@@ -758,10 +688,7 @@ async function salvarVistoria() {
       clienteTelefone: vistoriaClienteTelefoneInput.value || "",
       imovelTipo: vistoriaImovelTipoInput.value || "",
       imovelIdentificacao: vistoriaImovelIdentificacaoInput.value || "",
-      cep: vistoriaCepInput.value || "", rua: vistoriaRuaInput.value || "",
-      numero: vistoriaNumeroInput.value || "", complemento: vistoriaComplementoInput.value || "",
-      bairro: vistoriaBairroInput.value || "", cidade: vistoriaCidadeInput.value || "",
-      uf: vistoriaUfInput.value || "", enderecoCompleto: vistoriaEnderecoCompletoInput.value || "",
+      enderecoCompleto: vistoriaEnderecoCompletoInput.value || "",
       rascunho: false
     };
     if (vistoriaIdInput.value) await atualizarVistoria(vistoriaIdInput.value, dados);
@@ -817,8 +744,6 @@ function renderizarAgenda() {
 
 function abrirFormularioAgenda(ag = null) {
   agendaForm.classList.remove("hidden");
-  ultimoCepConsultado = "";
-  if (consultaCepController) consultaCepController.abort();
   agendaIdInput.value = ag?.id || "";
   agendaDataInput.value = ag?.data || hojeISO(); agendaHoraInput.value = ag?.hora || horaAtual();
   agendaImovelCodigoInput.value = ag?.imovelCodigo || "";
@@ -838,12 +763,7 @@ function abrirFormularioAgenda(ag = null) {
   }
   agendaImovelTipoInput.value = valTipo;
   agendaImovelIdentificacaoInput.value = ag?.imovelIdentificacao || ag?.unidadeCliente || "";
-  agendaCepInput.value = ag?.cep || ""; agendaRuaInput.value = ag?.rua || "";
-  agendaNumeroInput.value = ag?.numero || ""; agendaComplementoInput.value = ag?.complemento || "";
-  agendaBairroInput.value = ag?.bairro || ""; agendaCidadeInput.value = ag?.cidade || "";
-  agendaUfInput.value = ag?.uf || ""; agendaEnderecoCompletoInput.value = enderecoDoAgendamento(ag);
-  agendaCepStatus.textContent = "";
-  agendaCepStatus.className = "field-hint";
+  agendaEnderecoCompletoInput.value = enderecoDoAgendamento(ag);
   agendaObsInput.value = ag?.obs || ""; agendaStatusInput.value = ag?.statusConfirmacao || "Aguardando envio";
 }
 function fecharFormularioAgenda() { agendaForm.reset(); agendaIdInput.value = ""; agendaForm.classList.add("hidden"); }
@@ -937,19 +857,14 @@ async function adicionarAgendamentoPeloFormulario(event) {
   event.preventDefault();
   const telefone = normalizarTelefone(agendaClienteTelefoneInput.value);
   if (!telefoneValido(telefone)) return mostrarToast("Telefone inválido. Use 55 + DDD + número.", "error");
-  const enderecoCompleto = agendaEnderecoCompletoInput.value.trim() || montarEnderecoCompleto({
-    rua: agendaRuaInput.value, numero: agendaNumeroInput.value, complemento: agendaComplementoInput.value,
-    bairro: agendaBairroInput.value, cidade: agendaCidadeInput.value, uf: agendaUfInput.value.toUpperCase()
-  });
+  const enderecoCompleto = agendaEnderecoCompletoInput.value.trim();
   const agendaTipo = document.querySelector("input[name='agenda-tipo']:checked")?.value || "entrada";
   const dados = { data: agendaDataInput.value, hora: agendaHoraInput.value,
     imovelCodigo: agendaImovelCodigoInput.value.trim(),
     tipo: agendaTipo,
     clienteNome: agendaClienteNomeInput.value.trim(), clienteTelefone: telefone,
     imovelTipo: agendaImovelTipoInput.value.trim(), imovelIdentificacao: agendaImovelIdentificacaoInput.value.trim(),
-    cep: agendaCepInput.value.trim(), rua: agendaRuaInput.value.trim(), numero: agendaNumeroInput.value.trim(),
-    complemento: agendaComplementoInput.value.trim(), bairro: agendaBairroInput.value.trim(),
-    cidade: agendaCidadeInput.value.trim(), uf: agendaUfInput.value.trim().toUpperCase(), enderecoCompleto,
+    enderecoCompleto,
     unidadeCliente: agendaImovelIdentificacaoInput.value.trim(), responsavel: agendaClienteNomeInput.value.trim(),
     telefoneWhatsapp: telefone, endereco: enderecoCompleto, obs: agendaObsInput.value.trim(),
     statusConfirmacao: agendaStatusInput.value };
@@ -1385,9 +1300,6 @@ async function inicializar() {
     renderizarAgenda();
   });
   agendaFiltroStatus.addEventListener("change", renderizarAgenda);
-  agendaCepInput.addEventListener("input", consultarCep);
-  [agendaRuaInput, agendaNumeroInput, agendaComplementoInput, agendaBairroInput, agendaCidadeInput, agendaUfInput]
-    .forEach(input => input.addEventListener("input", atualizarEnderecoCompletoFormulario));
 
   // Resumo
   historicoLista.addEventListener("click", removerVistoriaDoHistorico);
@@ -1410,7 +1322,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=29").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=31").catch(() => {});
 }
 
 inicializar();

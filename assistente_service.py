@@ -132,16 +132,9 @@ class AssistenteService:
         # Endereço
         "endereco": {
             "titulo": "📍 Endereço Completo",
-            "conteudo": """<p><strong>Para preencher o endereço corretamente:</strong></p>
-<ul>
-  <li><strong>CEP:</strong> Use 8 dígitos (ex: 01310-100)</li>
-  <li><strong>Rua/Avenida:</strong> Digite o nome completo</li>
-  <li><strong>Número:</strong> Apartamento, sala, casa, etc</li>
-  <li><strong>Complemento:</strong> Apto 302, Bloco A, Conjunto 4 (opcional)</li>
-  <li><strong>Bairro:</strong> Nome do bairro</li>
-  <li><strong>Cidade e UF:</strong> Cidade e estado (ex: São Paulo, SP)</li>
-</ul>
-<p><strong>✓ Após preenchidos, clique no botão "Carregar Endereço"</strong> para validar os dados.</p>"""
+            "conteudo": """<p>Preencha o endereço completo em um único campo.</p>
+<p>Inclua rua ou avenida, número, complemento quando houver, bairro, cidade e UF.</p>
+<p><strong>Exemplo:</strong> Rua das Flores, 123, Apto 302, Centro, São Paulo - SP.</p>"""
         },
 
         # Status
