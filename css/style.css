@@ -2210,3 +2210,425 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; border: none
     z-index: 30 !important;
   }
 }
+
+/* ===================================================
+   HOME - MATERIAL 3 REFRESH
+   =================================================== */
+
+.phone:has(#tela-home:not(.hidden)) .app-header {
+  padding: 12px 20px;
+  background: var(--surface);
+  color: var(--text);
+  border-bottom: 1px solid #E8ECF2;
+}
+.phone:has(#tela-home:not(.hidden)) .header-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #2563EB;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, .2);
+}
+.phone:has(#tela-home:not(.hidden)) .header-title { color: var(--text); }
+.phone:has(#tela-home:not(.hidden)) .profile-button,
+.phone:has(#tela-home:not(.hidden)) .header-icon-button {
+  width: 38px;
+  height: 38px;
+  color: #475569;
+  background: #F1F5F9;
+  border-color: transparent;
+  border-radius: 12px;
+}
+.phone:has(#tela-home:not(.hidden)) .profile-button:hover,
+.phone:has(#tela-home:not(.hidden)) .header-icon-button:hover { background: #E2E8F0; }
+.phone:has(#tela-home:not(.hidden)) .sync-strip { background: #FFFFFF; }
+
+#tela-home {
+  min-height: 100%;
+  background: #F5F7FA;
+}
+#tela-home .home-content {
+  gap: 26px;
+  padding: 26px 20px 28px;
+}
+#tela-home .home-greeting { align-items: center; }
+#tela-home .greeting-period {
+  margin-bottom: 5px;
+  color: #64748B;
+  font-size: .82rem;
+  font-weight: 600;
+}
+#tela-home .greeting-name {
+  color: #0F172A;
+  font-size: 1.55rem;
+  font-weight: 750;
+  letter-spacing: 0;
+}
+#tela-home .greeting-date {
+  padding: 7px 10px;
+  color: #475569;
+  background: #FFFFFF;
+  border: 1px solid #E8ECF2;
+  border-radius: 12px;
+  font-size: .72rem;
+  line-height: 1.35;
+}
+
+#tela-home .today-card {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  background: #2563EB;
+  border-radius: 20px;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, .2);
+}
+#tela-home .today-card::after {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  right: -36px;
+  top: -50px;
+  border: 22px solid rgba(255, 255, 255, .08);
+  border-radius: 50%;
+  pointer-events: none;
+}
+#tela-home .today-card-header { margin-bottom: 14px; }
+#tela-home .today-label {
+  color: #DBEAFE;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+#tela-home .today-date-badge {
+  padding: 5px 9px;
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, .14);
+  border-radius: 999px;
+}
+#tela-home .today-total {
+  margin-bottom: 6px;
+  font-size: 2.35rem;
+  font-weight: 750;
+  letter-spacing: 0;
+}
+#tela-home .today-count { color: #DBEAFE; font-weight: 500; }
+#tela-home .today-progress-wrap { margin-top: 22px; }
+#tela-home .today-progress-bar { height: 7px; background: rgba(255,255,255,.22); }
+#tela-home .today-progress-fill { background: #FFFFFF; }
+#tela-home .today-progress-labels { margin-top: 8px; color: #DBEAFE; }
+
+#tela-home .section-label {
+  margin-bottom: 12px;
+  color: #334155;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+#tela-home .section-row { margin-bottom: 12px; }
+#tela-home .next-card {
+  padding: 20px;
+  background: #FFFFFF;
+  border: 1px solid #E8ECF2;
+  border-radius: 18px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, .055);
+}
+#tela-home .next-card-content { gap: 14px; }
+#tela-home .next-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #EEF1F5;
+}
+#tela-home .next-time { color: #0F172A; font-size: 1.35rem; font-weight: 750; }
+#tela-home .next-time span {
+  display: block;
+  margin-top: 3px;
+  color: #64748B;
+  font-size: .78rem;
+  font-weight: 600;
+}
+#tela-home .next-tipo {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: .7rem;
+}
+#tela-home .next-address {
+  align-items: flex-start;
+  gap: 10px;
+  color: #64748B;
+  font-size: .86rem;
+  line-height: 1.45;
+}
+#tela-home .next-client { color: #1E293B; font-size: .95rem; }
+#tela-home .next-detail-icon {
+  display: grid;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  color: #2563EB;
+  background: #EFF6FF;
+  border-radius: 10px;
+}
+#tela-home .next-detail-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#tela-home .next-card-empty { min-height: 86px; justify-content: center; }
+#tela-home .link-btn { padding: 7px 10px; border-radius: 10px; }
+
+#tela-home .actions-grid { gap: 12px; }
+#tela-home .action-card {
+  min-height: 112px;
+  gap: 10px;
+  padding: 18px 12px;
+  background: #FFFFFF;
+  border-color: #E8ECF2;
+  border-radius: 18px;
+  color: #1E293B;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, .045);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+#tela-home .action-card:hover {
+  transform: translateY(-2px);
+  border-color: #BFDBFE;
+  box-shadow: 0 7px 18px rgba(15, 23, 42, .08);
+}
+#tela-home .action-card:active { transform: scale(.98); }
+#tela-home .action-icon {
+  width: 42px;
+  height: 42px;
+  color: #2563EB;
+  background: #EFF6FF;
+  border-radius: 13px;
+}
+#tela-home .action-icon svg { width: 20px; height: 20px; stroke-width: 2; }
+
+#tela-home .recent-list { gap: 12px; }
+#tela-home .recent-card {
+  padding: 15px;
+  background: #FFFFFF;
+  border-color: #E8ECF2;
+  border-radius: 16px;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, .04);
+}
+#tela-home .recent-card-icon { border-radius: 12px; }
+#tela-home .recent-card-info strong { color: #1E293B; }
+#tela-home .recent-card-valor { color: #1D4ED8; font-weight: 750; }
+
+[data-theme="dark"] #tela-home { background: var(--bg); }
+[data-theme="dark"] #tela-home .greeting-name,
+[data-theme="dark"] #tela-home .section-label,
+[data-theme="dark"] #tela-home .next-time,
+[data-theme="dark"] #tela-home .next-client,
+[data-theme="dark"] #tela-home .action-card,
+[data-theme="dark"] #tela-home .recent-card-info strong { color: var(--text); }
+[data-theme="dark"] #tela-home .greeting-date,
+[data-theme="dark"] #tela-home .next-card,
+[data-theme="dark"] #tela-home .action-card,
+[data-theme="dark"] #tela-home .recent-card { background: var(--surface); border-color: var(--border); }
+[data-theme="dark"] .phone:has(#tela-home:not(.hidden)) .app-header,
+[data-theme="dark"] .phone:has(#tela-home:not(.hidden)) .sync-strip { background: var(--surface); border-color: var(--border); }
+[data-theme="dark"] .phone:has(#tela-home:not(.hidden)) .header-title { color: var(--text); }
+
+@media (max-width: 380px) {
+  #tela-home .home-content { gap: 22px; padding-inline: 16px; }
+  #tela-home .greeting-name { font-size: 1.35rem; }
+  #tela-home .today-total { font-size: 2rem; }
+  #tela-home .action-card { min-height: 104px; }
+}
+
+/* Home polish: compact Material 3 shell and navigation */
+.phone:has(#tela-home:not(.hidden)) .app-header {
+  height: 64px;
+  min-height: 64px;
+  padding: 0 16px;
+}
+.phone:has(#tela-home:not(.hidden)) .header-left { gap: 0; }
+.phone:has(#tela-home:not(.hidden)) .header-title { display: none; }
+.phone:has(#tela-home:not(.hidden)) .profile-button { margin-left: auto; }
+.phone:has(#tela-home:not(.hidden)) .header-actions { margin-left: 6px; gap: 4px; }
+.phone:has(#tela-home:not(.hidden)) .profile-button,
+.phone:has(#tela-home:not(.hidden)) .header-icon-button {
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  background: transparent;
+}
+.phone:has(#tela-home:not(.hidden)) .header-icon-button svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.phone:has(#tela-home:not(.hidden)) .sync-strip {
+  min-height: 34px;
+  padding: 4px 16px;
+  border-bottom-color: #EEF1F5;
+}
+.phone:has(#tela-home:not(.hidden)) .sync-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: .68rem;
+}
+.phone:has(#tela-home:not(.hidden)) .sync-status.synced { color: #166534; background: #DCFCE7; }
+.phone:has(#tela-home:not(.hidden)) .sync-status.local { color: #854D0E; background: #FEF9C3; }
+.phone:has(#tela-home:not(.hidden)) .sync-status.error { color: #991B1B; background: #FEE2E2; }
+.phone:has(#tela-home:not(.hidden)) .sync-strip button { padding: 4px 0; font-size: .68rem; }
+
+#tela-home .home-content { gap: 24px; padding-top: 18px; }
+#tela-home .home-greeting { min-height: 48px; }
+#tela-home .greeting-period { margin-bottom: 2px; font-size: .78rem; }
+#tela-home .greeting-name { font-size: 1.4rem; line-height: 1.12; }
+#tela-home .greeting-date {
+  padding: 0;
+  color: #64748B;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: .75rem;
+}
+#tela-home .alertas-container { gap: 6px; }
+#tela-home .alerta {
+  min-height: 40px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: .8rem;
+  line-height: 1.3;
+}
+#tela-home .alerta::before { font-size: .9rem; }
+
+#tela-home .today-card {
+  padding: 22px;
+  background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 55%, #3B82F6 100%);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, .18);
+}
+#tela-home .today-card::after { display: none; }
+#tela-home .today-total { font-size: 2.45rem; }
+#tela-home .today-progress-wrap { margin-top: 18px; }
+#tela-home .today-progress-bar { height: 9px; border-radius: 999px; }
+#tela-home .today-progress-fill { border-radius: 999px; }
+#tela-home .today-progress-labels { font-size: .68rem; font-weight: 500; opacity: .88; }
+#tela-home .today-progress-labels span:last-child { opacity: .82; }
+
+#tela-home .next-card { border-radius: 18px; box-shadow: 0 3px 12px rgba(15, 23, 42, .05); }
+#tela-home .next-card-top { align-items: center; }
+#tela-home .next-calendar-icon,
+#tela-home .next-empty-icon {
+  display: grid;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  color: #2563EB;
+  background: #EFF6FF;
+  border-radius: 14px;
+}
+#tela-home .next-calendar-icon svg,
+#tela-home .next-empty-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#tela-home .next-card-top .next-time { flex: 1; }
+#tela-home .next-card-empty { min-height: 164px; gap: 12px; }
+#tela-home .next-card-empty p { color: #64748B; }
+#tela-home .next-card-empty .link-btn {
+  min-height: 40px;
+  padding: 0 20px;
+  color: #FFFFFF;
+  background: #2563EB;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, .2);
+}
+#tela-home .next-card-empty .link-btn:hover { background: #1D4ED8; }
+
+.bottom-nav {
+  height: 72px;
+  padding: 5px 10px max(5px, env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, .97);
+  border-top-color: #E8ECF2;
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, .045);
+}
+.nav-btn {
+  position: relative;
+  min-height: 56px;
+  gap: 3px;
+  padding: 6px 4px;
+  border-radius: 16px;
+  font-size: .62rem;
+  font-weight: 650;
+}
+.nav-btn svg { width: 24px; height: 24px; }
+.nav-btn:not(.nav-btn-center).active { color: #1D4ED8; background: #EFF6FF; }
+.nav-btn-center {
+  width: 48px;
+  height: 48px;
+  min-height: 48px;
+  border-radius: 16px;
+  box-shadow: 0 5px 14px rgba(37, 99, 235, .28);
+}
+.nav-btn-center svg { width: 24px; height: 24px; }
+
+.fab-btn {
+  right: 16px;
+  bottom: calc(var(--nav-h) + 14px);
+  width: 44px;
+  height: 44px;
+  box-shadow: 0 5px 14px rgba(37, 99, 235, .26);
+}
+.fab-btn svg { width: 22px; height: 22px; }
+
+#assistant-btn {
+  position: absolute !important;
+  left: 16px !important;
+  right: auto !important;
+  bottom: calc(var(--nav-h) + 14px) !important;
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: #2563EB;
+  box-shadow: 0 5px 16px rgba(37, 99, 235, .28);
+}
+#assistant-btn .assistant-icon { width: 24px; height: 24px; }
+#assistant-btn .assistant-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+[data-theme="dark"] .bottom-nav { background: rgba(22, 27, 34, .97); border-color: var(--border); }
+[data-theme="dark"] .nav-btn:not(.nav-btn-center).active { background: var(--brand-light); }
+
+@media (max-width: 380px) {
+  .phone:has(#tela-home:not(.hidden)) .sync-strip { padding-inline: 12px; flex-direction: row; align-items: center; }
+  #tela-home .today-total { font-size: 2.1rem; }
+  #tela-home .next-card-top { align-items: flex-start; }
+  #tela-home .next-calendar-icon { flex-basis: 40px; width: 40px; height: 40px; }
+}

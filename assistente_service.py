@@ -144,24 +144,6 @@ class AssistenteService:
 <p><strong>✓ Após preenchidos, clique no botão "Carregar Endereço"</strong> para validar os dados.</p>"""
         },
 
-        # Responsável
-        "responsavel": {
-            "titulo": "👤 Responsável pelo Aceite",
-            "conteudo": """<p><strong>Dados do responsável:</strong></p>
-<ul>
-  <li><strong>Nome completo:</strong> Dessa pessoa que acompanhou a vistoria</li>
-  <li><strong>Documento (opcional):</strong> CPF ou RG para referência</li>
-  <li><strong>Confirmação:</strong> Marque o checkbox declarando que acompanhou</li>
-</ul>
-<p><strong>Recomendações:</strong></p>
-<ul>
-  <li>Sempre peça para o cliente <strong>conferir os dados</strong> antes de assinar</li>
-  <li>Inclua <strong>observações importantes</strong> no campo de notas</li>
-  <li>Certifique-se de que o nome está <strong>correto e sem erros de digitação</strong></li>
-</ul>
-<p><strong>⚠️ Se o cliente não estiver presente:</strong> Use "Não acompanhou" e registre quem estava.</p>"""
-        },
-
         # Status
         "status": {
             "titulo": "🏷️ Status do Agendamento",
@@ -225,7 +207,6 @@ class AssistenteService:
                 "telefone": ["telefone", "telefone do cliente", "número", "celular", "contato", "ddd", "telefone errado", "número anterior"],
                 "fotos": ["foto", "fotos", "fotografia", "imagem", "capturar", "tirar foto"],
                 "endereco": ["endereço", "endereco", "cep", "rua", "avenida", "bairro", "localização", "local"],
-                "responsavel": ["responsável", "responsavel", "responsavel pelo aceite", "nome da pessoa", "quem assinou"],
                 "status": ["status", "estado", "situação", "qual status", "qual é o status"],
                 "ajuda": ["ajuda", "help", "como funciona", "o que voce faz", "qual sua funcao", "como usar"]
             }

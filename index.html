@@ -12,7 +12,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon.svg">
-  <link rel="stylesheet" href="css/style.css?v=23">
+  <link rel="stylesheet" href="css/style.css?v=25">
 </head>
 <body>
 
@@ -200,8 +200,12 @@
           </svg>
         </button>
         <div class="header-actions">
-          <button id="sync-button" class="header-icon-button" type="button" aria-label="Sincronizar dados" title="Sincronizar">↻</button>
-          <button id="logout-button" class="header-icon-button" type="button" aria-label="Sair" title="Sair">⇥</button>
+          <button id="sync-button" class="header-icon-button" type="button" aria-label="Sincronizar dados" title="Sincronizar">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7h-5V2"/><path d="M20 2l-3.5 3.5A8 8 0 1 0 20 12"/></svg>
+          </button>
+          <button id="logout-button" class="header-icon-button" type="button" aria-label="Sair" title="Sair">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></svg>
+          </button>
         </div>
       </header>
 
@@ -221,7 +225,7 @@
             <div class="home-greeting">
               <div>
                 <p id="greeting-period" class="greeting-period">Bom dia</p>
-                <h2 id="greeting-name" class="greeting-name">Bem-vindo! 👋</h2>
+                <h2 id="greeting-name" class="greeting-name">Bem-vindo!</h2>
               </div>
               <div id="greeting-date" class="greeting-date"></div>
             </div>
@@ -232,7 +236,7 @@
             <!-- Card hoje -->
             <div class="today-card">
               <div class="today-card-header">
-                <span class="today-label">Hoje</span>
+                <span class="today-label">Faturamento de hoje</span>
                 <span id="today-date-badge" class="today-date-badge"></span>
               </div>
               <strong id="today-total" class="today-total">R$ 0,00</strong>
@@ -389,23 +393,7 @@
                 <span>Valor calculado</span>
                 <strong id="vistoria-valor-preview">R$ 0,00</strong>
               </section>
-              <fieldset class="acceptance-card">
-                <legend>Aceite do cliente</legend>
-                <fieldset class="field-group">
-                  <legend>O cliente acompanhou a vistoria?</legend>
-                  <div class="segmented">
-                    <label><input type="radio" name="cliente-acompanhou" value="Sim"><span>Sim</span></label>
-                    <label><input type="radio" name="cliente-acompanhou" value="Não" checked><span>Não</span></label>
-                  </div>
-                </fieldset>
-                <label class="field"><span>Nome do responsável pelo aceite</span><input id="vistoria-nome-responsavel-aceite" type="text" autocomplete="name"></label>
-                <label class="field"><span>Documento do responsável (opcional)</span><input id="vistoria-documento-responsavel" type="text"></label>
-                <label class="field"><span>Observação do aceite (opcional)</span><textarea id="vistoria-observacao-aceite" rows="3"></textarea></label>
-                <label class="acceptance-check">
-                  <input id="vistoria-aceite-confirmado" type="checkbox">
-                  <span>Declaro que acompanhei a vistoria e estou ciente das informações registradas.</span>
-                </label>
-              </fieldset>
+
               <div class="button-group">
                 <button id="vistoria-calcular-btn" class="secondary-button" type="button">Calcular</button>
                 <button id="vistoria-salvar-btn" class="primary-button" type="button">Finalizar vistoria</button>
@@ -804,6 +792,6 @@
   <script src="css/js/calculadora.js?v=18"></script>
   <script src="css/js/memoria.js?v=19"></script>
   <script src="css/js/assistant.js?v=3"></script>
-  <script src="css/js/app.js?v=31"></script>
+  <script src="css/js/app.js?v=33"></script>
 </body>
 </html>

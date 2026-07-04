@@ -72,10 +72,6 @@ const vistoriaBairroInput = document.querySelector("#vistoria-bairro");
 const vistoriaCidadeInput = document.querySelector("#vistoria-cidade");
 const vistoriaUfInput = document.querySelector("#vistoria-uf");
 const vistoriaEnderecoCompletoInput = document.querySelector("#vistoria-endereco-completo");
-const vistoriaNomeResponsavelAceiteInput = document.querySelector("#vistoria-nome-responsavel-aceite");
-const vistoriaDocumentoResponsavelInput = document.querySelector("#vistoria-documento-responsavel");
-const vistoriaObservacaoAceiteInput = document.querySelector("#vistoria-observacao-aceite");
-const vistoriaAceiteConfirmadoInput = document.querySelector("#vistoria-aceite-confirmado");
 
 // Tela: Agenda
 const agendaForm         = document.querySelector("#agenda-form");
@@ -545,7 +541,7 @@ function renderizarHome() {
   const periodo = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
 
   // Saudação
-  document.querySelector("#greeting-period").textContent = periodo;
+  document.querySelector("#greeting-period").textContent = `${periodo} 👋`;
   document.querySelector("#greeting-name").textContent = `Olá, ${nome}`;
   document.querySelector("#greeting-date").innerHTML = getDataFormatada().replace(", ", ",<br>");
 
@@ -575,18 +571,30 @@ function renderizarHome() {
   if (proxima) {
     nextCard.innerHTML = `
       <div class="next-card-content">
-        <span class="next-tipo entrada">${textoSeguro(proxima.statusConfirmacao || "Agendado")}</span>
-        <div class="next-time">${proxima.hora} &mdash; ${formatarDataCurta(proxima.data)}</div>
-        <div class="next-address"><strong>${textoSeguro(clienteDoAgendamento(proxima))}</strong></div>
-        <div class="next-address">📍 ${textoSeguro(enderecoResumidoDoAgendamento(proxima))}</div>
-        ${proxima.obs ? `<div class="next-address">📝 ${textoSeguro(proxima.obs)}</div>` : ""}
+        <div class="next-card-top">
+          <span class="next-calendar-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span>
+          <div class="next-time">${proxima.hora} <span>${formatarDataCurta(proxima.data)}</span></div>
+          <span class="next-tipo entrada">${textoSeguro(proxima.statusConfirmacao || "Agendado")}</span>
+        </div>
+        <div class="next-address next-client">
+          <span class="next-detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg></span>
+          <strong>${textoSeguro(clienteDoAgendamento(proxima))}</strong>
+        </div>
+        <div class="next-address">
+          <span class="next-detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></svg></span>
+          <span>${textoSeguro(enderecoResumidoDoAgendamento(proxima))}</span>
+        </div>
+        ${proxima.obs ? `<div class="next-address"><span class="next-detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></span><span>${textoSeguro(proxima.obs)}</span></div>` : ""}
       </div>
     `;
   } else {
     nextCard.innerHTML = `
       <div class="next-card-empty">
+        <span class="next-empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+        </span>
         <p>Nenhuma vistoria agendada.</p>
-        <button class="link-btn" onclick="trocarTela('agenda')">+ Agendar</button>
+        <button class="link-btn" onclick="trocarTela('agenda')">Agendar</button>
       </div>
     `;
   }
@@ -662,14 +670,6 @@ function abrirVistoriaNoFormulario(vistoria) {
   camposOrigem.forEach(([input, valor]) => { input.value = valor || ""; });
   vistoriaOrigem.classList.toggle("hidden", !vistoria.agendamentoId);
 
-  const acompanhou = vistoria.clienteAcompanhou || "Não";
-  document.querySelectorAll("input[name='cliente-acompanhou']").forEach(input => {
-    input.checked = input.value === acompanhou;
-  });
-  vistoriaNomeResponsavelAceiteInput.value = vistoria.nomeResponsavelAceite || vistoria.clienteNome || "";
-  vistoriaDocumentoResponsavelInput.value = vistoria.documentoResponsavel || "";
-  vistoriaObservacaoAceiteInput.value = vistoria.observacaoAceite || "";
-  vistoriaAceiteConfirmadoInput.checked = Boolean(vistoria.aceiteConfirmado);
   vistoriaSalvarBtn.textContent = vistoria.rascunho ? "Finalizar vistoria" : "Salvar alterações";
   calcularEExibirValor();
   trocarTela("novaVistoria", true);
@@ -688,9 +688,7 @@ function dadosVistoriaDoAgendamento(agendamento) {
     cidade: agendamento.cidade || "", uf: agendamento.uf || "",
     enderecoCompleto: agendamento.enderecoCompleto || agendamento.endereco || "",
     metragem: 0, tipo: agendamento.tipo || "entrada", mobilia: false, qualidade: false, valor: 0,
-    clienteAcompanhou: "Não", nomeResponsavelAceite: agendamento.clienteNome || agendamento.responsavel || "",
-    documentoResponsavel: "", observacaoAceite: "", aceiteTexto: ACEITE_TEXTO_PADRAO,
-    aceiteConfirmado: false, rascunho: true
+    rascunho: true
   };
 }
 
@@ -747,16 +745,6 @@ async function salvarVistoria() {
     mostrarToast("Preencha a data e a metragem.", "error");
     return;
   }
-  if (!vistoriaNomeResponsavelAceiteInput.value.trim()) {
-    mostrarToast("Informe o nome do responsável pelo aceite.", "error");
-    vistoriaNomeResponsavelAceiteInput.focus();
-    return;
-  }
-  if (!vistoriaAceiteConfirmadoInput.checked) {
-    mostrarToast("Confirme o aceite do cliente para finalizar.", "error");
-    vistoriaAceiteConfirmadoInput.focus();
-    return;
-  }
   try {
     const tipo     = document.querySelector("input[name='vistoria-tipo']:checked").value;
     const mobilia  = vistoriaMobiliaInput.checked;
@@ -774,11 +762,7 @@ async function salvarVistoria() {
       numero: vistoriaNumeroInput.value || "", complemento: vistoriaComplementoInput.value || "",
       bairro: vistoriaBairroInput.value || "", cidade: vistoriaCidadeInput.value || "",
       uf: vistoriaUfInput.value || "", enderecoCompleto: vistoriaEnderecoCompletoInput.value || "",
-      clienteAcompanhou: document.querySelector("input[name='cliente-acompanhou']:checked")?.value || "Não",
-      nomeResponsavelAceite: vistoriaNomeResponsavelAceiteInput.value.trim(),
-      documentoResponsavel: vistoriaDocumentoResponsavelInput.value.trim(),
-      observacaoAceite: vistoriaObservacaoAceiteInput.value.trim(),
-      aceiteTexto: ACEITE_TEXTO_PADRAO, aceiteConfirmado: true, rascunho: false
+      rascunho: false
     };
     if (vistoriaIdInput.value) await atualizarVistoria(vistoriaIdInput.value, dados);
     else await adicionarVistoria(dados);
@@ -1426,7 +1410,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=27").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=29").catch(() => {});
 }
 
 inicializar();

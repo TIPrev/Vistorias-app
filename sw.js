@@ -1,11 +1,11 @@
-const CACHE = 'vistoria-v27-nome-perfil';
+const CACHE = 'vistoria-v29-home-material';
 const ASSETS = [
   '/',
   '/index.html',
-  '/css/style.css?v=18',
+  '/css/style.css?v=25',
   '/css/js/calculadora.js?v=18',
   '/css/js/memoria.js?v=18',
-  '/css/js/app.js?v=27',
+  '/css/js/app.js?v=33',
   '/config.js?v=18',
   '/firebase.js?v=27',
   '/manifest.json',
