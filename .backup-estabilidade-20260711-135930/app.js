@@ -266,61 +266,12 @@ function aplicarTema(tema) {
 
 let telaAtiva = "home";
 
-const CHAVE_TELA_SESSAO = "vistoria.ui.telaAtiva";
-const CHAVE_FORMULARIOS_SESSAO = "vistoria.ui.formularios";
-
-function chaveEstadoInterface(chave) {
-  return `${chave}.${usuarioLocalAtual || "anonimo"}`;
-}
-
-function logDiagnostico(evento, detalhes = {}) {
-  console.info(`[Diagnostico] ${evento}`, { ...detalhes, online: navigator.onLine,
-    visibility: document.visibilityState, timestamp: new Date().toISOString() });
-}
-
-function lerSessionStorage(chave, fallback = null) {
-  try { const valor = localStorage.getItem(chaveEstadoInterface(chave)); return valor == null ? fallback : valor; }
-  catch (erro) { console.warn("[Diagnostico] storage de interface indisponivel", erro); return fallback; }
-}
-
-function salvarSessionStorage(chave, valor) {
-  try { localStorage.setItem(chaveEstadoInterface(chave), valor); }
-  catch (erro) { console.warn("[Diagnostico] Estado da interface nao foi salvo", erro); }
-}
-
-function capturarFormularios() {
-  const estado = {};
-  [vistoriaForm, agendaForm].filter(Boolean).forEach(form => {
-    estado[form.id] = {};
-    [...form.elements].forEach(campo => {
-      if (!campo.id || campo.type === "file" || campo.type === "password" || campo.disabled) return;
-      estado[form.id][campo.id] = (campo.type === "checkbox" || campo.type === "radio")
-        ? { checked: campo.checked } : { value: campo.value };
-    });
-  });
-  salvarSessionStorage(CHAVE_FORMULARIOS_SESSAO, JSON.stringify(estado));
-}
-
-function restaurarFormularios() {
-  try {
-    const estado = JSON.parse(lerSessionStorage(CHAVE_FORMULARIOS_SESSAO, "{}"));
-    Object.values(estado).forEach(campos => Object.entries(campos || {}).forEach(([id, valor]) => {
-      const campo = document.getElementById(id);
-      if (!campo || campo.type === "file" || campo.type === "password") return;
-      if (Object.prototype.hasOwnProperty.call(valor, "checked")) campo.checked = Boolean(valor.checked);
-      else if (Object.prototype.hasOwnProperty.call(valor, "value")) campo.value = valor.value;
-    }));
-    logDiagnostico("Formularios restaurados");
-  } catch (erro) { console.warn("[Diagnostico] Estado de formularios invalido; estado atual preservado", erro); }
-}
-
 function trocarTela(nomeTela, preservarFormularioVistoria = false) {
   if (!telaEls[nomeTela]) return;
 
   if (nomeTela === "novaVistoria" && !preservarFormularioVistoria) limparFormularioVistoria();
 
   telaAtiva = nomeTela;
-  salvarSessionStorage(CHAVE_TELA_SESSAO, nomeTela);
 
   Object.keys(telaEls).forEach(n => {
     telaEls[n].classList.toggle("hidden", n !== nomeTela);
@@ -353,7 +304,6 @@ async function startApp(session) {
   loginScreen.classList.add("hidden");
   appShell.classList.remove("hidden");
   definirUsuarioLocal(session.user.uid || session.user.id);
-  restaurarFormularios();
   const nomeLocal = formatarNomePerfil(obterNomeUsuarioLocal());
   let nome = nomeLocal || session.user.email.split("@")[0];
   try {
@@ -367,25 +317,21 @@ async function startApp(session) {
     definirSync(possuiDadosLocaisPendentes() ? "local" : "synced", possuiDadosLocaisPendentes() ? "Dados locais pendentes" : "Sincronizado");
   } catch (erro) {
     console.error("Erro ao sincronizar dados online:", erro);
-    if (onlineBackend.isNetworkError?.(erro) || !navigator.onLine) {
-      definirSync("local", "Offline - dados preservados neste aparelho");
-      logDiagnostico("Sincronizacao adiada por falha de rede", { code: erro?.code, message: erro?.message });
-    } else if (onlineBackend.isInvalidSessionError?.(erro)) {
-      definirSync("error", "Sessão inválida - entre novamente quando for seguro");
-      logDiagnostico("Sessao invalida detectada sem reload", { code: erro?.code });
+    if (erro?.message?.includes('refresh token') || 
+        erro?.message?.includes('Sessão expirada') ||
+        erro?.code === 'auth/user-token-expired') {
+      definirSync("error", "Sessão expirada - faça login novamente");
+      await new Promise(r => setTimeout(r, 2000));
+      window.location.reload();
     } else {
       definirSync("error", "Erro na sincronização");
     }
   }
   aplicarTema(appConfig.tema);
-  const telaAnterior = lerSessionStorage(CHAVE_TELA_SESSAO, "home");
-  trocarTela(telaEls[telaAnterior] ? telaAnterior : "home", true);
+  trocarTela("home");
 }
 
-let restauracaoSessaoEmAndamento = false;
 async function handleOnboarding() {
-  if (restauracaoSessaoEmAndamento) return;
-  restauracaoSessaoEmAndamento = true;
   splashScreen.classList.add("fade-out");
   if (!onlineBackend.configured) {
     setTimeout(() => {
@@ -393,7 +339,6 @@ async function handleOnboarding() {
       loginScreen.classList.remove("hidden");
       document.querySelector("#login-config-aviso").classList.remove("hidden");
     }, 300);
-    restauracaoSessaoEmAndamento = false;
     return;
   }
   try {
@@ -409,13 +354,8 @@ async function handleOnboarding() {
   } catch (erro) {
     splashScreen.style.display = "none";
     loginScreen.classList.remove("hidden");
-    loginErro.textContent = (onlineBackend.isNetworkError?.(erro) || !navigator.onLine)
-      ? "Sem conexão. Sua sessão e seus dados continuam preservados; tente novamente quando a rede voltar."
-      : erro.message;
+    loginErro.textContent = erro.message;
     loginErro.classList.remove("hidden");
-    logDiagnostico("Falha ao restaurar sessao", { code: erro?.code, message: erro?.message });
-  } finally {
-    restauracaoSessaoEmAndamento = false;
   }
 }
 
@@ -1305,7 +1245,6 @@ function importarDados(arquivo) {
 // ============================================================
 
 async function inicializar() {
-  logDiagnostico("Inicializacao do aplicativo");
   // Splash → Login → App
   splashEnterBtn.addEventListener("click", handleOnboarding);
   loginForm.addEventListener("submit", autenticar);
@@ -1380,30 +1319,10 @@ async function inicializar() {
     importarDados(e.target.files[0]);
     e.target.value = "";
   });
-
-  document.addEventListener("input", capturarFormularios);
-  document.addEventListener("change", capturarFormularios);
-  window.addEventListener("pagehide", capturarFormularios);
-  window.addEventListener("online", () => logDiagnostico("Conexao restaurada"));
-  window.addEventListener("offline", () => {
-    definirSync("local", "Offline - dados preservados neste aparelho");
-    logDiagnostico("Conexao perdida");
-  });
-
-  // Restaura a sessao sem exigir um clique na splash. O botao continua como fallback.
-  void handleOnboarding();
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=32")
-    .then(registration => logDiagnostico("Service Worker registrado", { scope: registration.scope }))
-    .catch(erro => console.error("[Diagnostico] Falha ao registrar Service Worker", erro));
+  navigator.serviceWorker.register("/sw.js?v=31").catch(() => {});
 }
-
-window.addEventListener("error", evento => console.error("[Diagnostico] Erro JavaScript nao tratado", {
-  message: evento.message, source: evento.filename, line: evento.lineno, column: evento.colno
-}));
-window.addEventListener("unhandledrejection", evento =>
-  console.error("[Diagnostico] Promise rejeitada sem tratamento", evento.reason));
 
 inicializar();

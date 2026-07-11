@@ -1,27 +1,30 @@
-const CACHE = 'vistoria-v32-estabilidade';
+const CACHE = 'vistoria-v31-banner-azul';
 const ASSETS = [
   '/',
   '/index.html',
   '/css/style.css?v=26',
   '/css/js/calculadora.js?v=18',
-  '/css/js/memoria.js?v=19',
+  '/css/js/memoria.js?v=18',
   '/css/js/assistant.js?v=4',
-  '/css/js/app.js?v=35',
+  '/css/js/app.js?v=34',
   '/config.js?v=18',
-  '/firebase.js?v=28',
+  '/firebase.js?v=27',
   '/manifest.json',
   '/icons/icon.svg',
 ];
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS))
+    caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', e => {
-  // Caches anteriores sao mantidos: nenhum cache de dados e apagado na atualizacao.
-  e.waitUntil(Promise.resolve());
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener('fetch', e => {
@@ -33,9 +36,6 @@ self.addEventListener('fetch', e => {
     );
     return;
   }
-
-  // Recursos externos (como o SDK Firebase) seguem a politica normal do navegador.
-  if (new URL(e.request.url).origin !== self.location.origin) return;
 
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {

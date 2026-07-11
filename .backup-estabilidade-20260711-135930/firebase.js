@@ -6,46 +6,20 @@
     firebaseConfig.projectId && firebaseConfig.appId
   );
   let sdk = null;
-  let ready = null;
 
-  function isNetworkError(error) {
-    return error?.code === "auth/network-request-failed" ||
-      error?.code === "unavailable" || error?.code === "firestore/unavailable" ||
-      /network|offline|failed to fetch/i.test(String(error?.message || ""));
-  }
-
-  function isInvalidSessionError(error) {
-    return error?.code === "auth/user-token-expired" ||
-      error?.code === "auth/id-token-expired" || error?.code === "auth/invalid-user-token" ||
-      /refresh token (?:was )?revoked/i.test(String(error?.message || ""));
-  }
-
-  async function loadSdk() {
-    if (!configured) return null;
-    if (sdk) return sdk;
+  const ready = configured ? (async () => {
     const appSdk = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
     const authSdk = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js");
     const dbSdk = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
-    const app = appSdk.getApps().length ? appSdk.getApp() : appSdk.initializeApp(firebaseConfig);
+    const app = appSdk.initializeApp(firebaseConfig);
     const auth = authSdk.getAuth(app);
     await authSdk.setPersistence(auth, authSdk.browserLocalPersistence);
     sdk = { authSdk, dbSdk, auth, db: dbSdk.getFirestore(app) };
     return sdk;
-  }
-
-  function sdkReady() {
-    if (!ready) {
-      ready = loadSdk().catch(error => {
-        ready = null;
-        console.error("[Firebase] Falha ao inicializar SDK", { code: error?.code, message: error?.message, online: navigator.onLine });
-        throw error;
-      });
-    }
-    return ready;
-  }
+  })() : Promise.resolve(null);
 
   async function requireSdk() {
-    const loaded = await sdkReady();
+    const loaded = await ready;
     if (!loaded) throw new Error("Firebase ainda não foi configurado em config.js.");
     return loaded;
   }
@@ -73,12 +47,13 @@
       const user = await getUser();
       return user ? { user } : null;
     } catch (error) {
-      console.warn("[Firebase Auth] Falha ao restaurar sessao", {
-        code: error?.code, message: error?.message,
-        network: isNetworkError(error), invalidSession: isInvalidSessionError(error), online: navigator.onLine
-      });
-      if (isInvalidSessionError(error)) return null;
-      throw error;
+      const { auth, authSdk } = await requireSdk();
+      if (error?.code === 'auth/user-token-expired' || 
+          error?.message?.includes('refresh token was revoked') ||
+          error?.code === 'auth/network-request-failed') {
+        await authSdk.signOut(auth);
+      }
+      return null;
     }
   }
 
@@ -331,8 +306,8 @@
   }
 
   window.onlineBackend = {
-    configured, get ready() { return sdkReady(); }, currentSession, login, logout, ensureProfile, updateProfileName, loadAll,
+    configured, ready, currentSession, login, logout, ensureProfile, updateProfileName, loadAll,
     saveInspection, deleteInspection, saveAppointment, deleteAppointment,
-    publicAction, siteUrl, isNetworkError, isInvalidSessionError
+    publicAction, siteUrl
   };
 })();
