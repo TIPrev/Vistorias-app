@@ -331,7 +331,7 @@ function trocarTela(nomeTela, preservarFormularioVistoria = false) {
   });
 
   fabBtn.classList.toggle("hidden", nomeTela === "novaVistoria");
-  headerTitle.textContent = TITULOS_TELA[nomeTela] || "Vistoria App";
+  if (headerTitle) headerTitle.textContent = TITULOS_TELA[nomeTela] || "Vistoria App";
 
   document.querySelector(".screens-container").scrollTop = 0;
 
@@ -402,8 +402,8 @@ async function handleOnboarding() {
     else {
       splashScreen.style.display = "none";
       loginScreen.classList.remove("hidden");
-      loginErro.textContent = "Sua sessão expirou. Faça login novamente.";
-      loginErro.classList.remove("hidden");
+      loginErro.textContent = "";
+      loginErro.classList.add("hidden");
       loginEmail.focus();
     }
   } catch (erro) {
@@ -411,7 +411,7 @@ async function handleOnboarding() {
     loginScreen.classList.remove("hidden");
     loginErro.textContent = (onlineBackend.isNetworkError?.(erro) || !navigator.onLine)
       ? "Sem conexão. Sua sessão e seus dados continuam preservados; tente novamente quando a rede voltar."
-      : erro.message;
+      : "Não foi possível verificar sua sessão. Tente novamente.";
     loginErro.classList.remove("hidden");
     logDiagnostico("Falha ao restaurar sessao", { code: erro?.code, message: erro?.message });
   } finally {
@@ -423,6 +423,7 @@ async function autenticar(event) {
   event.preventDefault();
   loginErro.classList.add("hidden");
   loginSubmit.disabled = true;
+  loginSubmit.setAttribute("aria-busy", "true");
   loginSubmit.textContent = "Entrando...";
   try {
     const firebaseConfig = window.APP_CONFIG?.firebase;
@@ -454,31 +455,36 @@ async function autenticar(event) {
     loginSenha.value = "";
     await startApp(session);
   } catch (error) {
-    console.error(error);
     const firebaseConfig = window.APP_CONFIG?.firebase;
     const code = error?.code || "sem-codigo";
     const message = error?.message || String(error);
-    const diagnosticos = {
-      "auth/invalid-credential": "A credencial não foi aceita pelo Firebase.",
-      "auth/unauthorized-domain": "Este domínio não está autorizado no Firebase Authentication.",
-      "auth/network-request-failed": "Falha de rede ao acessar o Firebase.",
-      "auth/too-many-requests": "Muitas tentativas; o Firebase bloqueou temporariamente o acesso.",
-      "auth/user-token-expired": "Sua sessão expirou. Faça login novamente.",
-      "app/config-ausente": "O arquivo config.js não foi carregado corretamente.",
-      "app/project-id-incorreto": "O app está apontando para outro projeto Firebase.",
-      "app/auth-domain-incorreto": "O authDomain configurado não corresponde ao projeto esperado."
+    console.error("[Firebase Auth] Falha no login", {
+      code,
+      message,
+      projectId: firebaseConfig?.projectId || "ausente",
+      authDomain: firebaseConfig?.authDomain || "ausente",
+      error
+    });
+    const mensagensDeLogin = {
+      "auth/invalid-email": "E-mail inválido.",
+      "auth/user-not-found": "Usuário não encontrado.",
+      "auth/wrong-password": "Senha incorreta.",
+      "auth/invalid-password": "Senha incorreta.",
+      "auth/invalid-credential": "Usuário ou senha inválidos.",
+      "auth/network-request-failed": "Falha de conexão. Verifique sua internet.",
+      "auth/too-many-requests": "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
+      "auth/user-disabled": "Este usuário está desativado. Entre em contato com o suporte.",
+      "auth/operation-not-allowed": "Não foi possível realizar o login. Entre em contato com o suporte.",
+      "auth/unauthorized-domain": "Não foi possível realizar o login neste endereço.",
+      "auth/user-token-expired": "Sua sessão expirou. Entre novamente.",
+      "auth/id-token-expired": "Sua sessão expirou. Entre novamente.",
+      "auth/invalid-user-token": "Sua sessão não é mais válida. Entre novamente."
     };
-    let userMessage = diagnosticos[code];
-    if (!userMessage && message?.includes('refresh token')) {
-      userMessage = "Sua sessão foi revogada por questões de segurança. Faça login novamente.";
-    } else if (!userMessage) {
-      userMessage = "O Firebase retornou um erro de autenticação.";
-    }
-    loginErro.style.whiteSpace = "pre-line";
-    loginErro.textContent = `${userMessage}\nCódigo: ${code}\nMensagem: ${message}\nprojectId: ${firebaseConfig?.projectId || "ausente"}\nauthDomain: ${firebaseConfig?.authDomain || "ausente"}`;
+    loginErro.textContent = mensagensDeLogin[code] || "Não foi possível realizar o login. Tente novamente.";
     loginErro.classList.remove("hidden");
   } finally {
     loginSubmit.disabled = false;
+    loginSubmit.removeAttribute("aria-busy");
     loginSubmit.textContent = "Entrar";
   }
 }
@@ -1395,7 +1401,7 @@ async function inicializar() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js?v=32")
+  navigator.serviceWorker.register("/sw.js?v=33")
     .then(registration => logDiagnostico("Service Worker registrado", { scope: registration.scope }))
     .catch(erro => console.error("[Diagnostico] Falha ao registrar Service Worker", erro));
 }

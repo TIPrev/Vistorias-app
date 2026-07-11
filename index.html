@@ -2,17 +2,17 @@
 <html lang="pt-BR" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#2563eb">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Vistoria">
-  <title>Vistoria App</title>
+  <title>HM Origens | Vistorias</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon.svg">
-  <link rel="stylesheet" href="css/style.css?v=26">
+  <link rel="stylesheet" href="css/style.css?v=33">
 </head>
 <body>
 
@@ -37,7 +37,7 @@
   <!-- ===== ONBOARDING TELA 1: CAPA ===== -->
   <section id="login-screen" class="auth-screen hidden" aria-labelledby="login-title">
     <form id="login-form" class="auth-card">
-      <div class="auth-logo">⌂</div>
+      <img class="brand-logo brand-logo--login" src="img/hm-origens-logo.png" alt="HM Origens Vistorias">
       <h1 id="login-title">Acesse sua conta</h1>
       <p>Suas vistorias ficam protegidas e disponíveis em qualquer celular.</p>
       <label class="field"><span>Usuário ou e-mail</span><input id="login-email" type="text" autocapitalize="none" autocomplete="username" required></label>
@@ -186,12 +186,8 @@
       <!-- HEADER -->
       <header class="app-header" id="app-header">
         <div class="header-left">
-          <div class="header-logo">
-            <svg width="20" height="20" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 5L4 16h4v15h8v-9h4v9h8V16h4L18 5z" fill="white"/>
-            </svg>
-          </div>
-          <span id="header-title" class="header-title">Vistoria App</span>
+          <img class="brand-logo brand-logo--header" src="img/hm-origens-simbolo.png" alt="">
+          <span class="header-brand"><strong>HM ORIGENS</strong><small>Vistorias</small></span>
         </div>
         <button id="profile-button" class="profile-button" aria-label="Acessar perfil">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -629,23 +625,25 @@
 
       </main>
 
-      <!-- FAB BUTTON -->
-      <button id="fab-btn" class="fab-btn" title="Nova Vistoria" aria-label="Nova Vistoria">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-      </button>
-
-      <!-- ASSISTENTE FLUTUANTE -->
-      <button id="assistant-btn" class="assistant-btn" title="Abrir assistente" aria-label="Abrir assistente de vistoria" aria-haspopup="dialog" aria-controls="assistant-modal" aria-expanded="false">
-        <span class="assistant-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
-            <path d="M8 9h8M8 13h5"/>
+      <div class="floating-actions" aria-label="Ações rápidas">
+        <!-- FAB BUTTON -->
+        <button id="fab-btn" class="fab-btn" title="Nova Vistoria" aria-label="Nova Vistoria">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
-        </span>
-        <span class="assistant-text">Assistente</span>
-      </button>
+        </button>
+
+        <!-- ASSISTENTE -->
+        <button id="assistant-btn" class="assistant-btn" title="Abrir assistente" aria-label="Abrir assistente de vistoria" aria-haspopup="dialog" aria-controls="assistant-modal" aria-expanded="false">
+          <span class="assistant-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+              <path d="M8 9h8M8 13h5"/>
+            </svg>
+          </span>
+          <span class="assistant-text">Assistente</span>
+        </button>
+      </div>
       
       <!-- MODAL DO ASSISTENTE -->
       <div id="assistant-modal" class="assistant-modal hidden" role="dialog" aria-modal="true" aria-labelledby="assistant-title">
@@ -765,6 +763,6 @@
   <script src="css/js/calculadora.js?v=18"></script>
   <script src="css/js/memoria.js?v=19"></script>
   <script src="css/js/assistant.js?v=4"></script>
-  <script src="css/js/app.js?v=35"></script>
+  <script src="css/js/app.js?v=38"></script>
 </body>
 </html>

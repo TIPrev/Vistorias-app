@@ -1,3 +1,4 @@
+
 {
   "hosting": {
     "public": ".",
@@ -5,12 +6,11 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
-      ".git/**",
-      "*.py",
-      "*.md",
-      ".env",
-      "venv",
-      "__pycache__"
+      "**/*.exe",
+      "**/*.bat",
+      "**/*.dll",
+      "**/*.apk",
+      "**/*.ipa"
     ],
     "rewrites": [
       {
@@ -18,8 +18,5 @@
         "destination": "/index.html"
       }
     ]
-  },
-  "firestore": {
-    "rules": "firestore.rules"
   }
 }
