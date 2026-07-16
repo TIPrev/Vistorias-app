@@ -1,4 +1,4 @@
-const CACHE = 'vistoria-v43-origens-pwa';
+const CACHE = 'vistoria-v44-origens-pwa-v2';
 const ASSETS = [
   '/',
   '/index.html',
@@ -9,11 +9,11 @@ const ASSETS = [
   '/css/js/app.js?v=39',
   '/config.js?v=18',
   '/firebase.js?v=28',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/icons/apple-touch-icon.png',
-  '/icons/favicon.png',
+  '/manifest.json?v=2',
+  '/icons/icon-192.png?v=2',
+  '/icons/icon-512.png?v=2',
+  '/icons/apple-touch-icon.png?v=2',
+  '/icons/favicon.png?v=2',
   '/img/hm-origens-logo.png',
   '/img/hm-origens-simbolo.png',
 ];
