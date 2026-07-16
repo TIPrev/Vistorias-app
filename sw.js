@@ -1,12 +1,12 @@
-const CACHE = 'vistoria-v41-acoes-sem-sobreposicao';
+const CACHE = 'vistoria-v42-olho-senha';
 const ASSETS = [
   '/',
   '/index.html',
-  '/css/style.css?v=33',
+  '/css/style.css?v=34',
   '/css/js/calculadora.js?v=18',
   '/css/js/memoria.js?v=19',
   '/css/js/assistant.js?v=4',
-  '/css/js/app.js?v=38',
+  '/css/js/app.js?v=39',
   '/config.js?v=18',
   '/firebase.js?v=28',
   '/manifest.json',

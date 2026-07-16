@@ -12,7 +12,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon.svg">
-  <link rel="stylesheet" href="css/style.css?v=33">
+  <link rel="stylesheet" href="css/style.css?v=34">
 </head>
 <body>
 
@@ -41,7 +41,22 @@
       <h1 id="login-title">Acesse sua conta</h1>
       <p>Suas vistorias ficam protegidas e disponíveis em qualquer celular.</p>
       <label class="field"><span>Usuário ou e-mail</span><input id="login-email" type="text" autocapitalize="none" autocomplete="username" required></label>
-      <label class="field"><span>Senha</span><input id="login-senha" type="password" autocomplete="current-password" minlength="6" required></label>
+      <div class="field">
+        <span>Senha</span>
+        <div class="password-input-wrapper">
+          <input id="login-senha" type="password" autocomplete="current-password" minlength="6" required>
+          <button type="button" id="toggle-login-senha" class="toggle-password-btn" aria-label="Mostrar senha">
+            <svg class="eye-icon eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+            <svg class="eye-icon eye-open hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+      </div>
       <p id="login-erro" class="form-message error hidden" role="alert"></p>
       <button id="login-submit" class="primary-button" type="submit">Entrar</button>
       <small id="login-config-aviso" class="config-warning hidden">Configure o Firebase para habilitar o login online.</small>
@@ -763,6 +778,6 @@
   <script src="css/js/calculadora.js?v=18"></script>
   <script src="css/js/memoria.js?v=19"></script>
   <script src="css/js/assistant.js?v=4"></script>
-  <script src="css/js/app.js?v=38"></script>
+  <script src="css/js/app.js?v=39"></script>
 </body>
 </html>

@@ -314,10 +314,8 @@ function restaurarFormularios() {
   } catch (erro) { console.warn("[Diagnostico] Estado de formularios invalido; estado atual preservado", erro); }
 }
 
-function trocarTela(nomeTela, preservarFormularioVistoria = false) {
+function trocarTela(nomeTela) {
   if (!telaEls[nomeTela]) return;
-
-  if (nomeTela === "novaVistoria" && !preservarFormularioVistoria) limparFormularioVistoria();
 
   telaAtiva = nomeTela;
   salvarSessionStorage(CHAVE_TELA_SESSAO, nomeTela);
@@ -379,7 +377,7 @@ async function startApp(session) {
   }
   aplicarTema(appConfig.tema);
   const telaAnterior = lerSessionStorage(CHAVE_TELA_SESSAO, "home");
-  trocarTela(telaEls[telaAnterior] ? telaAnterior : "home", true);
+  trocarTela(telaEls[telaAnterior] ? telaAnterior : "home");
 }
 
 let restauracaoSessaoEmAndamento = false;
@@ -450,7 +448,14 @@ async function autenticar(event) {
     });
 
     const identificador = loginEmail.value.trim().toLowerCase();
-    const email = identificador.includes("@") ? identificador : `${identificador}@vistoria.local`;
+    let email = identificador;
+    if (!identificador.includes("@")) {
+      if (["marcela", "marcelalima", "marcelalima_2"].includes(identificador)) {
+        email = "marcelalima_2@hotmail.com";
+      } else {
+        email = `${identificador}@vistoria.local`;
+      }
+    }
     const session = await onlineBackend.login(email, loginSenha.value);
     loginSenha.value = "";
     await startApp(session);
@@ -671,7 +676,7 @@ function abrirVistoriaNoFormulario(vistoria) {
 
   vistoriaSalvarBtn.textContent = vistoria.rascunho ? "Finalizar vistoria" : "Salvar alterações";
   calcularEExibirValor();
-  trocarTela("novaVistoria", true);
+  trocarTela("novaVistoria");
 }
 
 function dadosVistoriaDoAgendamento(agendamento) {
@@ -1395,6 +1400,28 @@ async function inicializar() {
     definirSync("local", "Offline - dados preservados neste aparelho");
     logDiagnostico("Conexao perdida");
   });
+
+  // Mostrar/Ocultar Senha
+  const toggleSenhaBtn = document.querySelector("#toggle-login-senha");
+  if (toggleSenhaBtn) {
+    toggleSenhaBtn.addEventListener("click", () => {
+      const tipo = loginSenha.type === "password" ? "text" : "password";
+      loginSenha.type = tipo;
+      
+      const eyeClosed = toggleSenhaBtn.querySelector(".eye-closed");
+      const eyeOpen = toggleSenhaBtn.querySelector(".eye-open");
+      
+      if (tipo === "text") {
+        eyeClosed.classList.add("hidden");
+        eyeOpen.classList.remove("hidden");
+        toggleSenhaBtn.setAttribute("aria-label", "Ocultar senha");
+      } else {
+        eyeClosed.classList.remove("hidden");
+        eyeOpen.classList.add("hidden");
+        toggleSenhaBtn.setAttribute("aria-label", "Mostrar senha");
+      }
+    });
+  }
 
   // Restaura a sessao sem exigir um clique na splash. O botao continua como fallback.
   void handleOnboarding();

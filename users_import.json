@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "localId": "QXsV36kQU4eGBtm6lkcyNNTEMZs2",
+      "email": "marcelalima_2@hotmail.com",
+      "emailVerified": false,
+      "passwordHash": "uWUNJ1tEnTR7Mk/aimS2Z4imTuLy4n9eG02JV9apSVc=",
+      "lastSignedInAt": "1783804032380",
+      "createdAt": "1782670349384",
+      "disabled": false,
+      "providerUserInfo": []
+    }
+  ]
+}
