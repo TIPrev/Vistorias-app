@@ -1,4 +1,4 @@
-const CACHE = 'vistoria-v42-olho-senha';
+const CACHE = 'vistoria-v43-origens-pwa';
 const ASSETS = [
   '/',
   '/index.html',
@@ -10,7 +10,10 @@ const ASSETS = [
   '/config.js?v=18',
   '/firebase.js?v=28',
   '/manifest.json',
-  '/icons/icon.svg',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/apple-touch-icon.png',
+  '/icons/favicon.png',
   '/img/hm-origens-logo.png',
   '/img/hm-origens-simbolo.png',
 ];
